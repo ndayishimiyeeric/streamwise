@@ -17,7 +17,7 @@ function AuthCallbackPage() {
       }
     },
     onError: ({ message, data, shape }) => {
-      if (data?.code === "FORBIDDEN") {
+      if (data?.code === "UNAUTHORIZED") {
         router.push("/api/auth/login?origin=dashboard");
       } else {
         router.push("/auth");
