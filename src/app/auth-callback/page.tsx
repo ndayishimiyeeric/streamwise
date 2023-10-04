@@ -16,11 +16,14 @@ function AuthCallbackPage() {
         router.push(origin ? `/${origin}` : "/dashboard");
       }
     },
-    onError: (err) => {
-      console.log("error", err);
-      redirect("/auth");
+    onError: ({ message, data, shape }) => {
+      if (data?.code === "FORBIDDEN") {
+        router.push("/api/auth/login?origin=dashboard");
+      } else {
+        router.push("/auth");
+      }
     },
-    retry: true,
+    retry: 3,
     retryDelay: 500,
   });
 
