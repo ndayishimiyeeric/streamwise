@@ -1,15 +1,30 @@
 import React from "react";
 import Link from "next/link";
-import { File } from "@prisma/client";
-import { MessageSquare, Plus, Trash } from "lucide-react";
 import { format } from "date-fns";
+import { File } from "@prisma/client";
+
+import { trpc } from "@/app/_trpc/client";
+import { Loader2, MessageSquare, Plus, Trash } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import toast from "react-hot-toast";
 
 interface Props {
   file: File;
 }
 
 function DashboardFileCard({ file }: Props) {
+  const utils = trpc.useContext();
+  const { mutate: deleteFile, isLoading } = trpc.deleteFile.useMutation({
+    onSuccess: () => {
+      utils.getUserFiles.invalidate().then((r) => r);
+    },
+  });
+
+  const handleDelete = async (): Promise<void> => {
+    deleteFile({ id: file.id });
+    return await new Promise((resolve) => setTimeout(resolve, 2000));
+  };
+
   return (
     <li
       key={file.id}
@@ -38,8 +53,26 @@ function DashboardFileCard({ file }: Props) {
           <MessageSquare className="h-4 w-4" />3 messages
         </div>
 
-        <Button variant="destructive" size="sm" className="w-full">
-          <Trash />
+        <Button
+          onClick={() => {
+            toast
+              .promise(handleDelete(), {
+                loading: "Deleting file...",
+                success: "File deleted",
+                error: "Error deleting file",
+              })
+              .then((r) => r);
+          }}
+          variant="destructive"
+          size="sm"
+          className="w-full"
+          disabled={isLoading}
+        >
+          {isLoading ? (
+            <Loader2 className="w-4 h-4 animate-spin" />
+          ) : (
+            <Trash className="w-4 h-4" />
+          )}
         </Button>
       </div>
     </li>
