@@ -13,8 +13,10 @@ datasource db {
 }
 
 model User {
-  id           String        @id @unique
-  email        String        @unique
+  id    String @id @unique
+  email String @unique
+  File  File[]
+
   userLimit    UserLimit?
   subscription Subscription?
 }
@@ -36,4 +38,26 @@ model Subscription {
   stripePriceId          String?   @unique @map("stripe_price_id")
   stripeCurrentPeriodEnd DateTime? @map("stripe_current_period_end")
   user                   User      @relation(fields: [userId], references: [id])
+}
+
+enum FileUploadStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+model File {
+  id           String           @id @default(uuid())
+  userId       String
+  name         String
+  uploadStatus FileUploadStatus @default(PENDING)
+  url          String           @db.Text
+  key          String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  User      User     @relation(fields: [userId], references: [id])
+
+  @@index([userId])
 }
