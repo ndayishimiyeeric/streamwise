@@ -2,7 +2,7 @@ import { authProcedure, publicProcedure, router } from "./trpc";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { TRPCError } from "@trpc/server";
 import { db } from "@/lib/db";
-import { DeleteFileInput } from "@/lib/validators/file";
+import { DeleteFileInput, GetFileInput } from "@/lib/validators/file";
 
 export const appRouter = router({
   authCallback: publicProcedure.query(async () => {
@@ -73,6 +73,26 @@ export const appRouter = router({
           userId,
         },
       });
+
+      return file;
+    }),
+  getFile: authProcedure
+    .input(GetFileInput)
+    .mutation(async ({ ctx, input }) => {
+      const { userId } = ctx;
+
+      const file = await db.file.findFirst({
+        where: {
+          key: input.key,
+          userId,
+        },
+      });
+
+      if (!file)
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "File not found",
+        });
 
       return file;
     }),
