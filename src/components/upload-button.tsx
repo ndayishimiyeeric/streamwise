@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import UploadDropzone from "@/components/upload-dropzone";
 
 function UploadButton() {
   const [isOpened, setIsOpened] = useState(false);
@@ -27,7 +28,9 @@ function UploadButton() {
         <Button>Upload PDF</Button>
       </DialogTrigger>
 
-      <DialogContent>test</DialogContent>
+      <DialogContent>
+        <UploadDropzone />
+      </DialogContent>
     </Dialog>
   );
 }
