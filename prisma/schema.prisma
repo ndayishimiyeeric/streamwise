@@ -15,7 +15,9 @@ datasource db {
 model User {
   id    String @id @unique
   email String @unique
-  File  File[]
+
+  File     File[]
+  messages Message[]
 
   userLimit    UserLimit?
   subscription Subscription?
@@ -55,9 +57,28 @@ model File {
   url          String           @db.Text
   key          String
 
+  messages Message[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   User      User     @relation(fields: [userId], references: [id])
 
+  @@index([userId])
+}
+
+model Message {
+  id            String  @id @default(uuid())
+  text          String  @db.Text
+  isUserMessage Boolean @default(false)
+
+  fileId String?
+  File   File?   @relation(fields: [fileId], references: [id])
+  userId String?
+  User   User?   @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([fileId])
   @@index([userId])
 }
