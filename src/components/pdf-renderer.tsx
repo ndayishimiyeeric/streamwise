@@ -25,6 +25,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import PdfRendererFullscreen from "@/components/pdf-renderer-fullscreen";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
@@ -38,6 +39,9 @@ function PdfRenderer({ url }: Props) {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [zoom, setZoom] = useState<number>(1);
   const [rotation, setRotation] = useState<number>(0);
+  const [renderedScale, setRenderedScale] = useState<number | null>(null);
+
+  const isLoading = renderedScale !== zoom;
 
   const PageSchema = z.object({
     page: z
@@ -147,6 +151,8 @@ function PdfRenderer({ url }: Props) {
           >
             <RotateCw className="h-4 w-4" />
           </Button>
+
+          <PdfRendererFullscreen url={url} />
         </div>
       </div>
 
@@ -168,12 +174,30 @@ function PdfRenderer({ url }: Props) {
                 setNumPages(numPages);
               }}
             >
+              {isLoading && renderedScale && (
+                <Page
+                  width={width ? width : 1}
+                  pageNumber={currentPage}
+                  scale={zoom}
+                  rotate={rotation}
+                  key={"@" + renderedScale}
+                />
+              )}
+
               <Page
+                className={cn(isLoading && "hidden")}
                 width={width ? width : 1}
                 pageNumber={currentPage}
                 scale={zoom}
                 rotate={rotation}
-              ></Page>
+                key={"@" + zoom}
+                loading={
+                  <div className="flex justify-center">
+                    <Loader2 className="my-24 h-6 w-6 animate-spin" />
+                  </div>
+                }
+                onRenderSuccess={() => setRenderedScale(zoom)}
+              />
             </Document>
           </div>
         </SimpleBar>
