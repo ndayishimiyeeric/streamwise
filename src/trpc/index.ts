@@ -2,7 +2,11 @@ import { authProcedure, publicProcedure, router } from "./trpc";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { TRPCError } from "@trpc/server";
 import { db } from "@/lib/db";
-import { DeleteFileInput, GetFileInput } from "@/lib/validators/file";
+import {
+  DeleteFileInput,
+  GetFileInput,
+  GetFileUploadStatusInput,
+} from "@/lib/validators/file";
 
 export const appRouter = router({
   authCallback: publicProcedure.query(async () => {
@@ -95,6 +99,21 @@ export const appRouter = router({
         });
 
       return file;
+    }),
+
+  getFileUploadStatus: authProcedure
+    .input(GetFileUploadStatusInput)
+    .query(async ({ ctx, input }) => {
+      const file = await db.file.findUnique({
+        where: {
+          id: input.id,
+          userId: ctx.userId,
+        },
+      });
+
+      if (!file) return { status: "PENDING" as const };
+
+      return { status: file.uploadStatus };
     }),
 });
 
