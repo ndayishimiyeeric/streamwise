@@ -11,3 +11,11 @@ export const GetFileInput = z.object({
 });
 
 export type GetFileInputType = z.infer<typeof GetFileInput>;
+
+export const GetFileUploadStatusInput = z.object({
+  id: z.string().uuid(),
+});
+
+export type GetFileUploadStatusInputType = z.infer<
+  typeof GetFileUploadStatusInput
+>;
