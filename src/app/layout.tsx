@@ -6,6 +6,7 @@ import Providers from "@/components/providers";
 
 import "../styles/globals.css";
 import "react-loading-skeleton/dist/skeleton.css";
+import "simplebar-react/dist/simplebar.min.css";
 import ToastProvider from "@/components/toast-provider";
 
 const inter = Inter({ subsets: ["latin"] });
