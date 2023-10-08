@@ -7,8 +7,8 @@ import {
   ChevronDown,
   ChevronUp,
   Loader2,
+  RotateCw,
   ScanSearch,
-  Search,
 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -37,6 +37,7 @@ function PdfRenderer({ url }: Props) {
   const [numPages, setNumPages] = useState<number | undefined>(undefined);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [zoom, setZoom] = useState<number>(1);
+  const [rotation, setRotation] = useState<number>(0);
 
   const PageSchema = z.object({
     page: z
@@ -136,6 +137,16 @@ function PdfRenderer({ url }: Props) {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
+
+          <Button
+            aria-label="rotate 90 degrees"
+            variant="ghost"
+            onClick={() => {
+              setRotation((prev) => prev + 90);
+            }}
+          >
+            <RotateCw className="h-4 w-4" />
+          </Button>
         </div>
       </div>
 
@@ -161,6 +172,7 @@ function PdfRenderer({ url }: Props) {
                 width={width ? width : 1}
                 pageNumber={currentPage}
                 scale={zoom}
+                rotate={rotation}
               ></Page>
             </Document>
           </div>
