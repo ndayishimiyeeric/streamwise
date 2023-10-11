@@ -19,7 +19,7 @@ function UploadDropzone() {
     onSuccess: (data) => {
       router.push(`/dashboard/${data.id}`);
     },
-    retry: 3,
+    retry: true,
     retryDelay: 500,
   });
 
