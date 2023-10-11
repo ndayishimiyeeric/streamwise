@@ -5,10 +5,10 @@ import Messages from "@/components/chat/messages";
 import ChatInput from "@/components/chat/chat-input";
 import { trpc } from "@/app/_trpc/client";
 import { ChevronLeft, Loader2, XCircle } from "lucide-react";
-import { is } from "date-fns/locale";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
+import { ChatContextProvider } from "@/components/hoc/chat-context";
 
 type Props = {
   fileId: string;
@@ -25,16 +25,18 @@ function ChatWrapper({ fileId }: Props) {
 
   if (isLoading)
     return (
-      <div className="relative min-h-full bg-zinc-50 flex flex-col justify-between gap-2 divide-y divide-zinc-200">
-        <div className="flex-1 flex justify-center items-center flex-col mb-28">
-          <div className="flex flex-col items-center gap-2">
-            <Loader2 className="h-8 w-8 text-blue-500 animate-spin" />
-            <h3 className="font-semibold text-xl">Loading...</h3>
-            <p className="text-zinc-500 text-sm">PDF is being loaded</p>
+      <ChatContextProvider fileId={fileId}>
+        <div className="relative min-h-full bg-zinc-50 flex flex-col justify-between gap-2 divide-y divide-zinc-200">
+          <div className="flex-1 flex justify-center items-center flex-col mb-28">
+            <div className="flex flex-col items-center gap-2">
+              <Loader2 className="h-8 w-8 text-blue-500 animate-spin" />
+              <h3 className="font-semibold text-xl">Loading...</h3>
+              <p className="text-zinc-500 text-sm">PDF is being loaded</p>
+            </div>
           </div>
+          <ChatInput disabled />
         </div>
-        <ChatInput disabled />
-      </div>
+      </ChatContextProvider>
     );
 
   if (data?.status === "PROCESSING")
@@ -72,13 +74,15 @@ function ChatWrapper({ fileId }: Props) {
       </div>
     );
   return (
-    <div className="relative min-h-full bg-zinc-50 flex flex-col justify-between gap-2 divide-y divide-zinc-200">
-      <div className="flex-1 flex flex-col justify-between mb-28">
-        <Messages />
-      </div>
+    <ChatContextProvider fileId={fileId}>
+      <div className="relative min-h-full bg-zinc-50 flex flex-col justify-between gap-2 divide-y divide-zinc-200">
+        <div className="flex-1 flex flex-col justify-between mb-28">
+          <Messages />
+        </div>
 
-      <ChatInput />
-    </div>
+        <ChatInput />
+      </div>
+    </ChatContextProvider>
   );
 }
 
