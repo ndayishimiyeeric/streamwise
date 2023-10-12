@@ -7,6 +7,8 @@ import {
   GetFileInput,
   GetFileUploadStatusInput,
 } from "@/lib/validators/file";
+import { GetFileMessagesSchema } from "@/lib/validators/message";
+import { QUERY_LIMIT } from "@/config/query";
 
 export const appRouter = router({
   authCallback: publicProcedure.query(async () => {
@@ -114,6 +116,55 @@ export const appRouter = router({
       if (!file) return { status: "PENDING" as const };
 
       return { status: file.uploadStatus };
+    }),
+
+  getFileMessages: authProcedure
+    .input(GetFileMessagesSchema)
+    .query(async ({ input, ctx }) => {
+      const { userId } = ctx;
+      const { cursor, fileId } = input;
+      const limit = input.limit ?? QUERY_LIMIT;
+
+      const file = await db.file.findUnique({
+        where: {
+          id: fileId,
+          userId,
+        },
+      });
+
+      if (!file)
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "File not found",
+        });
+      const messages = await db.message.findMany({
+        where: {
+          fileId,
+        },
+        take: limit + 1,
+        cursor: cursor ? { id: cursor } : undefined,
+        select: {
+          id: true,
+          isUserMessage: true,
+          createdAt: true,
+          text: true,
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+      });
+
+      let nextCursor: typeof cursor | undefined = undefined;
+
+      if (messages.length > limit) {
+        const nextMessage = messages.pop();
+        nextCursor = nextMessage?.id;
+      }
+
+      return {
+        messages,
+        nextCursor,
+      };
     }),
 });
 
