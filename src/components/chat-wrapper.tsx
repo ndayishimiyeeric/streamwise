@@ -77,7 +77,7 @@ function ChatWrapper({ fileId }: Props) {
     <ChatContextProvider fileId={fileId}>
       <div className="relative min-h-full bg-zinc-50 flex flex-col justify-between gap-2 divide-y divide-zinc-200">
         <div className="flex-1 flex flex-col justify-between mb-28">
-          <Messages />
+          <Messages fileId={fileId} />
         </div>
 
         <ChatInput />

@@ -16,7 +16,7 @@ function ChatInput({ disabled }: Props) {
 
   return (
     <div className="absolute bottom-0 left-0 w-full">
-      <form className="mx-2 flex flex-row gap-3 md:mx-4 md:last:mb-6 lg:mx-auto lg:max-w-2xl xl:max-w-3xl">
+      <div className="mx-2 flex flex-row gap-3 md:mx-4 md:last:mb-6 lg:mx-auto lg:max-w-2xl xl:max-w-3xl">
         <div className="relative flex h-full flex-1 items-stretch md:flex-col">
           <div className="relative flex flex-col w-full flex-grow p-4">
             <div className="relative">
@@ -27,7 +27,6 @@ function ChatInput({ disabled }: Props) {
                 autoFocus
                 onKeyDown={(e) => {
                   if (e.key === "Enter" && !e.shiftKey) {
-                    e.preventDefault();
                     addMessage();
                     textAreaRef.current?.focus();
                   }
@@ -38,13 +37,11 @@ function ChatInput({ disabled }: Props) {
                 className="resize-none pr-12 text-base py-3 scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2"
               />
               <Button
-                type="submit"
                 aria-label="send message"
                 className="absolute bottom-1.5 right-[8px]"
                 size="icon"
                 disabled={disabled || isLoading}
-                onSubmit={(e) => {
-                  e.preventDefault();
+                onClick={(e) => {
                   addMessage();
                   textAreaRef.current?.focus();
                 }}
@@ -54,7 +51,7 @@ function ChatInput({ disabled }: Props) {
             </div>
           </div>
         </div>
-      </form>
+      </div>
     </div>
   );
 }
