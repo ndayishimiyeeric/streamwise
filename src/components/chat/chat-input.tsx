@@ -27,6 +27,7 @@ function ChatInput({ disabled }: Props) {
                 autoFocus
                 onKeyDown={(e) => {
                   if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
                     addMessage();
                     textAreaRef.current?.focus();
                   }
@@ -34,7 +35,7 @@ function ChatInput({ disabled }: Props) {
                 onChange={handleInputChange}
                 value={message}
                 ref={textAreaRef}
-                className="resize-none pr-12 text-base py-3 scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2"
+                className="resize-none pr-12 text-base py-3 scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch"
               />
               <Button
                 aria-label="send message"
