@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useContext } from "react";
 import { trpc } from "@/app/_trpc/client";
 import { QUERY_LIMIT } from "@/config/query";
 import { Loader2, MessageSquare } from "lucide-react";
 import Skeleton from "react-loading-skeleton";
 import Message from "@/components/chat/message";
+import { ChatContext } from "@/components/hoc/chat-context";
 
 type Props = {
   fileId: string;
@@ -22,6 +23,8 @@ function Messages({ fileId }: Props) {
       },
     );
 
+  const { isLoading: isAiThinking } = useContext(ChatContext);
+
   const messages = data?.pages.flatMap((page) => page.messages);
 
   const loadingMessage = {
@@ -29,14 +32,14 @@ function Messages({ fileId }: Props) {
     createdAt: new Date().toISOString(),
     isUserMessage: false,
     text: (
-      <span className="flex h-full items-center justify-center">
+      <span className="flex h-full items-center justify-center z-0">
         <Loader2 className="h-4 w-4 animate-spin" />
       </span>
     ),
   };
 
   const combinedMessages = [
-    ...(true ? [loadingMessage] : []),
+    ...(isAiThinking ? [loadingMessage] : []),
     ...(messages ?? []),
   ];
 
