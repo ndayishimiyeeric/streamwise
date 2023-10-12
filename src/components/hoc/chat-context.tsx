@@ -1,6 +1,8 @@
-import React, { createContext, useState } from "react";
+import React, { createContext, useRef, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
-import axios from "axios";
+import { trpc } from "@/app/_trpc/client";
+import { QUERY_LIMIT } from "@/config/query";
+import toast from "react-hot-toast";
 
 type ChatContextProps = {
   addMessage: () => void;
@@ -25,15 +27,156 @@ export const ChatContextProvider = ({ fileId, children }: Props) => {
   const [message, setMessage] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
+  const backupMessageRef = useRef("");
+
+  const utils = trpc.useContext();
+
   const { mutate: sendMessage } = useMutation({
     mutationFn: async ({ message }: { message: string }) => {
-      const { data } = await axios.post("/api/message", { fileId, message });
+      const response = await fetch("/api/message", {
+        method: "POST",
+        body: JSON.stringify({
+          fileId,
+          message,
+        }),
+      });
 
-      if (!data.success) {
+      if (!response.ok) {
         throw new Error("Failed to send message");
       }
 
-      return data;
+      return response.body;
+    },
+    onMutate: async ({ message }) => {
+      backupMessageRef.current = message;
+      setMessage("");
+
+      // cancel any outgoing refetches (so they don't overwrite our optimistic update)
+      await utils.getFileMessages.cancel();
+
+      // snapshot the previous value
+      const previousMessages = utils.getFileMessages.getInfiniteData();
+
+      // optimistically update to the new value
+      utils.getFileMessages.setInfiniteData(
+        { fileId, limit: QUERY_LIMIT },
+        (old) => {
+          if (!old) return { pages: [], pageParams: [] };
+
+          let newPages = [...old.pages];
+
+          let latestPage = newPages[0];
+
+          latestPage.messages = [
+            {
+              id: crypto.randomUUID(),
+              createdAt: new Date().toISOString(),
+              text: message,
+              isUserMessage: true,
+            },
+            ...latestPage.messages,
+          ];
+
+          newPages[0] = latestPage;
+
+          return { ...old, pages: newPages };
+        },
+      );
+
+      setIsLoading(true);
+
+      return {
+        previousMessages: previousMessages?.pages.flatMap(
+          (page) => page.messages ?? [],
+        ),
+      };
+    },
+
+    onSuccess: async (stream) => {
+      setIsLoading(false);
+
+      if (!stream) {
+        return toast.error("Failed to send message, refresh and try again");
+      }
+
+      const reader = stream.getReader();
+      const decoder = new TextDecoder();
+      let done = false;
+
+      // accumulated response
+      let response = "";
+
+      while (!done) {
+        const { value, done: doneReading } = await reader.read();
+
+        done = doneReading;
+
+        const chunk = decoder.decode(value);
+
+        response += chunk;
+
+        // append to the last message
+
+        utils.getFileMessages.setInfiniteData(
+          { fileId, limit: QUERY_LIMIT },
+          (old) => {
+            if (!old) return { pages: [], pageParams: [] };
+
+            let isAiResponseCreated = old.pages.some((page) =>
+              page.messages.some((message) => message.id === "ai-response"),
+            );
+
+            let updatedPages = old.pages.map((page) => {
+              if (page === old.pages[0]) {
+                let latestMessages;
+
+                if (!isAiResponseCreated) {
+                  latestMessages = [
+                    {
+                      id: "ai-response",
+                      createdAt: new Date().toISOString(),
+                      text: response,
+                      isUserMessage: false,
+                    },
+                    ...page.messages,
+                  ];
+                } else {
+                  latestMessages = page.messages.map((message) => {
+                    if (message.id === "ai-response") {
+                      return {
+                        ...message,
+                        text: response,
+                      };
+                    }
+                    return message;
+                  });
+                }
+
+                return {
+                  ...page,
+                  messages: latestMessages,
+                };
+              }
+
+              return page;
+            });
+            return { ...old, pages: updatedPages };
+          },
+        );
+      }
+    },
+
+    onError: (_, __, context) => {
+      setMessage(backupMessageRef.current);
+      utils.getFileMessages.setData(
+        { fileId },
+        { messages: context?.previousMessages ?? [] },
+      );
+    },
+
+    onSettled: async () => {
+      setIsLoading(false);
+      await utils.getFileMessages.invalidate({ fileId });
     },
   });
 
