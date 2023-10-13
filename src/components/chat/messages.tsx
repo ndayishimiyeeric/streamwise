@@ -1,8 +1,10 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useRef } from "react";
+import Skeleton from "react-loading-skeleton";
+import { Loader2, MessageSquare } from "lucide-react";
+import { useIntersection } from "@mantine/hooks";
+
 import { trpc } from "@/app/_trpc/client";
 import { QUERY_LIMIT } from "@/config/query";
-import { Loader2, MessageSquare } from "lucide-react";
-import Skeleton from "react-loading-skeleton";
 import Message from "@/components/chat/message";
 import { ChatContext } from "@/components/hoc/chat-context";
 
@@ -26,6 +28,19 @@ function Messages({ fileId }: Props) {
   const { isLoading: isAiThinking } = useContext(ChatContext);
 
   const messages = data?.pages.flatMap((page) => page.messages);
+
+  const lastMessageRef = useRef<HTMLDivElement>(null);
+
+  const { ref, entry } = useIntersection({
+    root: lastMessageRef.current,
+    threshold: 1,
+  });
+
+  useEffect(() => {
+    if (entry?.isIntersecting) {
+      fetchNextPage().then((r) => r);
+    }
+  }, [entry, fetchNextPage]);
 
   const loadingMessage = {
     id: "loading",
@@ -55,6 +70,7 @@ function Messages({ fileId }: Props) {
             return (
               <Message
                 key={index}
+                ref={ref}
                 message={message}
                 isNextMessageSamePerson={isNextMessageSameUser}
               />
