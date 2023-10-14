@@ -82,3 +82,11 @@
 .scrollbar-thumb-rounded::-webkit-scrollbar-thumb {
   border-radius: 7px;
 }
+
+.gradient-gold {
+  background:linear-gradient(315deg, #BF953F, #FCF6BA, #AA771C);
+}
+
+.gradient-silver {
+  background-image: linear-gradient(315deg, #B2B1B9, #FFFFFF, #B2B1B9);
+}
