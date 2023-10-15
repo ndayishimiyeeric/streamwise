@@ -16,7 +16,8 @@ import UpgradeButton from "@/components/upgrade-button";
 
 function Page() {
   const { getUser } = getKindeServerSession();
-  const { id: userId } = getUser();
+  const user = getUser();
+  const userId = user?.id;
 
   return (
     <>

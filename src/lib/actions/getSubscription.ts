@@ -6,16 +6,9 @@ import stripe from "@/lib/stripe";
 const DAY_IN_MS = 86_400_000;
 
 const getSubscription = async () => {
-  const { getUser, isAuthenticated } = getKindeServerSession();
-  if (!isAuthenticated())
-    return {
-      ...PLANS[0],
-      isSubscribed: false,
-      isCanceled: false,
-      stripeCurrentPeriodEnd: null,
-    };
-
-  const { id: userId } = getUser();
+  const { getUser } = getKindeServerSession();
+  const user = getUser();
+  const userId = user?.id;
 
   if (!userId)
     return {
