@@ -54,6 +54,9 @@ export const appRouter = router({
       where: {
         userId,
       },
+      include: {
+        messages: true,
+      },
       orderBy: {
         createdAt: "desc",
       },

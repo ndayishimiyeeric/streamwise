@@ -1,18 +1,22 @@
 import React from "react";
 import Link from "next/link";
 import { format } from "date-fns";
-import { File } from "@prisma/client";
+import { File, Message } from "@prisma/client";
+import toast from "react-hot-toast";
 
 import { trpc } from "@/app/_trpc/client";
 import { Loader2, MessageSquare, Plus, Trash } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import toast from "react-hot-toast";
 
+type FileWithMessages = File & {
+  messages: Message[];
+};
 interface Props {
   file: File;
+  messages: Message[];
 }
 
-function DashboardFileCard({ file }: Props) {
+function DashboardFileCard({ file, messages }: Props) {
   const utils = trpc.useContext();
   const { mutate: deleteFile, isLoading } = trpc.deleteFile.useMutation({
     onSuccess: () => {
@@ -50,7 +54,8 @@ function DashboardFileCard({ file }: Props) {
         </div>
 
         <div className="flex items-center gap-2">
-          <MessageSquare className="h-4 w-4" />3 messages
+          <MessageSquare className="h-4 w-4" />
+          {messages.length} messages
         </div>
 
         <Button

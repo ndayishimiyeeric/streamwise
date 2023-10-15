@@ -32,8 +32,19 @@ function Dashboard({}: Props) {
                 ...file,
                 createdAt: new Date(file.createdAt),
                 updatedAt: new Date(file.updatedAt),
+                messages: file.messages.map((message) => ({
+                  ...message,
+                  createdAt: new Date(message.createdAt) as Date,
+                  updatedAt: new Date(message.updatedAt) as Date,
+                })),
               };
-              return <DashboardFileCard file={formattedFile} key={file.id} />;
+              return (
+                <DashboardFileCard
+                  file={formattedFile}
+                  messages={formattedFile.messages}
+                  key={file.id}
+                />
+              );
             })}
         </ul>
       ) : isLoading ? (
