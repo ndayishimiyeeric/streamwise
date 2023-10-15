@@ -225,6 +225,16 @@ export const appRouter = router({
         });
       }
 
+      await db.aiData.update({
+        where: {
+          userId,
+        },
+        data: {
+          name,
+          imgUrl,
+        },
+      });
+
       return aiData;
     }),
 
