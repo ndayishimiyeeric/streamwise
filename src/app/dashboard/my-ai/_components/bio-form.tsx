@@ -1,6 +1,13 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
+import { useRouter } from "next/navigation";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { AiData } from "@prisma/client";
+import toast from "react-hot-toast";
+import { Loader2 } from "lucide-react";
+
 import {
   Card,
   CardContent,
@@ -18,12 +25,9 @@ import {
 } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { useForm } from "react-hook-form";
 import { MyAiBioType, MyAiDataSchema } from "@/lib/validators/my-ai";
-import { zodResolver } from "@hookform/resolvers/zod";
 import getSubscription from "@/lib/actions";
-import { AiData } from "@prisma/client";
+import { trpc } from "@/app/_trpc/client";
 
 type Props = {
   subscriptionPlan: Awaited<ReturnType<typeof getSubscription>>;
@@ -31,8 +35,8 @@ type Props = {
 };
 
 function BioForm({ subscriptionPlan, aiData }: Props) {
-  const [wordCount, setWordCount] = React.useState(0);
-  const textAreaRef = React.useRef<HTMLTextAreaElement>(null);
+  const router = useRouter();
+  const [wordCount, setWordCount] = useState<number>(aiData.bio.length);
 
   const countChars = (textarea: HTMLTextAreaElement) => {
     return textarea.value.length;
@@ -47,9 +51,33 @@ function BioForm({ subscriptionPlan, aiData }: Props) {
     },
   });
 
+  const { mutate: handleSubmit, isLoading } = trpc.updateAiData.useMutation({
+    onSuccess: (data) => {
+      router.refresh();
+    },
+    onError: (error) => {
+      router.refresh();
+    },
+  });
+
+  const handleUpdate = async (values: MyAiBioType): Promise<void> => {
+    handleSubmit(values);
+    return await new Promise((resolve) => setTimeout(resolve, 900));
+  };
+
   return (
     <Form {...form}>
-      <form>
+      <form
+        onSubmit={form.handleSubmit((data) => {
+          toast
+            .promise(handleUpdate(data), {
+              loading: "Updating...",
+              success: "Name updated",
+              error: "Error saving.",
+            })
+            .then((r) => r);
+        })}
+      >
         <Card className="border-2 border-[#BF953F] shadow-[#BF953F] rounded-2xl bg-white">
           <CardHeader>
             <CardTitle>{aiData.name}&apos;s Bio</CardTitle>
@@ -59,7 +87,7 @@ function BioForm({ subscriptionPlan, aiData }: Props) {
           </CardHeader>
           <CardContent>
             <FormField
-              render={() => (
+              render={({ field }) => (
                 <FormItem>
                   <FormControl>
                     <Textarea
@@ -72,6 +100,7 @@ function BioForm({ subscriptionPlan, aiData }: Props) {
                         );
                       }}
                       maxLength={300}
+                      {...field}
                     />
                   </FormControl>
                   <FormDescription className="text-sm">
@@ -89,6 +118,7 @@ function BioForm({ subscriptionPlan, aiData }: Props) {
               disabled={subscriptionPlan.name !== "Gold"}
               className="text-black font-semibold gradient-gold"
             >
+              {isLoading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
               Save
             </Button>
           </CardFooter>

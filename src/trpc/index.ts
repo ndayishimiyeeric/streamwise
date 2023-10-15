@@ -223,17 +223,17 @@ export const appRouter = router({
             imgUrl,
           },
         });
+      } else {
+        await db.aiData.update({
+          where: {
+            userId,
+          },
+          data: {
+            name,
+            imgUrl,
+          },
+        });
       }
-
-      await db.aiData.update({
-        where: {
-          userId,
-        },
-        data: {
-          name,
-          imgUrl,
-        },
-      });
 
       return aiData;
     }),

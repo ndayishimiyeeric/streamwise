@@ -20,7 +20,7 @@ async function Page() {
   });
 
   if (!aiData) {
-    redirect("/dashboard");
+    redirect("/auth-callback?origin=dashboard/my-ai");
   }
 
   const subscriptionPlan = await getSubscription();

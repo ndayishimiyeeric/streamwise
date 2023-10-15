@@ -6,6 +6,7 @@ import { AiData } from "@prisma/client";
 import { ImageIcon, Pencil, PlusCircle, XCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
+import Image from "next/image";
 
 import { MyAiBioType } from "@/lib/validators/my-ai";
 import getSubscription from "@/lib/actions";
@@ -17,7 +18,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import Image from "next/image";
 import ImageUploader from "@/components/image-uploader";
 import { trpc } from "@/app/_trpc/client";
 

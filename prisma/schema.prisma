@@ -88,8 +88,8 @@ model Message {
 model AiData {
   id     String  @id @default(uuid())
   name   String  @default("My AI")
-  bio    String? @db.Text
-  imgUrl String? @db.Text
+  bio    String  @default("You are a kind, smart, and creative friend") @db.Text
+  imgUrl String? @default("https://utfs.io/f/747c02c6-5938-42d0-9b75-408d6897d5ad-aefp5.png") @db.Text
 
   userId String @unique
   User   User   @relation(fields: [userId], references: [id])
