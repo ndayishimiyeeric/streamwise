@@ -5,6 +5,9 @@ const nextConfig = {
     config.resolve.alias.encoding = false;
     return config;
   },
+  images: {
+    domains: ["utfs.io"],
+  },
 };
 
 module.exports = nextConfig;
