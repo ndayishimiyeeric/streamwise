@@ -14,6 +14,7 @@ import getSubscription from "@/lib/actions";
 import stripe from "@/lib/stripe";
 import { CheckoutSchema } from "@/lib/validators/checkout";
 import { PLANS } from "@/config/plans/plan";
+import { MyAiDataSchema } from "@/lib/validators/my-ai";
 
 export const appRouter = router({
   authCallback: publicProcedure.query(async () => {
@@ -41,6 +42,22 @@ export const appRouter = router({
         data: {
           id: user.id,
           email: user.email!,
+        },
+      });
+    }
+
+    // check if user have Ai data
+    const ai = await db.aiData.findUnique({
+      where: {
+        userId: user.id,
+      },
+    });
+
+    if (!ai) {
+      // create ai data
+      await db.aiData.create({
+        data: {
+          userId: user.id,
         },
       });
     }
@@ -173,6 +190,42 @@ export const appRouter = router({
         messages,
         nextCursor,
       };
+    }),
+
+  updateAiData: authProcedure
+    .input(MyAiDataSchema)
+    .mutation(async ({ ctx, input }) => {
+      const { userId } = ctx;
+      const { name, bio, imgUrl } = input;
+
+      const aiData = await db.aiData.findUnique({
+        where: {
+          userId,
+        },
+      });
+
+      if (!aiData)
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Ai data not found",
+        });
+
+      const subscription = await getSubscription();
+
+      if (subscription.isSubscribed && subscription.name === "Gold") {
+        await db.aiData.update({
+          where: {
+            userId,
+          },
+          data: {
+            name,
+            bio,
+            imgUrl,
+          },
+        });
+      }
+
+      return aiData;
     }),
 
   createStripeSession: authProcedure
