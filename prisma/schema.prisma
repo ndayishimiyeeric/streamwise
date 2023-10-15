@@ -13,14 +13,16 @@ datasource db {
 }
 
 model User {
-  id    String @id @unique
-  email String @unique
+  id     String  @id @unique
+  email  String  @unique
+  imgUrl String? @db.Text
 
   File     File[]
   messages Message[]
 
   userLimit    UserLimit?
   subscription Subscription?
+  AiData       AiData?
 }
 
 model UserLimit {
@@ -81,4 +83,17 @@ model Message {
 
   @@index([fileId])
   @@index([userId])
+}
+
+model AiData {
+  id     String  @id @default(uuid())
+  name   String  @default("My AI")
+  bio    String? @db.Text
+  imgUrl String? @db.Text
+
+  userId String @unique
+  User   User   @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
