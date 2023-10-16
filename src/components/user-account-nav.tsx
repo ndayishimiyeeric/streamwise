@@ -48,9 +48,14 @@ export async function UserAccountNav({ subscriptionPlan }: Props) {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <Link href="/dashboard">
+          <Link href="/dashboard" className="block w-full sm:hidden">
             <DropdownMenuItem className="cursor-pointer">
               Dashboard
+            </DropdownMenuItem>
+          </Link>
+          <Link href="/pricing" className="block w-full sm:hidden">
+            <DropdownMenuItem className="cursor-pointer">
+              Pricing
             </DropdownMenuItem>
           </Link>
           <Link href="/dashboard/billing">

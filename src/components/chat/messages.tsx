@@ -2,17 +2,21 @@ import React, { useContext, useEffect, useRef } from "react";
 import Skeleton from "react-loading-skeleton";
 import { Loader2, MessageSquare } from "lucide-react";
 import { useIntersection } from "@mantine/hooks";
+import { AiData } from "@prisma/client";
 
 import { trpc } from "@/app/_trpc/client";
 import { QUERY_LIMIT } from "@/config/query";
 import Message from "@/components/chat/message";
 import { ChatContext } from "@/components/hoc/chat-context";
+import getSubscription from "@/lib/actions";
 
 type Props = {
   fileId: string;
+  aiData: AiData;
+  subscriptionPlan: Awaited<ReturnType<typeof getSubscription>>;
 };
 
-function Messages({ fileId }: Props) {
+function Messages({ fileId, aiData, subscriptionPlan }: Props) {
   const { data, isLoading, fetchNextPage } =
     trpc.getFileMessages.useInfiniteQuery(
       {
@@ -73,6 +77,8 @@ function Messages({ fileId }: Props) {
                 ref={ref}
                 message={message}
                 isNextMessageSamePerson={isNextMessageSameUser}
+                aiData={aiData}
+                subscriptionPlan={subscriptionPlan}
               />
             );
           } else
@@ -81,6 +87,8 @@ function Messages({ fileId }: Props) {
                 key={index}
                 message={message}
                 isNextMessageSamePerson={isNextMessageSameUser}
+                aiData={aiData}
+                subscriptionPlan={subscriptionPlan}
               />
             );
         })

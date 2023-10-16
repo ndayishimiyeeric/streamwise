@@ -1,61 +1,64 @@
 import React, { forwardRef } from "react";
 import ReactMarkdown from "react-markdown";
 import { format } from "date-fns";
+import { AiData } from "@prisma/client";
 
 import { cn } from "@/lib/utils";
 import { ExtendedMessage } from "@/types/message";
 import { Icons } from "@/components/icons";
+import Image from "next/image";
+import getSubscription from "@/lib/actions";
+import BotAvatar from "@/components/ui/bot-avatar";
+import Link from "next/link";
 
 type Props = {
   message: ExtendedMessage;
   isNextMessageSamePerson: boolean;
+  aiData: AiData;
+  subscriptionPlan: Awaited<ReturnType<typeof getSubscription>>;
 };
 
 const Message = forwardRef<HTMLDivElement, Props>(
-  ({ message, isNextMessageSamePerson }, ref) => {
+  ({ message, isNextMessageSamePerson, aiData, subscriptionPlan }, ref) => {
     return (
       <div
-        className={cn("flex items-end", {
-          "justify-end": message.isUserMessage,
+        className={cn("flex items-start px-8 py-4", {
+          "bg-[#fff]": message.isUserMessage,
         })}
         ref={ref}
       >
-        <div
-          className={cn(
-            "relative flex h-6 w-6 aspect-square items-center justify-center",
-            {
-              "order-2 bg-blue-600 rounded-sm": message.isUserMessage,
-              "order-1 bg-zinc-800 rounded-sm": !message.isUserMessage,
-              invisible: isNextMessageSamePerson,
-            },
-          )}
-        >
+        <div>
           {message.isUserMessage ? (
-            <Icons.user className="fill-zinc-200 text-zinc-200 h-3/4 w-3/4" />
+            <Icons.user className="text-zinc-200" />
           ) : (
-            <Icons.logo className="fill-zinc-300 h-3/4 w-3/4" />
+            <BotAvatar
+              aiData={aiData}
+              subscriptionPlan={subscriptionPlan}
+              isNextMessageSamePerson={isNextMessageSamePerson}
+            />
           )}
         </div>
         <div
-          className={cn("flex flex-col space-y-2 text-base max-w-md mx-2", {
-            "order-1 items-end": message.isUserMessage,
-            "order-2 items-start": !message.isUserMessage,
-          })}
+          className={cn(
+            "flex flex-col space-y-2 text-base w-full mx-2 items-start",
+          )}
         >
-          <div
-            className={cn("px-4 py-2 rounded-lg inline-block", {
-              "bg-blue-600 text-white": message.isUserMessage,
-              "bg-gray-200 text-gray-900": !message.isUserMessage,
-              "rounded-br-none":
-                !isNextMessageSamePerson && message.isUserMessage,
-              "rounded-bl-none":
-                !isNextMessageSamePerson && !message.isUserMessage,
-            })}
-          >
+          <div className={cn("px-4 rounded-lg inline-block")}>
+            {!message.isUserMessage && (
+              <Link
+                href="/dashboard/my-ai"
+                className="text-sm font-semibold text-primary"
+              >
+                {aiData.name}
+              </Link>
+            )}
+            {message.isUserMessage && (
+              <p className="text-sm font-semibold text-indigo-400">Me</p>
+            )}
             {typeof message.text === "string" ? (
               <ReactMarkdown
-                className={cn("prose", {
-                  "text-zinc-50": message.isUserMessage,
+                className={cn("prose mt-2", {
+                  // "text-zinc-50": message.isUserMessage,
                 })}
               >
                 {message.text}
@@ -63,17 +66,17 @@ const Message = forwardRef<HTMLDivElement, Props>(
             ) : (
               message.text
             )}
-            {message.id !== "loading" && (
-              <div
-                className={cn("text-xs select-none mt-2 w-full text-right", {
-                  "text-zinc-500": !message.isUserMessage,
-                  "text-blue-300": message.isUserMessage,
-                })}
-              >
-                {format(new Date(message.createdAt), "HH:mm")}
-              </div>
-            )}
           </div>
+          {message.id !== "loading" && (
+            <div
+              className={cn("text-xs select-none w-full text-right", {
+                "text-zinc-500": !message.isUserMessage,
+                "text-zinc-400": message.isUserMessage,
+              })}
+            >
+              {format(new Date(message.createdAt), "HH:mm")}
+            </div>
+          )}
         </div>
       </div>
     );

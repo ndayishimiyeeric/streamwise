@@ -1,20 +1,25 @@
 "use client";
 
 import React from "react";
+import { AiData } from "@prisma/client";
 import Messages from "@/components/chat/messages";
+import Link from "next/link";
+import { ChevronLeft, Loader2, XCircle } from "lucide-react";
+
 import ChatInput from "@/components/chat/chat-input";
 import { trpc } from "@/app/_trpc/client";
-import { ChevronLeft, Loader2, XCircle } from "lucide-react";
-import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
 import { ChatContextProvider } from "@/components/hoc/chat-context";
+import getSubscription from "@/lib/actions";
 
 type Props = {
   fileId: string;
+  aiData: AiData;
+  subscriptionPlan: Awaited<ReturnType<typeof getSubscription>>;
 };
 
-function ChatWrapper({ fileId }: Props) {
+function ChatWrapper({ fileId, aiData, subscriptionPlan }: Props) {
   const { data, isLoading } = trpc.getFileUploadStatus.useQuery(
     { id: fileId },
     {
@@ -77,7 +82,11 @@ function ChatWrapper({ fileId }: Props) {
     <ChatContextProvider fileId={fileId}>
       <div className="relative min-h-full bg-zinc-50 flex flex-col justify-between gap-2 divide-y divide-zinc-200">
         <div className="flex-1 flex flex-col justify-between mb-28">
-          <Messages fileId={fileId} />
+          <Messages
+            fileId={fileId}
+            aiData={aiData}
+            subscriptionPlan={subscriptionPlan}
+          />
         </div>
 
         <ChatInput />

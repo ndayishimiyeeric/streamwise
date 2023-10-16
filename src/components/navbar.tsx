@@ -26,10 +26,38 @@ async function Navbar() {
           </Link>
           {/*  TODO Mobile Navbar  */}
 
-          {user && <UserAccountNav subscriptionPlan={subscriptionPlan} />}
+          {user && (
+            <div className="items-center space-x-4 sm:flex">
+              <Link
+                href="/pricing"
+                className={cn(
+                  buttonVariants({
+                    variant: "ghost",
+                    size: "sm",
+                    className: "hidden sm:flex",
+                  }),
+                )}
+              >
+                Pricing
+              </Link>
+              <Link
+                className={cn(
+                  buttonVariants({
+                    variant: "ghost",
+                    size: "sm",
+                    className: "hidden sm:flex",
+                  }),
+                )}
+                href="/dashboard"
+              >
+                Dashboard
+              </Link>
+              <UserAccountNav subscriptionPlan={subscriptionPlan} />
+            </div>
+          )}
 
           {!user && (
-            <div className="hidden items-center space-x-4 sm:flex">
+            <div className="items-center space-x-4 sm:flex">
               <>
                 <Link
                   href="/pricing"

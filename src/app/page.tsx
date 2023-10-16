@@ -28,9 +28,8 @@ export default function Home() {
         <Link
           className={cn(buttonVariants({ size: "lg" }), "mt-5")}
           href="/dashboard"
-          target="_blank"
         >
-          Get started <ArrowRight className="ml-2 h-5 w-5" />
+          Dashboard <ArrowRight className="ml-2 h-5 w-5" />
         </Link>
       </MaxWidthWrapper>
 

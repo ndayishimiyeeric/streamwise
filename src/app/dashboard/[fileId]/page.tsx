@@ -7,6 +7,7 @@ import ChatWrapper from "@/components/chat-wrapper";
 
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
+import getSubscription from "@/lib/actions";
 
 type Props = {
   params: {
@@ -28,6 +29,18 @@ async function Page({ params }: Props) {
     },
   });
 
+  const aiData = await db.aiData.findUnique({
+    where: {
+      userId: user.id,
+    },
+  });
+
+  if (!aiData) {
+    redirect("/auth-callback?origin=dashboard/my-ai");
+  }
+
+  const subscription = await getSubscription();
+
   if (!file) notFound();
 
   return (
@@ -42,7 +55,11 @@ async function Page({ params }: Props) {
 
         {/*Chat Side*/}
         <div className="shrink-0 flex-[0.75] border-t border-gray-200 lg:w-96 lg:border-l lg:border-t-0">
-          <ChatWrapper fileId={fileId} />
+          <ChatWrapper
+            fileId={fileId}
+            aiData={aiData}
+            subscriptionPlan={subscription}
+          />
         </div>
       </div>
     </div>
