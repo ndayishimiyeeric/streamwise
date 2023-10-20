@@ -144,6 +144,7 @@ function PdfRenderer({ url }: Props) {
 
           <Button
             aria-label="rotate 90 degrees"
+            className="hidden sm:inline-flex"
             variant="ghost"
             onClick={() => {
               setRotation((prev) => prev + 90);

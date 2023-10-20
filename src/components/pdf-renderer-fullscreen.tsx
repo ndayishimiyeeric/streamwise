@@ -34,7 +34,11 @@ function PdfRendererFullscreen({ url }: Props) {
       }}
     >
       <DialogTrigger onClick={() => setFullScreen(true)}>
-        <Button aria-label="fullscreen" variant="ghost" className="gap-1.5">
+        <Button
+          aria-label="fullscreen"
+          variant="ghost"
+          className="gap-1.5 hidden sm:inline-flex"
+        >
           <ExpandIcon className="h-4 w-4" />
         </Button>
       </DialogTrigger>
