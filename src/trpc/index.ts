@@ -10,11 +10,12 @@ import {
 import { GetFileMessagesSchema } from "@/lib/validators/message";
 import { QUERY_LIMIT } from "@/config/query";
 import { absoluteUrl } from "@/lib/utils";
-import getSubscription from "@/lib/actions";
+import { getSubscription } from "@/lib/actions";
 import stripe from "@/lib/stripe";
 import { CheckoutSchema } from "@/lib/validators/checkout";
 import { PLANS } from "@/config/plans/plan";
 import { MyAiDataSchema } from "@/lib/validators/my-ai";
+import { qdrantClient } from "@/lib/qdrant";
 
 export const appRouter = router({
   authCallback: publicProcedure.query(async () => {
@@ -97,6 +98,8 @@ export const appRouter = router({
           message: "File not found",
           cause: "File not found",
         });
+
+      await qdrantClient.deleteCollection(file.id);
 
       await db.file.delete({
         where: {
