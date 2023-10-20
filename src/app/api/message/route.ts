@@ -3,11 +3,11 @@ import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { SendMessageSchema } from "@/lib/validators/message";
 import { db } from "@/lib/db";
 import { OpenAIEmbeddings } from "langchain/embeddings/openai";
-import { getPinecone } from "@/lib/pinecone";
-import { PineconeStore } from "langchain/vectorstores/pinecone";
 import { openai } from "@/lib/openai";
 import { formatConversation } from "@/lib/conversation";
 import { OpenAIStream, StreamingTextResponse } from "ai";
+import { QdrantVectorStore } from "langchain/vectorstores/qdrant";
+import { qdrantClient } from "@/lib/qdrant";
 
 export async function POST(req: NextRequest) {
   try {
@@ -25,6 +25,9 @@ export async function POST(req: NextRequest) {
       where: {
         id: fileId,
         userId,
+      },
+      include: {
+        User: true,
       },
     });
 
@@ -45,14 +48,17 @@ export async function POST(req: NextRequest) {
       openAIApiKey: process.env.OPENAI_API_KEY!,
     });
 
-    const { index } = await getPinecone();
+    const vector_store = await QdrantVectorStore.fromExistingCollection(
+      embeddings,
+      {
+        url: process.env.QDRANT_HOST!,
+        apiKey: process.env.QDRANT_API_KEY!,
+        collectionName: fileId,
+        client: qdrantClient,
+      },
+    );
 
-    const vectorizedDoc = await PineconeStore.fromExistingIndex(embeddings, {
-      pineconeIndex: index,
-      textKey: fileId,
-    });
-
-    const results = await vectorizedDoc.similaritySearch(message, 4);
+    const results = await vector_store.similaritySearch(message);
     const prevMessages = await db.message.findMany({
       where: {
         fileId,
@@ -63,7 +69,24 @@ export async function POST(req: NextRequest) {
       take: 6,
     });
 
-    const messages = formatConversation(results, prevMessages, message);
+    const userAiData = await db.aiData.findUnique({
+      where: {
+        userId,
+      },
+    });
+
+    const messages = formatConversation(
+      results,
+      prevMessages,
+      message,
+      file.User.email,
+      file.name,
+      file.pages,
+      {
+        name: userAiData?.name,
+        bio: userAiData?.bio || "",
+      },
+    );
 
     const response = await openai.chat.completions.create({
       model: process.env.OPENAI_MODEL!,
