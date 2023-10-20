@@ -13,9 +13,9 @@ datasource db {
 }
 
 model User {
-  id     String  @id @unique
-  email  String  @unique
-  imgUrl String? @db.Text
+  id     String @id @unique
+  email  String @unique
+  imgUrl String @default("https://utfs.io/f/31d8c1f1-082e-4b5c-88e7-9f4de946ad13-5e5vpb.jpg") @db.Text
 
   File     File[]
   messages Message[]
