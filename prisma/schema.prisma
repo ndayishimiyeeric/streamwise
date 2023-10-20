@@ -55,6 +55,7 @@ model File {
   id           String           @id @default(uuid())
   userId       String
   name         String
+  pages        Int              @default(0)
   uploadStatus FileUploadStatus @default(PENDING)
   url          String           @db.Text
   key          String
