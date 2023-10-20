@@ -1,11 +1,12 @@
 import { createUploadthing, type FileRouter } from "uploadthing/next";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { PDFLoader } from "langchain/document_loaders/fs/pdf";
+import { QdrantVectorStore } from "langchain/vectorstores/qdrant";
+import { OpenAIEmbeddings } from "langchain/embeddings/openai";
 
 import { db } from "@/lib/db";
-import { OpenAIEmbeddings } from "langchain/embeddings/openai";
-import { PineconeStore } from "langchain/vectorstores/pinecone";
-import { getPinecone } from "@/lib/pinecone";
+import { qdrantClient } from "@/lib/qdrant";
+import { getFileChunks, getOrCreateCollectionIfNotExists } from "@/lib/actions";
 
 const f = createUploadthing();
 
@@ -42,21 +43,28 @@ export const ourFileRouter = {
         const loader = new PDFLoader(blob);
 
         const pageLevelDocs = await loader.load();
-        const pages = pageLevelDocs.length;
+        const pages = pageLevelDocs.length; // limit the access of the user based on the number of pages
 
-        const { index } = await getPinecone();
+        const chunks = await getFileChunks(pageLevelDocs, pageLevelDocs.length);
+
+        await getOrCreateCollectionIfNotExists(createdFile.id);
 
         // indexing and vectorised documents
         const embeddings = new OpenAIEmbeddings({
           openAIApiKey: process.env.OPENAI_API_KEY!,
         });
 
-        const vectorizedDoc = await PineconeStore.fromDocuments(
-          pageLevelDocs,
+        await QdrantVectorStore.fromTexts(
+          chunks,
+          {
+            documentId: createdFile.id,
+          },
           embeddings,
           {
-            pineconeIndex: index,
-            textKey: createdFile.id,
+            apiKey: process.env.QDRANT_API_KEY!,
+            client: qdrantClient,
+            url: process.env.QDRANT_HOST!,
+            collectionName: createdFile.id,
           },
         );
 
@@ -66,6 +74,7 @@ export const ourFileRouter = {
           },
           data: {
             uploadStatus: "COMPLETED",
+            pages,
           },
         });
       } catch (e) {
@@ -83,7 +92,7 @@ export const ourFileRouter = {
 
   aiDataImageUploader: f({ image: { maxFileSize: "4MB", maxFileCount: 1 } })
     .middleware(async () => await handleAuth())
-    .onUploadComplete(async ({ metadata, file }) => {}),
+    .onUploadComplete(async ({ file }) => {}),
 } satisfies FileRouter;
 
 export type OurFileRouter = typeof ourFileRouter;
