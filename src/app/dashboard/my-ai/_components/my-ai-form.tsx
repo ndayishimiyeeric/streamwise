@@ -3,7 +3,7 @@
 import React from "react";
 import { AiData } from "@prisma/client";
 
-import getSubscription from "@/lib/actions";
+import { getSubscription } from "@/lib/actions";
 import MaxWidthWrapper from "@/components/max-width-wrapper";
 import BioForm from "@/app/dashboard/my-ai/_components/bio-form";
 import NameForm from "@/app/dashboard/my-ai/_components/name-form";

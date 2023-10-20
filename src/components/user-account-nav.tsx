@@ -1,4 +1,3 @@
-import { User } from "@prisma/client";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -12,7 +11,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { UserIcon } from "lucide-react";
 import { Avatar } from "@/components/ui/avatar";
-import getSubscription from "@/lib/actions";
+import { getSubscription } from "@/lib/actions";
 import {
   getKindeServerSession,
   LogoutLink,

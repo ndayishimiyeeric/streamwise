@@ -6,8 +6,7 @@ import { AiData } from "@prisma/client";
 import { cn } from "@/lib/utils";
 import { ExtendedMessage } from "@/types/message";
 import { Icons } from "@/components/icons";
-import Image from "next/image";
-import getSubscription from "@/lib/actions";
+import { getSubscription } from "@/lib/actions";
 import BotAvatar from "@/components/ui/bot-avatar";
 import Link from "next/link";
 

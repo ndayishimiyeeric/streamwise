@@ -2,7 +2,7 @@ import React from "react";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 
 import { db } from "@/lib/db";
-import getSubscription from "@/lib/actions";
+import { getSubscription } from "@/lib/actions";
 import MyAiForm from "@/app/dashboard/my-ai/_components/my-ai-form";
 import { redirect } from "next/navigation";
 

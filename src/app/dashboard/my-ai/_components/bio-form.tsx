@@ -26,7 +26,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { MyAiBioType, MyAiDataSchema } from "@/lib/validators/my-ai";
-import getSubscription from "@/lib/actions";
+import { getSubscription } from "@/lib/actions";
 import { trpc } from "@/app/_trpc/client";
 
 type Props = {

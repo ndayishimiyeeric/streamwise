@@ -10,7 +10,7 @@ import {
 } from "@kinde-oss/kinde-auth-nextjs/server";
 import { ArrowRight } from "lucide-react";
 import { UserAccountNav } from "@/components/user-account-nav";
-import getSubscription from "@/lib/actions";
+import { getSubscription } from "@/lib/actions";
 
 async function Navbar() {
   const { getUser } = getKindeServerSession();

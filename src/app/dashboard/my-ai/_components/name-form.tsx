@@ -24,7 +24,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
 import { MyAiBioType, MyAiDataSchema } from "@/lib/validators/my-ai";
-import getSubscription from "@/lib/actions";
+import { getSubscription } from "@/lib/actions";
 import { AiData } from "@prisma/client";
 import { Button } from "@/components/ui/button";
 import { trpc } from "@/app/_trpc/client";

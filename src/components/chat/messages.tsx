@@ -8,7 +8,7 @@ import { trpc } from "@/app/_trpc/client";
 import { QUERY_LIMIT } from "@/config/query";
 import Message from "@/components/chat/message";
 import { ChatContext } from "@/components/hoc/chat-context";
-import getSubscription from "@/lib/actions";
+import { getSubscription } from "@/lib/actions";
 
 type Props = {
   fileId: string;

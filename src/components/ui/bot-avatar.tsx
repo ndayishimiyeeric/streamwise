@@ -1,6 +1,6 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { AiData } from "@prisma/client";
-import getSubscription from "@/lib/actions";
+import { getSubscription } from "@/lib/actions";
 import { cn } from "@/lib/utils";
 
 type Props = {

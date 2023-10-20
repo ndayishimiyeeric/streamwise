@@ -7,7 +7,7 @@ import ChatWrapper from "@/components/chat-wrapper";
 
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
-import getSubscription from "@/lib/actions";
+import { getSubscription } from "@/lib/actions";
 
 type Props = {
   params: {

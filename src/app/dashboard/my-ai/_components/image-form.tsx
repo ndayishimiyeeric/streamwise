@@ -9,7 +9,7 @@ import toast from "react-hot-toast";
 import Image from "next/image";
 
 import { MyAiBioType } from "@/lib/validators/my-ai";
-import getSubscription from "@/lib/actions";
+import { getSubscription } from "@/lib/actions";
 import {
   Card,
   CardContent,

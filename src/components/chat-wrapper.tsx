@@ -11,7 +11,7 @@ import { trpc } from "@/app/_trpc/client";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
 import { ChatContextProvider } from "@/components/hoc/chat-context";
-import getSubscription from "@/lib/actions";
+import { getSubscription } from "@/lib/actions";
 
 type Props = {
   fileId: string;
