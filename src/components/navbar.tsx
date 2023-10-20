@@ -1,6 +1,8 @@
 import React from "react";
+import { User } from ".prisma/client";
 import MaxWidthWrapper from "@/components/max-width-wrapper";
 import Link from "next/link";
+
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
 import {
@@ -11,11 +13,22 @@ import {
 import { ArrowRight } from "lucide-react";
 import { UserAccountNav } from "@/components/user-account-nav";
 import { getSubscription } from "@/lib/actions";
+import { db } from "@/lib/db";
 
 async function Navbar() {
   const { getUser } = getKindeServerSession();
   const user = getUser();
   const subscriptionPlan = await getSubscription();
+
+  let dbUser: User | null = null;
+
+  if (user && user.id) {
+    dbUser = await db.user.findUnique({
+      where: {
+        id: user.id,
+      },
+    });
+  }
 
   return (
     <nav className="sticky h-14 inset-x-0 top-0 z-30 w-full border-b border-gray-200 bg-white/75 backdrop-blur-lg transition-all">
@@ -52,7 +65,11 @@ async function Navbar() {
               >
                 Dashboard
               </Link>
-              <UserAccountNav subscriptionPlan={subscriptionPlan} />
+              <UserAccountNav
+                imageUrl={dbUser?.imgUrl}
+                userName={dbUser?.email}
+                subscriptionPlan={subscriptionPlan}
+              />
             </div>
           )}
 

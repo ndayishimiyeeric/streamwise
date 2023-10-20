@@ -11,12 +11,20 @@ import { ChatContext } from "@/components/hoc/chat-context";
 import { getSubscription } from "@/lib/actions";
 
 type Props = {
+  userName: string;
+  imageUrl: string;
   fileId: string;
   aiData: AiData;
   subscriptionPlan: Awaited<ReturnType<typeof getSubscription>>;
 };
 
-function Messages({ fileId, aiData, subscriptionPlan }: Props) {
+function Messages({
+  imageUrl,
+  userName,
+  fileId,
+  aiData,
+  subscriptionPlan,
+}: Props) {
   const { data, isLoading, fetchNextPage } =
     trpc.getFileMessages.useInfiniteQuery(
       {
@@ -75,6 +83,8 @@ function Messages({ fileId, aiData, subscriptionPlan }: Props) {
               <Message
                 key={index}
                 ref={ref}
+                imageUrl={imageUrl}
+                userName={userName}
                 message={message}
                 isNextMessageSamePerson={isNextMessageSameUser}
                 aiData={aiData}
@@ -85,6 +95,8 @@ function Messages({ fileId, aiData, subscriptionPlan }: Props) {
             return (
               <Message
                 key={index}
+                userName={userName}
+                imageUrl={imageUrl}
                 message={message}
                 isNextMessageSamePerson={isNextMessageSameUser}
                 aiData={aiData}

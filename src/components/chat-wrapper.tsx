@@ -14,12 +14,20 @@ import { ChatContextProvider } from "@/components/hoc/chat-context";
 import { getSubscription } from "@/lib/actions";
 
 type Props = {
+  imageUrl: string;
+  userName: string;
   fileId: string;
   aiData: AiData;
   subscriptionPlan: Awaited<ReturnType<typeof getSubscription>>;
 };
 
-function ChatWrapper({ fileId, aiData, subscriptionPlan }: Props) {
+function ChatWrapper({
+  imageUrl,
+  userName,
+  fileId,
+  aiData,
+  subscriptionPlan,
+}: Props) {
   const { data, isLoading } = trpc.getFileUploadStatus.useQuery(
     { id: fileId },
     {
@@ -83,6 +91,8 @@ function ChatWrapper({ fileId, aiData, subscriptionPlan }: Props) {
       <div className="relative min-h-full bg-zinc-50 flex flex-col justify-between gap-2 divide-y divide-zinc-200">
         <div className="flex-1 flex flex-col justify-between mb-28">
           <Messages
+            imageUrl={imageUrl}
+            userName={userName}
             fileId={fileId}
             aiData={aiData}
             subscriptionPlan={subscriptionPlan}

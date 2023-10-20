@@ -6,7 +6,6 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { UserIcon } from "lucide-react";
@@ -17,21 +16,26 @@ import {
   LogoutLink,
 } from "@kinde-oss/kinde-auth-nextjs/server";
 import Link from "next/link";
+import UserAvatar from "@/components/ui/user-avatar";
 
 type Props = {
+  userName?: string;
+  imageUrl?: string;
   subscriptionPlan: Awaited<ReturnType<typeof getSubscription>>;
 };
 
-export async function UserAccountNav({ subscriptionPlan }: Props) {
+export async function UserAccountNav({
+  subscriptionPlan,
+  imageUrl,
+  userName,
+}: Props) {
   const { getUser } = getKindeServerSession();
   const user = getUser();
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-          <Avatar className="h-5 w-5">
-            <UserIcon className="h-5 w-5" />
-          </Avatar>
+          <UserAvatar userName={userName!} imageUrl={imageUrl!} />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="end" forceMount>

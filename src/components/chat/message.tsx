@@ -9,8 +9,11 @@ import { Icons } from "@/components/icons";
 import { getSubscription } from "@/lib/actions";
 import BotAvatar from "@/components/ui/bot-avatar";
 import Link from "next/link";
+import UserAvatar from "@/components/ui/user-avatar";
 
 type Props = {
+  userName: string;
+  imageUrl: string;
   message: ExtendedMessage;
   isNextMessageSamePerson: boolean;
   aiData: AiData;
@@ -18,7 +21,17 @@ type Props = {
 };
 
 const Message = forwardRef<HTMLDivElement, Props>(
-  ({ message, isNextMessageSamePerson, aiData, subscriptionPlan }, ref) => {
+  (
+    {
+      imageUrl,
+      userName,
+      message,
+      isNextMessageSamePerson,
+      aiData,
+      subscriptionPlan,
+    },
+    ref,
+  ) => {
     return (
       <div
         className={cn("flex items-start px-8 py-4", {
@@ -28,7 +41,12 @@ const Message = forwardRef<HTMLDivElement, Props>(
       >
         <div>
           {message.isUserMessage ? (
-            <Icons.user className="text-zinc-200" />
+            <UserAvatar
+              imageUrl={imageUrl}
+              userName={userName}
+              subscriptionPlan={subscriptionPlan}
+              isNextMessageSamePerson={isNextMessageSamePerson}
+            />
           ) : (
             <BotAvatar
               aiData={aiData}

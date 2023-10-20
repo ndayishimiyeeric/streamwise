@@ -16,7 +16,7 @@ function BotAvatar({
 }: Props) {
   return (
     <Avatar
-      className={cn("rounded-md", {
+      className={cn("rounded-md w-8 h-8", {
         invisible: isNextMessageSamePerson,
       })}
     >
