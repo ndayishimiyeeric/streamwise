@@ -2,13 +2,13 @@
 
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import { AiData } from "@prisma/client";
 import { ImageIcon, Pencil, PlusCircle, XCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import Image from "next/image";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { User } from ".prisma/client";
 
-import { MyAiBioType } from "@/lib/validators/my-ai";
 import { getSubscription } from "@/lib/actions";
 import {
   Card,
@@ -20,29 +20,29 @@ import {
 import { Button } from "@/components/ui/button";
 import ImageUploader from "@/components/image-uploader";
 import { trpc } from "@/app/_trpc/client";
+import { UserDataSchema, UserDataSchemaType } from "@/lib/validators/user";
 
 type Props = {
   subscriptionPlan: Awaited<ReturnType<typeof getSubscription>>;
-  aiData: AiData;
+  data: User;
 };
 
-function ImageForm({ aiData, subscriptionPlan }: Props) {
+function UserImageForm({ data, subscriptionPlan }: Props) {
   const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
 
-  const form = useForm<MyAiBioType>({
+  const form = useForm<UserDataSchemaType>({
     defaultValues: {
-      name: aiData.name || "",
-      bio: aiData.bio || "",
-      imgUrl: aiData.imgUrl || "",
+      imgUrl: data.imgUrl || "",
     },
+    resolver: zodResolver(UserDataSchema),
   });
 
   const toggleEditing = () => {
     setIsEditing((prev) => !prev);
   };
 
-  const { mutate: handleSubmit, isLoading } = trpc.updateAiData.useMutation({
+  const { mutate: handleSubmit, isLoading } = trpc.updateUserData.useMutation({
     onSuccess: (data) => {
       router.refresh();
       toggleEditing();
@@ -57,10 +57,8 @@ function ImageForm({ aiData, subscriptionPlan }: Props) {
   return (
     <Card className="rounded-2xl bg-white">
       <CardHeader>
-        <CardTitle>{aiData.name}&apos;s Image</CardTitle>
-        <CardDescription>
-          Customize the image of your AI assistant.
-        </CardDescription>
+        <CardTitle>Profile Image</CardTitle>
+        <CardDescription>Customize your profile image.</CardDescription>
       </CardHeader>
       <CardContent>
         <Button
@@ -76,14 +74,14 @@ function ImageForm({ aiData, subscriptionPlan }: Props) {
             </>
           )}
 
-          {!isEditing && !aiData.imgUrl && (
+          {!isEditing && !data.imgUrl && (
             <>
               <PlusCircle className="w-4 h-4 mr-2" />
               Add Image
             </>
           )}
 
-          {!isEditing && aiData.imgUrl && (
+          {!isEditing && data.imgUrl && (
             <>
               <Pencil className="w-4 h-4 mr-2" />
               Update Image
@@ -91,14 +89,14 @@ function ImageForm({ aiData, subscriptionPlan }: Props) {
           )}
         </Button>
         {!isEditing &&
-          (!aiData.imgUrl ? (
+          (!data.imgUrl ? (
             <div className="flex items-center justify-center h-60 rounded-lg bg-primary/30">
               <ImageIcon className="w-10 h-10 text-slate-500" />
             </div>
           ) : (
             <div className="relative h-60 aspect-square mt-2">
               <Image
-                src={aiData.imgUrl}
+                src={data.imgUrl}
                 alt="ai image"
                 fill
                 className="object-contain rounded-lg"
@@ -128,4 +126,4 @@ function ImageForm({ aiData, subscriptionPlan }: Props) {
   );
 }
 
-export default ImageForm;
+export default UserImageForm;

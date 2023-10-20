@@ -66,6 +66,11 @@ export async function UserAccountNav({
               Billing
             </DropdownMenuItem>
           </Link>
+          <Link href="/dashboard/me">
+            <DropdownMenuItem className="cursor-pointer">
+              My Account
+            </DropdownMenuItem>
+          </Link>
           <Link href="/dashboard/my-ai">
             <DropdownMenuItem className="cursor-pointer">
               My AI

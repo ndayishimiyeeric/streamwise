@@ -90,7 +90,7 @@ export const ourFileRouter = {
       }
     }),
 
-  aiDataImageUploader: f({ image: { maxFileSize: "4MB", maxFileCount: 1 } })
+  imageUploader: f({ image: { maxFileSize: "4MB", maxFileCount: 1 } })
     .middleware(async () => await handleAuth())
     .onUploadComplete(async ({ file }) => {}),
 } satisfies FileRouter;

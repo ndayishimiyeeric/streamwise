@@ -10,11 +10,15 @@ type Props = {
 function UserAvatar({ imageUrl, userName, isNextMessageSamePerson }: Props) {
   return (
     <Avatar
-      className={cn("rounded-md w-8 h-8", {
+      className={cn("rounded-full border-2  w-8 h-8", {
         invisible: isNextMessageSamePerson,
       })}
     >
-      <AvatarImage src={imageUrl} alt="user profile image" />
+      <AvatarImage
+        className="object-contain"
+        src={imageUrl}
+        alt="user profile image"
+      />
       <AvatarFallback>{userName?.[0].toUpperCase()}</AvatarFallback>
     </Avatar>
   );

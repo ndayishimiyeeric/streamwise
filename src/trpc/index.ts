@@ -16,6 +16,7 @@ import { CheckoutSchema } from "@/lib/validators/checkout";
 import { PLANS } from "@/config/plans/plan";
 import { MyAiDataSchema } from "@/lib/validators/my-ai";
 import { qdrantClient } from "@/lib/qdrant";
+import { UserDataSchema } from "@/lib/validators/user";
 
 export const appRouter = router({
   authCallback: publicProcedure.query(async () => {
@@ -65,6 +66,7 @@ export const appRouter = router({
 
     return { success: true };
   }),
+
   getUserFiles: authProcedure.query(async ({ ctx }) => {
     const { userId } = ctx;
 
@@ -80,6 +82,7 @@ export const appRouter = router({
       },
     });
   }),
+
   deleteFile: authProcedure
     .input(DeleteFileInput)
     .mutation(async ({ ctx, input }) => {
@@ -110,6 +113,7 @@ export const appRouter = router({
 
       return file;
     }),
+
   getFile: authProcedure
     .input(GetFileInput)
     .mutation(async ({ ctx, input }) => {
@@ -239,6 +243,36 @@ export const appRouter = router({
       }
 
       return aiData;
+    }),
+
+  updateUserData: authProcedure
+    .input(UserDataSchema)
+    .mutation(async ({ ctx, input }) => {
+      const { userId } = ctx;
+      const { imgUrl } = input;
+
+      const user = await db.user.findUnique({
+        where: {
+          id: userId,
+        },
+      });
+
+      if (!user)
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "User not found",
+        });
+
+      await db.user.update({
+        where: {
+          id: userId,
+        },
+        data: {
+          imgUrl,
+        },
+      });
+
+      return user;
     }),
 
   createStripeSession: authProcedure
