@@ -1,4 +1,7 @@
 import { db } from "@/lib/db";
+import { OurFileRouter } from "@/app/api/uploadthing/core";
+import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
+import { getSubscription } from "@/lib/actions/index";
 
 export const increasePromptUsage = async (userId: string) => {
   const userUsageExits = await db.userUsage.findUnique({
@@ -35,7 +38,15 @@ export const checkPromptUsage = async (userId: string) => {
 
   if (!userUsageExits) return true;
 
-  return userUsageExits.queryUsage < 100;
+  const userLimit = await db.userLimit.findUnique({
+    where: {
+      userId,
+    },
+  });
+
+  if (!userLimit) return true;
+
+  return userUsageExits.queryUsage < userLimit.queryLimit;
 };
 
 export const getPromptUsage = async (userId: string) => {
@@ -88,7 +99,15 @@ export const checkPdfUploadUsage = async (userId: string) => {
 
   if (!userUsageExits) return true;
 
-  return userUsageExits.pdfUploadUsage < 100;
+  const userLimit = await db.userLimit.findUnique({
+    where: {
+      userId,
+    },
+  });
+
+  if (!userLimit) return true;
+
+  return userUsageExits.pdfUploadUsage < userLimit.pdfUploadLimit;
 };
 
 export const getPdfUploadUsage = async (userId: string) => {
@@ -101,4 +120,31 @@ export const getPdfUploadUsage = async (userId: string) => {
   if (!userUsageExits) return 0;
 
   return userUsageExits.pdfUploadUsage;
+};
+
+export const getUserMaxFileLimit = async () => {
+  const { getUser } = getKindeServerSession();
+  const { id: userId } = getUser();
+
+  if (!userId) {
+    return {
+      maxFileSize: 4,
+      maxPagesPdf: 10,
+    };
+  }
+
+  const userLimit = await db.userLimit.findUnique({
+    where: {
+      userId,
+    },
+    select: {
+      maxFileSize: true,
+      maxPagesPdf: true,
+    },
+  });
+
+  return {
+    maxFileSize: userLimit?.maxFileSize || 4,
+    maxPagesPdf: userLimit?.maxPagesPdf || 5,
+  };
 };
