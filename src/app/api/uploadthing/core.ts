@@ -6,7 +6,13 @@ import { OpenAIEmbeddings } from "langchain/embeddings/openai";
 
 import { db } from "@/lib/db";
 import { qdrantClient } from "@/lib/qdrant";
-import { getFileChunks, getOrCreateCollectionIfNotExists } from "@/lib/actions";
+import {
+  checkPdfUploadUsage,
+  getFileChunks,
+  getOrCreateCollectionIfNotExists,
+} from "@/lib/actions";
+import { getUserMaxFileLimit } from "@/lib/actions/user-usage-actions";
+import { TRPCError } from "@trpc/server";
 
 const f = createUploadthing();
 
@@ -18,11 +24,27 @@ const handleAuth = async () => {
     throw new Error("Not authenticated");
   }
 
-  return { userId: id, email };
+  const isAllowed = await checkPdfUploadUsage(id);
+
+  if (!isAllowed) {
+    throw new TRPCError({
+      code: "FORBIDDEN",
+      message: "You have reached the limit of your prompt plan usage",
+      cause: "You have reached the limit of your prompt plan usage",
+    });
+  }
+
+  const userFileLimits = await getUserMaxFileLimit();
+
+  return { userId: id, userFileLimits, email };
 };
 
 export const ourFileRouter = {
-  pdfUploader: f({ pdf: { maxFileSize: "4MB", maxFileCount: 1 } })
+  pdfUploader: f({
+    pdf: {
+      maxFileCount: 1,
+    },
+  })
     .middleware(async () => await handleAuth())
     .onUploadComplete(async ({ metadata, file }) => {
       const createdFile = await db.file.create({
@@ -55,7 +77,24 @@ export const ourFileRouter = {
         const loader = new PDFLoader(blob);
 
         const pageLevelDocs = await loader.load();
-        const pages = pageLevelDocs.length; // limit the access of the user based on the number of pages
+        const pages = pageLevelDocs.length;
+        const fileSize = file.size / 1024 / 1024;
+
+        if (
+          fileSize > metadata.userFileLimits.maxFileSize ||
+          pages > metadata.userFileLimits.maxPagesPdf
+        ) {
+          await db.file.update({
+            where: {
+              id: createdFile.id,
+            },
+            data: {
+              uploadStatus: "FAILED",
+            },
+          });
+
+          return;
+        }
 
         const chunks = await getFileChunks(pageLevelDocs, pageLevelDocs.length);
 
