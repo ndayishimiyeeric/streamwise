@@ -29,7 +29,7 @@ model User {
 model UserLimit {
   id             String   @id @default(uuid())
   userId         String   @unique
-  querylimit     Int      @default(50)
+  queryLimit     Int      @default(50)
   pdfUploadLimit Int      @default(5)
   maxPagesPdf    Int      @default(5)
   maxFileSize    Int      @default(4)
