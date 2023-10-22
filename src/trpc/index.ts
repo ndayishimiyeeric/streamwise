@@ -154,18 +154,6 @@ export const appRouter = router({
         },
       });
 
-      // decrease upload file usage
-      await db.userUsage.update({
-        where: {
-          userId,
-        },
-        data: {
-          pdfUploadUsage: {
-            decrement: 1,
-          },
-        },
-      });
-
       return file;
     }),
 
