@@ -8,6 +8,11 @@ import { formatConversation } from "@/lib/conversation";
 import { OpenAIStream, StreamingTextResponse } from "ai";
 import { QdrantVectorStore } from "langchain/vectorstores/qdrant";
 import { qdrantClient } from "@/lib/qdrant";
+import {
+  checkPromptUsage,
+  getSubscription,
+  increasePromptUsage,
+} from "@/lib/actions";
 
 export async function POST(req: NextRequest) {
   try {
@@ -33,6 +38,17 @@ export async function POST(req: NextRequest) {
 
     if (!file) {
       return new NextResponse("Not found", { status: 404 });
+    }
+
+    const isAllowed = await checkPromptUsage(userId);
+    const subscription = await getSubscription();
+    const isGold = subscription?.slug?.toLowerCase() === "gold";
+
+    if (!isAllowed && !isGold) {
+      return new NextResponse(
+        "You have reached the limit of your prompt plan usage",
+        { status: 403 },
+      );
     }
 
     await db.message.create({
@@ -107,6 +123,10 @@ export async function POST(req: NextRequest) {
         });
       },
     });
+
+    if (!isGold) {
+      await increasePromptUsage(userId);
+    }
 
     return new StreamingTextResponse(stream);
   } catch (e) {
