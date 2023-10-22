@@ -49,7 +49,8 @@ function UploadDropzone() {
         // handle file upload
         const res = await startUpload(acceptedFile);
         if (!res) {
-          return toast.error("Something went wrong. Please try again later.");
+          toast.error("Max upload limit reached.");
+          return router.push("/auth");
         }
 
         const [fileResponse] = res;
