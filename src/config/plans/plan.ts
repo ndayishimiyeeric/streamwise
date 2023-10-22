@@ -1,9 +1,25 @@
+import {
+  FREE_MAX_FILE_SIZE,
+  FREE_MAX_PDF_PAGES,
+  FREE_PROMPT_LIMIT,
+  FREE_UPLOAD_LIMIT,
+  GOLD_MAX_FILE_SIZE,
+  GOLD_MAX_PDF_PAGES,
+  GOLD_UPLOAD_LIMIT,
+  SILVER_MAX_FILE_SIZE,
+  SILVER_MAX_PDF_PAGES,
+  SILVER_PROMPT_LIMIT,
+  SILVER_UPLOAD_LIMIT,
+} from "@/config/user-usage";
+
 export const PLANS = [
   {
     name: "Free",
     slug: "free",
-    quota: 10,
-    pagePerPdf: 5,
+    quota: FREE_UPLOAD_LIMIT,
+    pagePerPdf: FREE_MAX_PDF_PAGES,
+    promptLimit: FREE_PROMPT_LIMIT,
+    fileSize: FREE_MAX_FILE_SIZE,
     price: {
       amount: 0,
       priceIds: {
@@ -15,8 +31,10 @@ export const PLANS = [
   {
     name: "Silver",
     slug: "silver",
-    quota: 50,
-    pagePerPdf: 25,
+    quota: SILVER_UPLOAD_LIMIT,
+    pagePerPdf: SILVER_MAX_PDF_PAGES,
+    promptLimit: SILVER_PROMPT_LIMIT,
+    fileSize: SILVER_MAX_FILE_SIZE,
     price: {
       amount: 7,
       priceIds: {
@@ -28,8 +46,10 @@ export const PLANS = [
   {
     name: "Gold",
     slug: "gold",
-    quota: 100,
-    pagePerPdf: 100,
+    quota: GOLD_UPLOAD_LIMIT,
+    pagePerPdf: GOLD_MAX_PDF_PAGES,
+    promptLimit: SILVER_PROMPT_LIMIT,
+    fileSize: GOLD_MAX_FILE_SIZE,
     price: {
       amount: 12,
       priceIds: {
@@ -44,18 +64,18 @@ export const pricingItems = [
   {
     plan: "Free",
     tagline: "For small side documents. eg CVs, Resumes, etc.",
-    quota: 10,
+    quota: PLANS.find((p) => p.slug === "free")!.quota,
     features: [
       {
-        text: "5 pages per PDF",
+        text: `${FREE_MAX_PDF_PAGES} pages per PDF`,
         footnote: "The maximum amount of pages per PDF-file.",
       },
       {
-        text: "4MB file size limit",
+        text: `${FREE_MAX_FILE_SIZE} file size limit`,
         footnote: "The maximum file size of a single PDF file.",
       },
       {
-        text: "100 queries per month",
+        text: `${FREE_PROMPT_LIMIT} queries all time`,
         footnote: "The maximum amount of queries per month.",
       },
       {
@@ -85,15 +105,15 @@ export const pricingItems = [
     quota: PLANS.find((p) => p.slug === "silver")!.quota,
     features: [
       {
-        text: "25 pages per PDF",
+        text: `${SILVER_MAX_PDF_PAGES} pages per PDF`,
         footnote: "The maximum amount of pages per PDF-file.",
       },
       {
-        text: "8MB file size limit",
+        text: `${SILVER_MAX_FILE_SIZE} file size limit`,
         footnote: "The maximum file size of a single PDF file.",
       },
       {
-        text: "500 queries per month",
+        text: `${SILVER_PROMPT_LIMIT} queries per month`,
         footnote: "The maximum amount of queries per month.",
       },
       {
@@ -122,11 +142,11 @@ export const pricingItems = [
     quota: PLANS.find((p) => p.slug === "gold")!.quota,
     features: [
       {
-        text: "100 pages per PDF",
+        text: `${GOLD_MAX_PDF_PAGES} pages per PDF`,
         footnote: "The maximum amount of pages per PDF-file.",
       },
       {
-        text: "16MB file size limit",
+        text: `${GOLD_MAX_FILE_SIZE} file size limit`,
         footnote: "The maximum file size of a single PDF file.",
       },
       {

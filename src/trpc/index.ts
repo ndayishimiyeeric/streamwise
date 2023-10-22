@@ -64,6 +64,37 @@ export const appRouter = router({
       });
     }
 
+    // check if user have limit and usage
+    const userLimit = await db.userLimit.findUnique({
+      where: {
+        userId: user.id,
+      },
+    });
+
+    if (!userLimit) {
+      // create user limit
+      await db.userLimit.create({
+        data: {
+          userId: user.id,
+        },
+      });
+    }
+
+    const userUsage = await db.userUsage.findUnique({
+      where: {
+        userId: user.id,
+      },
+    });
+
+    if (!userUsage) {
+      // create user usage
+      await db.userUsage.create({
+        data: {
+          userId: user.id,
+        },
+      });
+    }
+
     return { success: true };
   }),
 
