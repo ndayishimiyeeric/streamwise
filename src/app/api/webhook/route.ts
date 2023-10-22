@@ -3,6 +3,7 @@ import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import stripe from "@/lib/stripe";
 import { db } from "@/lib/db";
+import { PLANS } from "@/config/plans/plan";
 
 export async function POST(req: Request) {
   try {
@@ -21,16 +22,14 @@ export async function POST(req: Request) {
       return new NextResponse(`Webhook error ${e.message}`, { status: 400 });
     }
 
-    console.log(event);
-
     const session = event.data.object as Stripe.Checkout.Session;
 
     if (event.type === "checkout.session.completed") {
       const subscription = await stripe.subscriptions.retrieve(
         session.subscription as string,
       );
-      if (!session?.metadata?.userId) {
-        return new NextResponse("No user id", { status: 400 });
+      if (!session?.metadata?.userId && !session?.metadata?.plan) {
+        return new NextResponse("No user id and plan", { status: 400 });
       }
 
       // check if the user had a subscription before
@@ -41,7 +40,6 @@ export async function POST(req: Request) {
       });
 
       if (dbSubscription) {
-        console.log("dbSubscription=", dbSubscription);
         const currentSubscription = await stripe.subscriptions.list({
           customer: dbSubscription.stripeCustomerId!,
           status: "active",
@@ -49,11 +47,9 @@ export async function POST(req: Request) {
         });
 
         if (currentSubscription) {
-          console.log("currentSubscription", currentSubscription);
           await stripe.subscriptions.cancel(currentSubscription?.data[0].id, {
             cancellation_details: { comment: "User changed plan" },
           });
-          console.log("canceled");
 
           await db.subscription.update({
             where: {
@@ -68,10 +64,8 @@ export async function POST(req: Request) {
               ),
             },
           });
-          console.log("updated");
         }
       } else {
-        console.log("creating");
         await db.subscription.create({
           data: {
             userId: session?.metadata.userId,
@@ -83,7 +77,35 @@ export async function POST(req: Request) {
             ),
           },
         });
-        console.log("created");
+      }
+
+      await db.userUsage.update({
+        where: {
+          userId: session?.metadata.userId,
+        },
+        data: {
+          queryUsage: 0,
+          pdfUploadUsage: 0,
+        },
+      });
+
+      const newPlan = session?.metadata.plan;
+      const plan = PLANS.find(
+        (p) => p.slug.toLowerCase() === newPlan?.toLowerCase(),
+      );
+
+      if (plan) {
+        await db.userLimit.update({
+          where: {
+            userId: session?.metadata.userId,
+          },
+          data: {
+            queryLimit: plan.promptLimit,
+            pdfUploadLimit: plan.quota,
+            maxFileSize: plan.fileSize,
+            maxPagesPdf: plan.pagePerPdf,
+          },
+        });
       }
     }
 
@@ -91,7 +113,7 @@ export async function POST(req: Request) {
       const subscription = await stripe.subscriptions.retrieve(
         session.subscription as string,
       );
-      await db.subscription.update({
+      const userSub = await db.subscription.update({
         where: {
           stripeSubscriptionId: subscription.id as string,
         },
@@ -100,6 +122,16 @@ export async function POST(req: Request) {
           stripeCurrentPeriodEnd: new Date(
             subscription.current_period_end * 1000,
           ),
+        },
+      });
+
+      await db.userUsage.update({
+        where: {
+          userId: userSub.userId,
+        },
+        data: {
+          queryUsage: 0,
+          pdfUploadUsage: 0,
         },
       });
     }

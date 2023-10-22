@@ -368,6 +368,7 @@ export const appRouter = router({
         ],
         metadata: {
           userId: userId,
+          plan: input.plan,
         },
       });
 
