@@ -1,7 +1,7 @@
 import React, { createContext, useRef, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { trpc } from "@/app/_trpc/client";
-import { QUERY_LIMIT } from "@/config/query";
+import { QUERY_LIMIT } from "@/config/user-usage";
 import toast from "react-hot-toast";
 
 type ChatContextProps = {

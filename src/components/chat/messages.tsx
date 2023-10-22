@@ -5,7 +5,7 @@ import { useIntersection } from "@mantine/hooks";
 import { AiData } from "@prisma/client";
 
 import { trpc } from "@/app/_trpc/client";
-import { QUERY_LIMIT } from "@/config/query";
+import { QUERY_LIMIT } from "@/config/user-usage";
 import Message from "@/components/chat/message";
 import { ChatContext } from "@/components/hoc/chat-context";
 import { getSubscription } from "@/lib/actions";

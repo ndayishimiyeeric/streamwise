@@ -8,7 +8,7 @@ import {
   GetFileUploadStatusInput,
 } from "@/lib/validators/file";
 import { GetFileMessagesSchema } from "@/lib/validators/message";
-import { QUERY_LIMIT } from "@/config/query";
+import { QUERY_LIMIT } from "@/config/user-usage";
 import { absoluteUrl } from "@/lib/utils";
 import { getSubscription } from "@/lib/actions";
 import stripe from "@/lib/stripe";
