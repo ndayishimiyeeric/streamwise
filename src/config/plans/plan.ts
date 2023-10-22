@@ -71,7 +71,7 @@ export const pricingItems = [
         footnote: "The maximum amount of pages per PDF-file.",
       },
       {
-        text: `${FREE_MAX_FILE_SIZE} file size limit`,
+        text: `${FREE_MAX_FILE_SIZE}MB file size limit`,
         footnote: "The maximum file size of a single PDF file.",
       },
       {
@@ -109,7 +109,7 @@ export const pricingItems = [
         footnote: "The maximum amount of pages per PDF-file.",
       },
       {
-        text: `${SILVER_MAX_FILE_SIZE} file size limit`,
+        text: `${SILVER_MAX_FILE_SIZE}MB file size limit`,
         footnote: "The maximum file size of a single PDF file.",
       },
       {
@@ -146,7 +146,7 @@ export const pricingItems = [
         footnote: "The maximum amount of pages per PDF-file.",
       },
       {
-        text: `${GOLD_MAX_FILE_SIZE} file size limit`,
+        text: `${GOLD_MAX_FILE_SIZE}MB file size limit`,
         footnote: "The maximum file size of a single PDF file.",
       },
       {
