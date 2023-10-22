@@ -33,17 +33,58 @@ export async function POST(req: Request) {
         return new NextResponse("No user id", { status: 400 });
       }
 
-      await db.subscription.create({
-        data: {
+      // check if the user had a subscription before
+      const dbSubscription = await db.subscription.findUnique({
+        where: {
           userId: session?.metadata.userId,
-          stripeCustomerId: subscription.customer as string,
-          stripeSubscriptionId: subscription.id as string,
-          stripePriceId: subscription.items.data[0].price.id as string,
-          stripeCurrentPeriodEnd: new Date(
-            subscription.current_period_end * 1000,
-          ),
         },
       });
+
+      if (dbSubscription) {
+        console.log("dbSubscription=", dbSubscription);
+        const currentSubscription = await stripe.subscriptions.list({
+          customer: dbSubscription.stripeCustomerId!,
+          status: "active",
+          limit: 1,
+        });
+
+        if (currentSubscription) {
+          console.log("currentSubscription", currentSubscription);
+          await stripe.subscriptions.cancel(currentSubscription?.data[0].id, {
+            cancellation_details: { comment: "User changed plan" },
+          });
+          console.log("canceled");
+
+          await db.subscription.update({
+            where: {
+              userId: session?.metadata.userId,
+            },
+            data: {
+              stripeCustomerId: subscription.customer as string,
+              stripeSubscriptionId: subscription.id as string,
+              stripePriceId: subscription.items.data[0].price.id as string,
+              stripeCurrentPeriodEnd: new Date(
+                subscription.current_period_end * 1000,
+              ),
+            },
+          });
+          console.log("updated");
+        }
+      } else {
+        console.log("creating");
+        await db.subscription.create({
+          data: {
+            userId: session?.metadata.userId,
+            stripeCustomerId: subscription.customer as string,
+            stripeSubscriptionId: subscription.id as string,
+            stripePriceId: subscription.items.data[0].price.id as string,
+            stripeCurrentPeriodEnd: new Date(
+              subscription.current_period_end * 1000,
+            ),
+          },
+        });
+        console.log("created");
+      }
     }
 
     if (event.type === "invoice.payment_succeeded") {
