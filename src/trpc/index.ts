@@ -17,6 +17,7 @@ import { PLANS } from "@/config/plans/plan";
 import { MyAiDataSchema } from "@/lib/validators/my-ai";
 import { qdrantClient } from "@/lib/qdrant";
 import { UserDataSchema } from "@/lib/validators/user";
+import { utapi } from "@/server/uploadthing";
 
 export const appRouter = router({
   authCallback: publicProcedure.query(async () => {
@@ -133,12 +134,35 @@ export const appRouter = router({
           cause: "File not found",
         });
 
-      await qdrantClient.deleteCollection(file.id);
-
       await db.file.delete({
         where: {
           id: input.id,
           userId,
+        },
+      });
+
+      // delete file collection from qdrant
+      await qdrantClient.deleteCollection(file.id);
+
+      // delete file from UT
+      await utapi.deleteFiles(file.key);
+
+      // delete file messages
+      await db.message.deleteMany({
+        where: {
+          fileId: file.id,
+        },
+      });
+
+      // decrease upload file usage
+      await db.userUsage.update({
+        where: {
+          userId,
+        },
+        data: {
+          pdfUploadUsage: {
+            decrement: 1,
+          },
         },
       });
 
