@@ -12,15 +12,14 @@ function AuthCallbackPage() {
   trpc.authCallback.useQuery(undefined, {
     onSuccess: ({ success }) => {
       if (success) {
-        console.log("success");
         router.push(origin ? `/${origin}` : "/dashboard");
       }
     },
     onError: ({ message, data, shape }) => {
       if (data?.code === "UNAUTHORIZED") {
-        router.push("/api/auth/login?");
+        router.push("/api/upgrade/login?");
       } else {
-        router.push("/auth");
+        router.push("/");
       }
     },
     retry: 3,

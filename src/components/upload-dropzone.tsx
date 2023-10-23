@@ -50,7 +50,7 @@ function UploadDropzone() {
         const res = await startUpload(acceptedFile);
         if (!res) {
           toast.error("Max upload limit reached.");
-          return router.push("/auth");
+          return router.push("/dashboard/usage");
         }
 
         const [fileResponse] = res;
