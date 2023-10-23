@@ -106,6 +106,14 @@ export async function POST(req: Request) {
             maxPagesPdf: plan.pagePerPdf,
           },
         });
+
+        await db.userPurchase.create({
+          data: {
+            userId: session?.metadata.userId,
+            amount: plan.price.amount,
+            success: true,
+          },
+        });
       }
     }
 
@@ -132,6 +140,14 @@ export async function POST(req: Request) {
         data: {
           queryUsage: 0,
           pdfUploadUsage: 0,
+        },
+      });
+
+      await db.userPurchase.create({
+        data: {
+          userId: userSub.userId,
+          amount: subscription.items.data[0].price.unit_amount as number,
+          success: true,
         },
       });
     }
