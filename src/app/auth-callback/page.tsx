@@ -3,6 +3,7 @@
 import { redirect, useRouter, useSearchParams } from "next/navigation";
 import { trpc } from "@/app/_trpc/client";
 import { Loader2 } from "lucide-react";
+import toast from "react-hot-toast";
 
 function AuthCallbackPage() {
   const router = useRouter();
@@ -17,7 +18,8 @@ function AuthCallbackPage() {
     },
     onError: ({ message, data, shape }) => {
       if (data?.code === "UNAUTHORIZED") {
-        router.push("/api/upgrade/login?");
+        router.push("/");
+        toast.error("Sign in to continue");
       } else {
         router.push("/");
       }
