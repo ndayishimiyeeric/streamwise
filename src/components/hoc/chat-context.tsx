@@ -2,7 +2,7 @@ import React, { createContext, useRef, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { trpc } from "@/app/_trpc/client";
 import { QUERY_LIMIT } from "@/config/user-usage";
-import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 type ChatContextProps = {
   addMessage: () => void;
@@ -31,6 +31,8 @@ export const ChatContextProvider = ({ fileId, children }: Props) => {
 
   const utils = trpc.useContext();
 
+  const router = useRouter();
+
   const { mutate: sendMessage } = useMutation({
     mutationFn: async ({ message }: { message: string }) => {
       const response = await fetch("/api/message", {
@@ -42,7 +44,10 @@ export const ChatContextProvider = ({ fileId, children }: Props) => {
       });
 
       if (!response.ok) {
-        throw new Error("Failed to send message");
+        if (response.status === 403) {
+          router.push("/upgrade");
+        }
+        throw new Error("Upgrade your plan to use this feature");
       }
 
       return response.body;
@@ -96,7 +101,7 @@ export const ChatContextProvider = ({ fileId, children }: Props) => {
       setIsLoading(false);
 
       if (!stream) {
-        return toast.error("Failed to send message, refresh and try again");
+        return router.refresh();
       }
 
       const reader = stream.getReader();
@@ -166,12 +171,13 @@ export const ChatContextProvider = ({ fileId, children }: Props) => {
       }
     },
 
-    onError: (_, __, context) => {
+    onError: async (_, __, context) => {
       setMessage(backupMessageRef.current);
       utils.getFileMessages.setData(
         { fileId },
         { messages: context?.previousMessages ?? [] },
       );
+      await utils.getFileMessages.invalidate({ fileId });
     },
 
     onSettled: async () => {
