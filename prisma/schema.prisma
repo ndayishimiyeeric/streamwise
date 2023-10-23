@@ -24,6 +24,7 @@ model User {
   userUsage    UserUsage?
   subscription Subscription?
   AiData       AiData?
+  purchases    UserPurchase[]
 }
 
 model UserLimit {
@@ -56,6 +57,17 @@ model Subscription {
   stripePriceId          String?   @unique @map("stripe_price_id")
   stripeCurrentPeriodEnd DateTime? @map("stripe_current_period_end")
   user                   User      @relation(fields: [userId], references: [id])
+}
+
+model UserPurchase {
+  id        String   @id @default(uuid())
+  userId    String
+  amount    Int
+  success   Boolean  @default(false)
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@index([userId])
 }
 
 enum FileUploadStatus {
