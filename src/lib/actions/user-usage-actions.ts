@@ -148,3 +148,43 @@ export const getUserMaxFileLimit = async () => {
     maxPagesPdf: userLimit?.maxPagesPdf || 5,
   };
 };
+
+export const getPurchases = async () => {
+  const { getUser } = getKindeServerSession();
+  const { id: userId } = getUser();
+
+  if (!userId) {
+    return [];
+  }
+
+  const purchases = await db.userPurchase.findMany({
+    where: {
+      userId,
+    },
+  });
+
+  if (!purchases) {
+    return [];
+  }
+
+  const yearMonths: { id: number; name: string }[] = [
+    { id: 0, name: "Jan" },
+    { id: 1, name: "Feb" },
+    { id: 2, name: "Mar" },
+    { id: 3, name: "Apr" },
+    { id: 4, name: "May" },
+    { id: 5, name: "Jun" },
+    { id: 6, name: "Jul" },
+    { id: 7, name: "Aug" },
+    { id: 8, name: "Sept" },
+    { id: 9, name: "Oct" },
+    { id: 10, name: "Nov" },
+    { id: 11, name: "Dec" },
+  ];
+
+  return purchases.map((purchase) => ({
+    purchaseMonth: yearMonths[purchase.createdAt.getMonth()].name,
+    amount: purchase.amount,
+    status: purchase.success ? "Success" : "Failed",
+  }));
+};

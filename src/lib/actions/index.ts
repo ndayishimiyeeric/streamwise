@@ -8,3 +8,4 @@ export { clientPromptLimit } from "@/lib/actions/user-usage-actions";
 export { increasePdfUploadUsage } from "@/lib/actions/user-usage-actions";
 export { checkPdfUploadUsage } from "@/lib/actions/user-usage-actions";
 export { getPdfUploadUsage } from "@/lib/actions/user-usage-actions";
+export { getPurchases } from "@/lib/actions/user-usage-actions";
