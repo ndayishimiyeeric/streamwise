@@ -171,3 +171,66 @@ export const getPurchases = async () => {
     status: purchase.success ? "Success" : "Failed",
   }));
 };
+
+export interface GraphData {
+  name: string;
+  value: number;
+}
+
+export const getGraphData = async (userId: string) => {
+  const userMessages = await db.message.findMany({
+    where: {
+      userId,
+      isUserMessage: true,
+    },
+  });
+
+  const userUploads = await db.file.findMany({
+    where: {
+      userId,
+    },
+  });
+
+  const monthlyUsage: { [key: string]: number } = {};
+
+  for (const message of userMessages) {
+    const month = message.createdAt.getMonth();
+
+    if (monthlyUsage[month]) {
+      monthlyUsage[month] += 1;
+    } else {
+      monthlyUsage[month] = 1;
+    }
+  }
+
+  for (const file of userUploads) {
+    const month = file.createdAt.getMonth();
+
+    if (monthlyUsage[month]) {
+      monthlyUsage[month] += 1;
+    } else {
+      monthlyUsage[month] = 1;
+    }
+  }
+
+  const graphData: GraphData[] = [
+    { name: "Jan", value: 0 },
+    { name: "Feb", value: 0 },
+    { name: "Mar", value: 0 },
+    { name: "Apr", value: 0 },
+    { name: "May", value: 0 },
+    { name: "Jun", value: 0 },
+    { name: "Jul", value: 0 },
+    { name: "Aug", value: 0 },
+    { name: "Sep", value: 0 },
+    { name: "Oct", value: 0 },
+    { name: "Nov", value: 0 },
+    { name: "Dec", value: 0 },
+  ];
+
+  for (const month in monthlyUsage) {
+    graphData[parseInt(month)].value = monthlyUsage[month];
+  }
+
+  return graphData;
+};
