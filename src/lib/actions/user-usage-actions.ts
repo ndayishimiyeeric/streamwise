@@ -1,7 +1,5 @@
 import { db } from "@/lib/db";
-import { OurFileRouter } from "@/app/api/uploadthing/core";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
-import { getSubscription } from "@/lib/actions/index";
 
 export const increasePromptUsage = async (userId: string) => {
   const userUsageExits = await db.userUsage.findUnique({
@@ -167,23 +165,8 @@ export const getPurchases = async () => {
     return [];
   }
 
-  const yearMonths: { id: number; name: string }[] = [
-    { id: 0, name: "Jan" },
-    { id: 1, name: "Feb" },
-    { id: 2, name: "Mar" },
-    { id: 3, name: "Apr" },
-    { id: 4, name: "May" },
-    { id: 5, name: "Jun" },
-    { id: 6, name: "Jul" },
-    { id: 7, name: "Aug" },
-    { id: 8, name: "Sept" },
-    { id: 9, name: "Oct" },
-    { id: 10, name: "Nov" },
-    { id: 11, name: "Dec" },
-  ];
-
   return purchases.map((purchase) => ({
-    purchaseMonth: yearMonths[purchase.createdAt.getMonth()].name,
+    date: purchase.createdAt,
     amount: purchase.amount,
     status: purchase.success ? "Success" : "Failed",
   }));

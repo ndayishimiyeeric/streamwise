@@ -1,8 +1,9 @@
 "use client";
 
 import React from "react";
+import { useRouter } from "next/navigation";
 import { UserLimit, UserUsage } from "@prisma/client";
-import { MessagesSquare, ShoppingBag, UploadCloud } from "lucide-react";
+import { MessagesSquare, UploadCloud } from "lucide-react";
 import { TbPlant2 } from "react-icons/tb";
 import { PiBookOpenBold } from "react-icons/pi";
 
@@ -17,8 +18,10 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import FixedUsageCard from "@/app/dashboard/usage/_components/fixed-usage-card";
-import UsageProgress from "@/app/dashboard/usage/_components/usage-progress";
 import UsageCard from "@/app/dashboard/usage/_components/usage-card";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Button } from "@/components/ui/button";
+import PurchaseCard from "@/app/dashboard/usage/_components/purchase-card";
 
 type Props = {
   subscription: Awaited<ReturnType<typeof getSubscription>>;
@@ -28,9 +31,11 @@ type Props = {
 };
 
 function ClientPage({ subscription, purchases, userLimit, userUsage }: Props) {
+  const router = useRouter();
+
   return (
-    <MaxWidthWrapper className="flex flex-col-reverse gap-2 md:grid md:grid-cols-3 md:space-x-3 pt-8 px-2.5 md:px-3 lg:px-20">
-      <div className="col-span-2">
+    <MaxWidthWrapper className="flex flex-col-reverse gap-2 md:grid md:items-start md:grid-cols-3 md:space-x-3 pt-8 px-2.5 md:px-3 lg:px-20">
+      <div className="col-span-2 grid space-y-3">
         <Card>
           <CardHeader className="space-y-1">
             <CardTitle className="text-xl font-semibold text-zinc-900">
@@ -61,7 +66,7 @@ function ClientPage({ subscription, purchases, userLimit, userUsage }: Props) {
           </CardContent>
         </Card>
       </div>
-      <div>
+      <div className="grid space-y-3">
         <Card>
           <CardHeader className="space-y-1">
             <CardTitle className="text-xl font-semibold text-zinc-900">
@@ -85,6 +90,33 @@ function ClientPage({ subscription, purchases, userLimit, userUsage }: Props) {
               subscription={subscription}
               limit={`${userLimit.maxFileSize}MB`}
             />
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="space-y-1">
+            <CardTitle className="text-xl font-semibold text-zinc-900">
+              Purchases
+            </CardTitle>
+            <CardDescription>Your recent purchases</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {purchases.length > 0 && (
+              <ScrollArea className="h-40 rounded-md border">
+                <div className="p-4 flex flex-col space-y-2">
+                  {purchases.map((purchase, index) => (
+                    <PurchaseCard purchase={purchase} key={index} />
+                  ))}
+                </div>
+              </ScrollArea>
+            )}
+            {purchases.length === 0 && (
+              <div className="h-40 rounded-md flex flex-col items-center justify-center space-y-2 border">
+                <p className="text-sm leading-tight">No purchase available</p>
+                <Button onClick={() => router.push("/upgrade")} size="sm">
+                  Upgrade
+                </Button>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
