@@ -5,6 +5,7 @@ import { getPurchases, getSubscription } from "@/lib/actions";
 import { db } from "@/lib/db";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { redirect } from "next/navigation";
+import { getGraphData } from "@/lib/actions/user-usage-actions";
 
 async function UsagePage() {
   const { getUser } = getKindeServerSession();
@@ -27,12 +28,15 @@ async function UsagePage() {
     },
   });
 
+  const graphData = await getGraphData(user.id);
+
   return (
     <ClientPage
       subscription={subscription}
       purchases={purchases}
       userLimit={userLimit!}
       userUsage={usageUsage!}
+      graphData={graphData}
     />
   );
 }
