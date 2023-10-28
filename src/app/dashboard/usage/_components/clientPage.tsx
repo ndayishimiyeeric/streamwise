@@ -29,9 +29,9 @@ type Props = {
 
 function ClientPage({ subscription, purchases, userLimit, userUsage }: Props) {
   return (
-    <MaxWidthWrapper className="flex flex-col space-y-3 pt-8 px-2.5 md:px-3 lg:px-20">
-      <div className="grid md:grid-cols-3 gap-2">
-        <Card className="md:col-span-2">
+    <MaxWidthWrapper className="flex flex-col-reverse gap-2 md:grid md:grid-cols-3 md:space-x-3 pt-8 px-2.5 md:px-3 lg:px-20">
+      <div className="col-span-2">
+        <Card>
           <CardHeader className="space-y-1">
             <CardTitle className="text-xl font-semibold text-zinc-900">
               {subscription.isSubscribed
@@ -39,11 +39,11 @@ function ClientPage({ subscription, purchases, userLimit, userUsage }: Props) {
                 : "Limited plan usage"}
             </CardTitle>
             <CardDescription>
-              Your <span className="font-bold">{subscription.name}</span>{" "}
-              subscription resources usage
+              Your <span className="font-bold">{subscription.name}</span> plan
+              resources usage
             </CardDescription>
           </CardHeader>
-          <CardContent className="grid grid-cols-3 gap-2">
+          <CardContent className="grid sm:grid-cols-2 lg:grid-cols-3 gap-2">
             <UsageCard
               title="Prompt usage"
               value={(userUsage.queryUsage / userLimit.queryLimit) * 100}
@@ -60,17 +60,19 @@ function ClientPage({ subscription, purchases, userLimit, userUsage }: Props) {
             />
           </CardContent>
         </Card>
+      </div>
+      <div>
         <Card>
           <CardHeader className="space-y-1">
             <CardTitle className="text-xl font-semibold text-zinc-900">
               Plan limits
             </CardTitle>
             <CardDescription>
-              Your <span className="font-bold">{subscription.name}</span>{" "}
-              subscription fixed limits
+              Your <span className="font-bold">{subscription.name}</span> plan
+              resource limits
             </CardDescription>
           </CardHeader>
-          <CardContent className="grid grid-cols-2 gap-2">
+          <CardContent className="grid sm:grid-cols-2 gap-2">
             <FixedUsageCard
               title="Pages / PDF"
               icon={PiBookOpenBold}

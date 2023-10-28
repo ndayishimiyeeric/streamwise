@@ -1,5 +1,5 @@
 import React from "react";
-import { LucideIcon, ShoppingBag, UploadCloud } from "lucide-react";
+import { LucideIcon, ShoppingBag } from "lucide-react";
 import { IconType } from "react-icons";
 import UsageProgress from "@/app/dashboard/usage/_components/usage-progress";
 import { Card } from "@/components/ui/card";
