@@ -34,6 +34,7 @@ function UserImageForm({ data, subscriptionPlan }: Props) {
   const form = useForm<UserDataSchemaType>({
     defaultValues: {
       imgUrl: data.imgUrl || "",
+      name: data.name || "",
     },
     resolver: zodResolver(UserDataSchema),
   });

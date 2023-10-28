@@ -292,7 +292,7 @@ export const appRouter = router({
     .input(UserDataSchema)
     .mutation(async ({ ctx, input }) => {
       const { userId } = ctx;
-      const { imgUrl } = input;
+      const { imgUrl, name } = input;
 
       const user = await db.user.findUnique({
         where: {
@@ -312,6 +312,7 @@ export const appRouter = router({
         },
         data: {
           imgUrl,
+          name,
         },
       });
 

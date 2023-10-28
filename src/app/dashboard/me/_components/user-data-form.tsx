@@ -18,7 +18,7 @@ function UserDataForm({ subscriptionPlan, data }: Props) {
     <MaxWidthWrapper className="max-w-5xl">
       <div className="mt-12 grid md:grid-cols-2 gap-8">
         <div className="grid space-y-8">
-          {/*<NameForm subscriptionPlan={subscriptionPlan} aiData={aiData} />*/}
+          <NameForm subscriptionPlan={subscriptionPlan} data={data} />
         </div>
         <UserImageForm subscriptionPlan={subscriptionPlan} data={data} />
       </div>

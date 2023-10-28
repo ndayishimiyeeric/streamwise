@@ -2,6 +2,7 @@
 
 import React from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { User } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import toast from "react-hot-toast";
@@ -23,29 +24,27 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
-import { MyAiBioType, MyAiDataSchema } from "@/lib/validators/my-ai";
 import { getSubscription } from "@/lib/actions";
-import { AiData } from "@prisma/client";
 import { Button } from "@/components/ui/button";
 import { trpc } from "@/app/_trpc/client";
+import { UserDataSchema, UserDataSchemaType } from "@/lib/validators/user";
 
 type Props = {
   subscriptionPlan: Awaited<ReturnType<typeof getSubscription>>;
-  aiData: AiData;
+  data: User;
 };
 
-function NameForm({ aiData, subscriptionPlan }: Props) {
+function NameForm({ data, subscriptionPlan }: Props) {
   const router = useRouter();
-  const form = useForm<MyAiBioType>({
-    resolver: zodResolver(MyAiDataSchema),
+  const form = useForm<UserDataSchemaType>({
+    resolver: zodResolver(UserDataSchema),
     defaultValues: {
-      name: aiData.name || "",
-      bio: aiData.bio || "",
-      imgUrl: aiData.imgUrl || "",
+      name: data.name || "",
+      imgUrl: data.imgUrl || "",
     },
   });
 
-  const { mutate: handleSubmit, isLoading } = trpc.updateAiData.useMutation({
+  const { mutate: handleSubmit, isLoading } = trpc.updateUserData.useMutation({
     onSuccess: (data) => {
       router.refresh();
     },
@@ -54,7 +53,7 @@ function NameForm({ aiData, subscriptionPlan }: Props) {
     },
   });
 
-  const handleUpdate = async (values: MyAiBioType): Promise<void> => {
+  const handleUpdate = async (values: UserDataSchemaType): Promise<void> => {
     handleSubmit(values);
     return await new Promise((resolve) => setTimeout(resolve, 900));
   };
@@ -67,17 +66,15 @@ function NameForm({ aiData, subscriptionPlan }: Props) {
             .promise(handleUpdate(data), {
               loading: "Updating...",
               success: "Name updated",
-              error: "Error saving.",
+              error: "Error updating.",
             })
             .then((r) => r);
         })}
       >
         <Card className="rounded-2xl bg-white">
           <CardHeader>
-            <CardTitle>{aiData.name}&apos;s Name</CardTitle>
-            <CardDescription>
-              Customize the name of your AI assistant.
-            </CardDescription>
+            <CardTitle>Full Name</CardTitle>
+            <CardDescription>Update your Full Name.</CardDescription>
           </CardHeader>
           <CardContent>
             <FormField
@@ -86,7 +83,6 @@ function NameForm({ aiData, subscriptionPlan }: Props) {
                   <FormControl>
                     <Input
                       className="focus-visible:ring-0 focus-visible:ring-offset-0"
-                      placeholder={`${aiData.name}'s Name`}
                       {...field}
                     />
                   </FormControl>
