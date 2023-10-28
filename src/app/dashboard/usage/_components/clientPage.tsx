@@ -8,7 +8,7 @@ import { TbPlant2 } from "react-icons/tb";
 import { PiBookOpenBold } from "react-icons/pi";
 
 import { getSubscription } from "@/lib/actions";
-import { getPurchases } from "@/lib/actions/user-usage-actions";
+import { getPurchases, GraphData } from "@/lib/actions/user-usage-actions";
 import MaxWidthWrapper from "@/components/max-width-wrapper";
 import {
   Card,
@@ -22,20 +22,28 @@ import UsageCard from "@/app/dashboard/usage/_components/usage-card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import PurchaseCard from "@/app/dashboard/usage/_components/purchase-card";
+import Overview from "@/components/overview";
 
 type Props = {
   subscription: Awaited<ReturnType<typeof getSubscription>>;
   purchases: Awaited<ReturnType<typeof getPurchases>>;
   userLimit: UserLimit;
   userUsage: UserUsage;
+  graphData: GraphData[];
 };
 
-function ClientPage({ subscription, purchases, userLimit, userUsage }: Props) {
+function ClientPage({
+  subscription,
+  purchases,
+  userLimit,
+  userUsage,
+  graphData,
+}: Props) {
   const router = useRouter();
 
   return (
-    <MaxWidthWrapper className="flex flex-col-reverse gap-2 md:grid md:items-start md:grid-cols-3 md:space-x-3 pt-8 px-2.5 md:px-3 lg:px-20">
-      <div className="col-span-2 grid space-y-3">
+    <MaxWidthWrapper className="flex flex-col-reverse w-full gap-2 lg:grid lg:items-start lg:grid-cols-3 lg:space-x-3 pt-8 px-2.5 md:px-3 lg:px-20">
+      <div className="lg:col-span-2 grid space-y-3">
         <Card>
           <CardHeader className="space-y-1">
             <CardTitle className="text-xl font-semibold text-zinc-900">
@@ -65,8 +73,18 @@ function ClientPage({ subscription, purchases, userLimit, userUsage }: Props) {
             />
           </CardContent>
         </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-xl font-semibold text-zinc-900">
+              Activity Overview
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Overview data={graphData} />
+          </CardContent>
+        </Card>
       </div>
-      <div className="grid space-y-3">
+      <div className="grid w-full space-y-3">
         <Card>
           <CardHeader className="space-y-1">
             <CardTitle className="text-xl font-semibold text-zinc-900">
