@@ -5,7 +5,7 @@ import { getPurchases, getSubscription } from "@/lib/actions";
 import { db } from "@/lib/db";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { redirect } from "next/navigation";
-import { getGraphData } from "@/lib/actions/user-usage-actions";
+import { getGraphData } from "@/lib/actions";
 
 async function UsagePage() {
   const { getUser } = getKindeServerSession();

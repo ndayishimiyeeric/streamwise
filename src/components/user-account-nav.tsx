@@ -8,8 +8,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { UserIcon } from "lucide-react";
-import { Avatar } from "@/components/ui/avatar";
 import { getSubscription } from "@/lib/actions";
 import {
   getKindeServerSession,
@@ -17,6 +15,7 @@ import {
 } from "@kinde-oss/kinde-auth-nextjs/server";
 import Link from "next/link";
 import UserAvatar from "@/components/ui/user-avatar";
+import { Diamond, Gem } from "lucide-react";
 
 type Props = {
   userName?: string;
@@ -61,9 +60,26 @@ export async function UserAccountNav({
               Pricing
             </DropdownMenuItem>
           </Link>
-          <Link href="/dashboard/billing">
+          <Link
+            href={`${
+              subscriptionPlan.name === "Free"
+                ? "/upgrade"
+                : "/dashboard/billing"
+            }`}
+          >
             <DropdownMenuItem className="cursor-pointer">
-              Billing
+              {subscriptionPlan.name === "Free" ? (
+                <>
+                  Upgrade <Gem className="w-4 h-4 ml-2 text-[#BF953F]" />
+                </>
+              ) : (
+                "Billing"
+              )}
+            </DropdownMenuItem>
+          </Link>
+          <Link href="/dashboard/usage" className="block w-full sm:hidden">
+            <DropdownMenuItem className="cursor-pointer">
+              Usage
             </DropdownMenuItem>
           </Link>
           <Link href="/dashboard/me">

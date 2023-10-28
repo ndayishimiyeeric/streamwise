@@ -37,12 +37,11 @@ async function Navbar() {
           <Link href="/" className="flex z-40 font-semibold">
             <span>Streamwise.</span>
           </Link>
-          {/*  TODO Mobile Navbar  */}
 
           {user && (
             <div className="items-center space-x-4 sm:flex">
               <Link
-                href="/pricing"
+                href="/dashboard/usage"
                 className={cn(
                   buttonVariants({
                     variant: "ghost",
@@ -51,7 +50,7 @@ async function Navbar() {
                   }),
                 )}
               >
-                Pricing
+                Usage
               </Link>
               <Link
                 className={cn(
