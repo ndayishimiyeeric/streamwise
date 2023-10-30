@@ -1,20 +1,20 @@
 import React from "react";
-import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
+import { auth, currentUser } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
+
 import { db } from "@/lib/db";
 import Dashboard from "@/components/dashboard";
 
 async function DashboardPage() {
-  const { getUser } = getKindeServerSession();
-  const user = getUser();
+  const { userId } = auth();
 
-  if (!user || !user.email || !user.id) {
+  if (!userId) {
     redirect("/auth-callback?origin=dashboard");
   }
 
   const dbUser = await db.user.findUnique({
     where: {
-      id: user.id,
+      id: userId,
     },
   });
 

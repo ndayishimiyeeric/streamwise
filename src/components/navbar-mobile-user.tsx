@@ -27,24 +27,25 @@ export function NavbarMobileUser() {
               Pricing
             </DropdownMenuItem>
           </Link>
-          <LoginLink>
+          <Link href="sign-in">
             <DropdownMenuItem className="cursor-pointer">
               Sign In
             </DropdownMenuItem>
-          </LoginLink>
+          </Link>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <RegisterLink
+        <Link
           className={cn(
             buttonVariants({
               size: "sm",
               className: "w-full",
             }),
           )}
+          href="/sign-up"
         >
           Get Started
           <ArrowRight className="h-5 w-5 ml-2" />
-        </RegisterLink>
+        </Link>
       </DropdownMenuContent>
     </DropdownMenu>
   );

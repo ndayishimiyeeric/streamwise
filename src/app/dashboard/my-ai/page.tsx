@@ -1,5 +1,5 @@
 import React from "react";
-import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
+import { auth } from "@clerk/nextjs";
 
 import { db } from "@/lib/db";
 import { getSubscription } from "@/lib/actions";
@@ -7,9 +7,7 @@ import MyAiForm from "@/app/dashboard/my-ai/_components/my-ai-form";
 import { redirect } from "next/navigation";
 
 async function Page() {
-  const { getUser } = getKindeServerSession();
-  const user = getUser();
-  const userId = user?.id;
+  const { userId } = auth();
   if (!userId) {
     redirect("/auth-callback?origin=/dashboard/my-ai");
   }

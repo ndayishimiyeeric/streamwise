@@ -1,5 +1,5 @@
 import React from "react";
-import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
+import { auth } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
 
 import { db } from "@/lib/db";
@@ -7,11 +7,9 @@ import { getSubscription } from "@/lib/actions";
 import UserDataForm from "./_components/user-data-form";
 
 async function Page() {
-  const { getUser } = getKindeServerSession();
-  const user = getUser();
-  const userId = user?.id;
+  const { userId } = auth();
   if (!userId) {
-    redirect("/auth-callback?origin=/dashboard/my-ai");
+    redirect("/auth-callback?origin=/dashboard/me");
   }
   const dbUser = await db.user.findUnique({
     where: {

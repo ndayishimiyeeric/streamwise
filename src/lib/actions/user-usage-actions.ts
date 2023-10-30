@@ -1,5 +1,5 @@
 import { db } from "@/lib/db";
-import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
+import { auth } from "@clerk/nextjs";
 
 export const increasePromptUsage = async (userId: string) => {
   const userUsageExits = await db.userUsage.findUnique({
@@ -121,8 +121,7 @@ export const getPdfUploadUsage = async (userId: string) => {
 };
 
 export const getUserMaxFileLimit = async () => {
-  const { getUser } = getKindeServerSession();
-  const { id: userId } = getUser();
+  const { userId } = auth();
 
   if (!userId) {
     return {
@@ -148,8 +147,7 @@ export const getUserMaxFileLimit = async () => {
 };
 
 export const getPurchases = async () => {
-  const { getUser } = getKindeServerSession();
-  const { id: userId } = getUser();
+  const { userId } = auth();
 
   if (!userId) {
     return [];

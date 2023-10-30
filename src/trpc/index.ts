@@ -1,5 +1,5 @@
 import { authProcedure, publicProcedure, router } from "./trpc";
-import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
+import { auth, currentUser } from "@clerk/nextjs";
 import { TRPCError } from "@trpc/server";
 import { db } from "@/lib/db";
 import {
@@ -21,10 +21,10 @@ import { utapi } from "@/server/uploadthing";
 
 export const appRouter = router({
   authCallback: publicProcedure.query(async () => {
-    const { getUser } = getKindeServerSession();
-    const user = getUser();
+    const { userId } = auth();
+    const user = await currentUser();
 
-    if (!user || !user.id || !user.email) {
+    if (!userId || !user) {
       throw new TRPCError({
         code: "UNAUTHORIZED",
         message: "Unauthorized",
@@ -35,7 +35,7 @@ export const appRouter = router({
     // check if user is the database
     const dbUser = await db.user.findUnique({
       where: {
-        id: user.id,
+        id: userId,
       },
     });
 
@@ -43,8 +43,10 @@ export const appRouter = router({
       // create user in database
       await db.user.create({
         data: {
-          id: user.id,
-          email: user.email!,
+          id: userId,
+          email: user.emailAddresses[0].emailAddress,
+          imgUrl: user.imageUrl,
+          name: user.firstName + " " + user.lastName,
         },
       });
     }
@@ -52,7 +54,7 @@ export const appRouter = router({
     // check if user have Ai data
     const ai = await db.aiData.findUnique({
       where: {
-        userId: user.id,
+        userId: userId,
       },
     });
 
@@ -60,7 +62,7 @@ export const appRouter = router({
       // create ai data
       await db.aiData.create({
         data: {
-          userId: user.id,
+          userId: userId,
         },
       });
     }
@@ -68,7 +70,7 @@ export const appRouter = router({
     // check if user have limit and usage
     const userLimit = await db.userLimit.findUnique({
       where: {
-        userId: user.id,
+        userId: userId,
       },
     });
 
@@ -76,14 +78,14 @@ export const appRouter = router({
       // create user limit
       await db.userLimit.create({
         data: {
-          userId: user.id,
+          userId: userId,
         },
       });
     }
 
     const userUsage = await db.userUsage.findUnique({
       where: {
-        userId: user.id,
+        userId: userId,
       },
     });
 
@@ -91,7 +93,7 @@ export const appRouter = router({
       // create user usage
       await db.userUsage.create({
         data: {
-          userId: user.id,
+          userId: userId,
         },
       });
     }
@@ -323,7 +325,6 @@ export const appRouter = router({
     .input(CheckoutSchema)
     .mutation(async ({ ctx, input }) => {
       const { userId, user } = ctx;
-      const { email } = user;
 
       const billingUrl = absoluteUrl("dashboard/billing");
 
@@ -359,7 +360,7 @@ export const appRouter = router({
         payment_method_types: ["card", "paypal"],
         mode: "subscription",
         billing_address_collection: "auto",
-        customer_email: email!,
+        customer_email: user.emailAddresses[0].emailAddress,
         line_items: [
           {
             price: PLANS.find((p) => p.name === input.plan)?.price.priceIds

@@ -1,5 +1,8 @@
 import React from "react";
-import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
+import { auth } from "@clerk/nextjs";
+import Link from "next/link";
+import { ArrowRight, Check, HelpCircle, Minus } from "lucide-react";
+
 import MaxWidthWrapper from "@/components/max-width-wrapper";
 import {
   Tooltip,
@@ -9,15 +12,11 @@ import {
 } from "@/components/ui/tooltip";
 import { PLANS, pricingItems } from "@/config/plans/plan";
 import { cn } from "@/lib/utils";
-import { ArrowRight, Check, HelpCircle, Minus, Plus } from "lucide-react";
-import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
 import UpgradeButton from "@/components/upgrade-button";
 
 function Page() {
-  const { getUser } = getKindeServerSession();
-  const user = getUser();
-  const userId = user?.id;
+  const { userId } = auth();
 
   return (
     <>
@@ -140,7 +139,7 @@ function Page() {
                           className: "w-full",
                           variant: "secondary",
                         })}
-                        href={userId ? "/dashboard" : "sign-in"}
+                        href={userId ? "/dashboard" : "/sign-in"}
                       >
                         {userId ? "Upgrade now" : "Get started"}
                         <ArrowRight className="h-5 w-5 ml-1.5" />
@@ -152,7 +151,7 @@ function Page() {
                     ) : (
                       <Link
                         className={buttonVariants({ className: "w-full" })}
-                        href="sign-in"
+                        href="/sign-in"
                       >
                         {userId ? "Upgrade now" : "Get started"}
                         <ArrowRight className="h-5 w-5 ml-1.5" />

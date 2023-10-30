@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
+import { auth } from "@clerk/nextjs";
 import { SendMessageSchema } from "@/lib/validators/message";
 import { db } from "@/lib/db";
 import { OpenAIEmbeddings } from "langchain/embeddings/openai";
@@ -17,8 +17,7 @@ import {
 export async function POST(req: NextRequest) {
   try {
     const payload = await req.json();
-    const { getUser } = getKindeServerSession();
-    const { id: userId } = getUser();
+    const { userId } = auth();
 
     if (!userId) {
       return new NextResponse("Unauthorized", { status: 401 });

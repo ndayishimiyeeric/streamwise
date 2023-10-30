@@ -1,5 +1,5 @@
 import React from "react";
-import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
+import { auth } from "@clerk/nextjs";
 import { notFound, redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import PdfRenderer from "@/components/pdf-renderer";
@@ -17,21 +17,20 @@ type Props = {
 
 async function Page({ params }: Props) {
   const { fileId } = params;
-  const { getUser } = getKindeServerSession();
-  const user = getUser();
+  const { userId } = auth();
 
-  if (!user || !user.id) redirect(`/auth-callback?origin=dashboard/${fileId}`);
+  if (!userId) redirect(`/auth-callback?origin=dashboard/${fileId}`);
 
   const file = await db.file.findFirst({
     where: {
       id: fileId,
-      userId: user.id,
+      userId,
     },
   });
 
   const dbUser = await db.user.findFirst({
     where: {
-      id: user.id,
+      id: userId,
     },
   });
 
@@ -41,7 +40,7 @@ async function Page({ params }: Props) {
 
   const aiData = await db.aiData.findUnique({
     where: {
-      userId: user.id,
+      userId: userId,
     },
   });
 

@@ -1,3 +1,7 @@
+import { auth, currentUser, SignOutButton } from "@clerk/nextjs";
+import Link from "next/link";
+import { Gem, LogOut } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -9,13 +13,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { getSubscription } from "@/lib/actions";
-import {
-  getKindeServerSession,
-  LogoutLink,
-} from "@kinde-oss/kinde-auth-nextjs/server";
-import Link from "next/link";
 import UserAvatar from "@/components/ui/user-avatar";
-import { Gem } from "lucide-react";
+import React from "react";
 
 type Props = {
   userName?: string;
@@ -28,8 +27,8 @@ export async function UserAccountNav({
   imageUrl,
   userName,
 }: Props) {
-  const { getUser } = getKindeServerSession();
-  const user = getUser();
+  const user = await currentUser();
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -41,10 +40,10 @@ export async function UserAccountNav({
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
             <p className="text-sm font-medium leading-none">
-              {user.given_name}
+              {userName ?? user?.firstName}
             </p>
             <p className="text-xs leading-none text-muted-foreground">
-              {user.email}
+              {user?.emailAddresses[0].emailAddress}
             </p>
           </div>
         </DropdownMenuLabel>
@@ -94,11 +93,12 @@ export async function UserAccountNav({
           </Link>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <LogoutLink>
-          <DropdownMenuItem className="cursor-pointer">
-            Log out
-          </DropdownMenuItem>
-        </LogoutLink>
+        <SignOutButton>
+          <Button variant="ghost" size="sm" className="w-full">
+            Sign out
+            <LogOut className="w-4 h-4 ml-2" />
+          </Button>
+        </SignOutButton>
       </DropdownMenuContent>
     </DropdownMenu>
   );

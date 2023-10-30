@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
-import { Poppins, Montserrat } from "next/font/google";
+import { Poppins } from "next/font/google";
+import { ClerkProvider } from "@clerk/nextjs";
+
 import { cn } from "@/lib/utils";
 import Navbar from "@/components/navbar";
 import Providers from "@/components/providers";
@@ -27,16 +29,18 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="light">
-      <Providers>
-        <body
-          className={cn("min-h-screen antialiased grainy", poppins.className)}
-        >
-          <Navbar />
-          <ToastProvider />
-          {children}
-        </body>
-      </Providers>
-    </html>
+    <ClerkProvider>
+      <html lang="en" className="light">
+        <Providers>
+          <body
+            className={cn("min-h-screen antialiased grainy", poppins.className)}
+          >
+            <Navbar />
+            <ToastProvider />
+            {children}
+          </body>
+        </Providers>
+      </html>
+    </ClerkProvider>
   );
 }

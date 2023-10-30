@@ -1,4 +1,4 @@
-import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
+import { auth, currentUser } from "@clerk/nextjs";
 import { db } from "@/lib/db";
 import { PLANS } from "@/config/plans/plan";
 import stripe from "@/lib/stripe";
@@ -6,9 +6,7 @@ import stripe from "@/lib/stripe";
 const DAY_IN_MS = 86_400_000;
 
 const getSubscription = async () => {
-  const { getUser } = getKindeServerSession();
-  const user = getUser();
-  const userId = user?.id;
+  const { userId } = auth();
 
   if (!userId)
     return {
