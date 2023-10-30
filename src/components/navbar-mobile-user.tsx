@@ -42,10 +42,8 @@ export function NavbarMobileUser() {
             }),
           )}
         >
-          <DropdownMenuItem className="cursor-pointer">
-            Get Started
-            <ArrowRight className="h-5 w-5 ml-2" />
-          </DropdownMenuItem>
+          Get Started
+          <ArrowRight className="h-5 w-5 ml-2" />
         </RegisterLink>
       </DropdownMenuContent>
     </DropdownMenu>
