@@ -44,7 +44,6 @@ const Message = forwardRef<HTMLDivElement, Props>(
             <UserAvatar
               imageUrl={imageUrl}
               userName={userName}
-              subscriptionPlan={subscriptionPlan}
               isNextMessageSamePerson={isNextMessageSamePerson}
             />
           ) : (
