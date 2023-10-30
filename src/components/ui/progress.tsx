@@ -24,12 +24,14 @@ export interface ProgressProps
     VariantProps<typeof progressVariants> {}
 
 type CombinedProgressProps = ProgressProps &
-  React.ComponentPropsWithoutRef<typeof ProgressPrimitive.Root>;
+  React.ComponentPropsWithoutRef<typeof ProgressPrimitive.Root> & {
+    customIndicator?: string;
+  };
 
 const Progress = React.forwardRef<
   React.ElementRef<typeof ProgressPrimitive.Root>,
   CombinedProgressProps
->(({ className, value, variant, ...props }, ref) => (
+>(({ className, value, customIndicator, variant, ...props }, ref) => (
   <ProgressPrimitive.Root
     ref={ref}
     className={cn(
@@ -39,7 +41,10 @@ const Progress = React.forwardRef<
     {...props}
   >
     <ProgressPrimitive.Indicator
-      className={cn(progressVariants({ variant }))}
+      className={cn(
+        progressVariants({ variant }),
+        customIndicator ?? `${customIndicator}`,
+      )}
       style={{ transform: `translateX(-${100 - (value || 0)}%)` }}
     />
   </ProgressPrimitive.Root>
