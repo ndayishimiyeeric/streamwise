@@ -9,7 +9,7 @@ async function DashboardPage() {
   const user = getUser();
 
   if (!user || !user.email || !user.id) {
-    redirect("/auth-callback");
+    redirect("/auth-callback?origin=dashboard");
   }
 
   const dbUser = await db.user.findUnique({

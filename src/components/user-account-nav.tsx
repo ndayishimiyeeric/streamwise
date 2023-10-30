@@ -15,7 +15,7 @@ import {
 } from "@kinde-oss/kinde-auth-nextjs/server";
 import Link from "next/link";
 import UserAvatar from "@/components/ui/user-avatar";
-import { Diamond, Gem } from "lucide-react";
+import { Gem } from "lucide-react";
 
 type Props = {
   userName?: string;

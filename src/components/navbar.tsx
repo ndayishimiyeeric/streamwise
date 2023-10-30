@@ -14,6 +14,7 @@ import { ArrowRight } from "lucide-react";
 import { UserAccountNav } from "@/components/user-account-nav";
 import { getSubscription } from "@/lib/actions";
 import { db } from "@/lib/db";
+import { NavbarMobileUser } from "@/components/navbar-mobile-user";
 
 async function Navbar() {
   const { getUser } = getKindeServerSession();
@@ -73,41 +74,44 @@ async function Navbar() {
           )}
 
           {!user && (
-            <div className="items-center space-x-4 sm:flex">
-              <>
-                <Link
-                  href="/pricing"
-                  className={cn(
-                    buttonVariants({
-                      variant: "ghost",
-                      size: "sm",
-                    }),
-                  )}
-                >
-                  Pricing
-                </Link>
-                <LoginLink
-                  className={cn(
-                    buttonVariants({
-                      variant: "ghost",
-                      size: "sm",
-                    }),
-                  )}
-                >
-                  Sign in
-                </LoginLink>
-                <RegisterLink
-                  className={cn(
-                    buttonVariants({
-                      size: "sm",
-                    }),
-                  )}
-                >
-                  Get started
-                  <ArrowRight className="h-5 w-5 ml-2" />
-                </RegisterLink>
-              </>
-            </div>
+            <>
+              <div className="hidden items-center space-x-4 sm:flex">
+                <>
+                  <Link
+                    href="/pricing"
+                    className={cn(
+                      buttonVariants({
+                        variant: "ghost",
+                        size: "sm",
+                      }),
+                    )}
+                  >
+                    Pricing
+                  </Link>
+                  <LoginLink
+                    className={cn(
+                      buttonVariants({
+                        variant: "ghost",
+                        size: "sm",
+                      }),
+                    )}
+                  >
+                    Sign in
+                  </LoginLink>
+                  <RegisterLink
+                    className={cn(
+                      buttonVariants({
+                        size: "sm",
+                      }),
+                    )}
+                  >
+                    Get started
+                    <ArrowRight className="h-5 w-5 ml-2" />
+                  </RegisterLink>
+                </>
+              </div>
+              <NavbarMobileUser />
+            </>
           )}
         </div>
       </MaxWidthWrapper>
