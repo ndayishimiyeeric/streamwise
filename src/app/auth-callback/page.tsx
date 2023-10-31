@@ -1,6 +1,6 @@
 "use client";
 
-import { redirect, useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { trpc } from "@/app/_trpc/client";
 import { Loader2 } from "lucide-react";
 import toast from "react-hot-toast";

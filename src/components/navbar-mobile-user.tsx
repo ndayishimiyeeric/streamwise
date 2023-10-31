@@ -1,4 +1,7 @@
-import { Button, buttonVariants } from "@/components/ui/button";
+import { ArrowRight } from "lucide-react";
+import Link from "next/link";
+
+import { buttonVariants } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -7,9 +10,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { LoginLink, RegisterLink } from "@kinde-oss/kinde-auth-nextjs/server";
-import Link from "next/link";
-import { ArrowRight, MenuIcon, MenuSquare } from "lucide-react";
 import { HiOutlineMenuAlt3 } from "react-icons/hi";
 import React from "react";
 import { cn } from "@/lib/utils";
