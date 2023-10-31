@@ -47,6 +47,20 @@ export const ourFileRouter = {
   })
     .middleware(async () => await handleAuth())
     .onUploadComplete(async ({ metadata, file }) => {
+      const fileExists = await db.file.findUnique({
+        where: {
+          userId_key_name: {
+            userId: metadata.userId,
+            key: file.key,
+            name: file.name,
+          },
+        },
+      });
+
+      if (fileExists) {
+        return;
+      }
+
       const createdFile = await db.file.create({
         data: {
           userId: metadata.userId,

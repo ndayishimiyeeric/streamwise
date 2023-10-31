@@ -93,6 +93,7 @@ model File {
   updatedAt DateTime @updatedAt
   User      User     @relation(fields: [userId], references: [id])
 
+  @@unique([userId, key, name])
   @@index([userId])
 }
 
