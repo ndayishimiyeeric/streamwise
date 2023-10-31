@@ -1,5 +1,5 @@
 import React from "react";
-import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
+import { auth } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
 
 interface Props {
@@ -7,10 +7,9 @@ interface Props {
 }
 
 function Layout({ children }: Props) {
-  const { getUser } = getKindeServerSession();
-  const user = getUser();
+  const { userId } = auth();
 
-  if (!user) {
+  if (!userId) {
     return redirect("/auth-callback?origin=upgrade");
   }
   return <>{children}</>;

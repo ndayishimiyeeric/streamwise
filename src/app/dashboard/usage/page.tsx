@@ -1,34 +1,33 @@
 import React from "react";
+import { auth } from "@clerk/nextjs";
 
 import ClientPage from "./_components/clientPage";
 import { getPurchases, getSubscription } from "@/lib/actions";
 import { db } from "@/lib/db";
-import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { redirect } from "next/navigation";
 import { getGraphData } from "@/lib/actions";
 
 async function UsagePage() {
-  const { getUser } = getKindeServerSession();
-  const user = getUser();
+  const { userId } = auth();
 
-  if (!user.id) {
+  if (!userId) {
     return redirect("/dashboard");
   }
   const subscription = await getSubscription();
   const purchases = await getPurchases();
   const userLimit = await db.userLimit.findFirst({
     where: {
-      userId: user.id,
+      userId,
     },
   });
 
   const usageUsage = await db.userUsage.findFirst({
     where: {
-      userId: user.id,
+      userId,
     },
   });
 
-  const graphData = await getGraphData(user.id);
+  const graphData = await getGraphData(userId);
 
   return (
     <ClientPage

@@ -9,14 +9,16 @@ import Skeleton from "react-loading-skeleton";
 import { trpc } from "@/app/_trpc/client";
 import DashboardFileCard from "@/components/dashboard-file-card";
 
-interface Props {}
-function Dashboard({}: Props) {
+interface Props {
+  uploadLimit?: number;
+}
+function Dashboard({ uploadLimit }: Props) {
   const { data: userFiles, isLoading } = trpc.getUserFiles.useQuery();
   return (
     <main className="max-w-7xl mx-auto p-10">
       <div className="mt-8 flex flex-col items-start justify-between gap-4 border-b border-gray-200 pb-5 sm:flex-row sm:items-center sm:gap-0">
         <h1 className="text-4xl font-bold text-gray-900">My Files</h1>
-        <UploadButton />
+        <UploadButton uploadLimit={uploadLimit} />
       </div>
 
       {userFiles && userFiles.length !== 0 ? (

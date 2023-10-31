@@ -1,5 +1,5 @@
 import { createUploadthing, type FileRouter } from "uploadthing/next";
-import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
+import { auth, currentUser } from "@clerk/nextjs";
 import { PDFLoader } from "langchain/document_loaders/fs/pdf";
 import { QdrantVectorStore } from "langchain/vectorstores/qdrant";
 import { OpenAIEmbeddings } from "langchain/embeddings/openai";
@@ -17,14 +17,14 @@ import { TRPCError } from "@trpc/server";
 const f = createUploadthing();
 
 const handleAuth = async () => {
-  const { getUser } = getKindeServerSession();
-  const { id, email } = getUser();
+  const { userId } = auth();
+  const user = await currentUser();
 
-  if (!id || !email) {
+  if (!userId || !user) {
     throw new Error("Not authenticated");
   }
 
-  const isAllowed = await checkPdfUploadUsage(id);
+  const isAllowed = await checkPdfUploadUsage(userId);
 
   if (!isAllowed) {
     throw new TRPCError({
@@ -36,7 +36,7 @@ const handleAuth = async () => {
 
   const userFileLimits = await getUserMaxFileLimit();
 
-  return { userId: id, userFileLimits, email };
+  return { userId: userId, userFileLimits };
 };
 
 export const ourFileRouter = {

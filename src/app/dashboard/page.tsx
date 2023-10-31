@@ -1,5 +1,5 @@
 import React from "react";
-import { auth, currentUser } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
 
 import { db } from "@/lib/db";
@@ -21,7 +21,13 @@ async function DashboardPage() {
   if (!dbUser) {
     redirect("/auth-callback?origin=dashboard");
   }
-  return <Dashboard />;
+
+  const userLimit = await db.userLimit.findFirst({
+    where: {
+      userId: dbUser.id,
+    },
+  });
+  return <Dashboard uploadLimit={userLimit?.pdfUploadLimit} />;
 }
 
 export default DashboardPage;

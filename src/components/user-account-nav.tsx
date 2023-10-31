@@ -1,4 +1,4 @@
-import { auth, currentUser, SignOutButton } from "@clerk/nextjs";
+import { currentUser, SignOutButton } from "@clerk/nextjs";
 import Link from "next/link";
 import { Gem, LogOut } from "lucide-react";
 

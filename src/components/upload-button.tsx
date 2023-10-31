@@ -3,9 +3,13 @@
 import React, { useEffect, useState } from "react";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import UploadDropzone from "@/components/upload-dropzone";
+import FileUploader from "@/components/file-uploader";
 
-function UploadButton() {
+interface Props {
+  uploadLimit?: number;
+}
+
+function UploadButton({ uploadLimit }: Props) {
   const [isOpened, setIsOpened] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
 
@@ -28,8 +32,8 @@ function UploadButton() {
         <Button>Upload PDF</Button>
       </DialogTrigger>
 
-      <DialogContent>
-        <UploadDropzone />
+      <DialogContent className="p-8">
+        <FileUploader fileLimit={uploadLimit} />
       </DialogContent>
     </Dialog>
   );
