@@ -96,14 +96,6 @@ export async function POST(req: Request) {
             maxPagesPdf: plan.pagePerPdf,
           },
         });
-
-        await db.userPurchase.create({
-          data: {
-            userId: session?.metadata.userId,
-            amount: plan.price.amount,
-            success: true,
-          },
-        });
       }
     }
 

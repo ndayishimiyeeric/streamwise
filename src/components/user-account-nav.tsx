@@ -80,6 +80,13 @@ export async function UserAccountNav({
               )}
             </DropdownMenuItem>
           </Link>
+          {subscriptionPlan.name === "Silver" && (
+            <Link href="/dashboard/billing">
+              <DropdownMenuItem className="cursor-pointer">
+                Billing
+              </DropdownMenuItem>
+            </Link>
+          )}
           <Link href="/dashboard/usage" className="block w-full sm:hidden">
             <DropdownMenuItem className="cursor-pointer">
               Usage
