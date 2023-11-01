@@ -341,10 +341,19 @@ export const appRouter = router({
 
       const subscriptionPlan = await getSubscription();
 
+      let isChanged = false;
+
+      if (
+        subscriptionPlan.name?.toLowerCase() !== input.plan.toLowerCase() &&
+        subscriptionPlan.isCanceled
+      ) {
+        isChanged = true;
+      }
+
       if (
         subscriptionPlan.isSubscribed &&
         subscription?.stripeCustomerId &&
-        subscriptionPlan.slug?.toLowerCase() === input.plan.toLowerCase()
+        !isChanged
       ) {
         const stripeSession = await stripe.billingPortal.sessions.create({
           customer: subscription.stripeCustomerId,
@@ -363,14 +372,15 @@ export const appRouter = router({
         customer_email: user.emailAddresses[0].emailAddress,
         line_items: [
           {
-            price: PLANS.find((p) => p.name === input.plan)?.price.priceIds
-              .test,
+            price: PLANS.find(
+              (p) => p.name.toLowerCase() === input.plan.toLowerCase(),
+            )?.price.priceIds.test,
             quantity: 1,
           },
         ],
         metadata: {
           userId: userId,
-          plan: input.plan,
+          plan: input.plan.toLowerCase(),
         },
       });
 

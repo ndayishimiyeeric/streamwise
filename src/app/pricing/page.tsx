@@ -67,8 +67,8 @@ function Page() {
                     <p className="text-gray-500">{plan.tagline}</p>
                     <p className="my-5 font-display text-5xl font-semibold">
                       €{price}
+                      <span className="text-xl font-normal"> / mo</span>
                     </p>
-                    <p className="text-gray-500">per month</p>
                   </div>
 
                   <div className="flex items-center justify-center border-b border-t border-gray-200 bg-gray-50 h-20">
@@ -141,7 +141,7 @@ function Page() {
                         })}
                         href={userId ? "/dashboard" : "/sign-in"}
                       >
-                        {userId ? "Upgrade now" : "Get started"}
+                        {userId ? "Dashboard" : "Get started"}
                         <ArrowRight className="h-5 w-5 ml-1.5" />
                       </Link>
                     ) : userId ? (
@@ -153,7 +153,7 @@ function Page() {
                         className={buttonVariants({ className: "w-full" })}
                         href="/sign-in"
                       >
-                        {userId ? "Upgrade now" : "Get started"}
+                        Get started
                         <ArrowRight className="h-5 w-5 ml-1.5" />
                       </Link>
                     )}

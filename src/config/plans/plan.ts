@@ -36,7 +36,7 @@ export const PLANS = [
     promptLimit: SILVER_PROMPT_LIMIT,
     fileSize: SILVER_MAX_FILE_SIZE,
     price: {
-      amount: 7,
+      amount: 3,
       priceIds: {
         test: process.env.STREAMWISE_SILVER_PRICE_ID_TEST,
         production: "",
@@ -51,7 +51,7 @@ export const PLANS = [
     promptLimit: SILVER_PROMPT_LIMIT,
     fileSize: GOLD_MAX_FILE_SIZE,
     price: {
-      amount: 12,
+      amount: 5,
       priceIds: {
         test: process.env.STREAMWISE_GOLD_PRICE_ID_TEST,
         production: "",

@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import getSubscription from "@/lib/actions/getSubscription";
 import { trpc } from "@/app/_trpc/client";
 import toast from "react-hot-toast";
@@ -15,15 +15,23 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Loader2 } from "lucide-react";
+import { CalendarCheck, CalendarX, Loader2 } from "lucide-react";
+import Link from "next/link";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 type Props = {
   subscriptionPlan: Awaited<ReturnType<typeof getSubscription>>;
 };
 
 function BillingForm({ subscriptionPlan }: Props) {
+  const [isMounted, setIsMounted] = useState(false);
   const router = useRouter();
   const { mutate: createStripeSession, isLoading } =
     trpc.createStripeSession.useMutation({
@@ -37,6 +45,11 @@ function BillingForm({ subscriptionPlan }: Props) {
         }
       },
     });
+  useEffect(() => {
+    setIsMounted(true);
+  }, [isMounted]);
+
+  if (!isMounted) return null;
   return (
     <MaxWidthWrapper className="max-w-5xl">
       <form
@@ -81,13 +94,48 @@ function BillingForm({ subscriptionPlan }: Props) {
               </Button>
             )}
             {subscriptionPlan.isSubscribed && (
-              <p className="rounded-full text-xs font-medium">
-                {subscriptionPlan.isCanceled
-                  ? "Your subscription will be ended on "
-                  : "Your subscription will be renewed on "}
-                {format(subscriptionPlan.stripeCurrentPeriodEnd!, "dd.MM.yyyy")}
-                .
-              </p>
+              <TooltipProvider>
+                <Button
+                  className={cn("justify-start text-left font-normal gap-2", {
+                    "pointer-events-none": !subscriptionPlan.isCanceled,
+                  })}
+                  variant="secondary"
+                  type="button"
+                >
+                  {subscriptionPlan.isCanceled ? (
+                    <Tooltip delayDuration={300}>
+                      <TooltipTrigger>
+                        <CalendarX className="w-4 h-4 text-red-600" />
+                      </TooltipTrigger>
+                      <TooltipContent className="w-80 p-2 flex items-center space-x-1">
+                        <p className="text-left">
+                          Your subscription is canceled.
+                        </p>
+
+                        <Link
+                          className={cn(
+                            buttonVariants({
+                              variant: "link",
+                              size: "sm",
+                              className: "p-0",
+                            }),
+                          )}
+                          href="/upgrade"
+                        >
+                          Options
+                        </Link>
+                      </TooltipContent>
+                    </Tooltip>
+                  ) : (
+                    <CalendarCheck className="w-4 h-4 text-emerald-600" />
+                  )}
+                  {format(
+                    subscriptionPlan.stripeCurrentPeriodEnd!,
+                    "dd.MM.yyyy",
+                  )}
+                  .
+                </Button>
+              </TooltipProvider>
             )}
           </CardFooter>
         </Card>

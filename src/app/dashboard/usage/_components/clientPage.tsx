@@ -115,7 +115,9 @@ function ClientPage({
             <CardTitle className="text-xl font-semibold text-zinc-900">
               Purchases
             </CardTitle>
-            <CardDescription>Your recent purchases</CardDescription>
+            <CardDescription>
+              Your recent purchases ({purchases.length})
+            </CardDescription>
           </CardHeader>
           <CardContent>
             {purchases.length > 0 && (

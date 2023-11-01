@@ -61,18 +61,22 @@ export async function UserAccountNav({
           </Link>
           <Link
             href={`${
-              subscriptionPlan.name === "Free"
-                ? "/upgrade"
-                : "/dashboard/billing"
+              subscriptionPlan.name === "Gold"
+                ? "/dashboard/billing"
+                : "/upgrade"
             }`}
           >
             <DropdownMenuItem className="cursor-pointer">
-              {subscriptionPlan.name === "Free" ? (
+              {subscriptionPlan.name === "Gold" ? (
+                "Billing"
+              ) : subscriptionPlan.name === "Silver" ? (
                 <>
-                  Upgrade <Gem className="w-4 h-4 ml-2 text-[#BF953F]" />
+                  Get Gold <Gem className="w-4 h-4 ml-2 text-[#BF953F]" />
                 </>
               ) : (
-                "Billing"
+                <>
+                  Upgrade <Gem className="w-4 h-4 ml-2 text-primary" />
+                </>
               )}
             </DropdownMenuItem>
           </Link>

@@ -1,6 +1,7 @@
 import Stripe from "stripe";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
+
 import stripe from "@/lib/stripe";
 import { db } from "@/lib/db";
 import { PLANS } from "@/config/plans/plan";
@@ -24,13 +25,14 @@ export async function POST(req: Request) {
 
     const session = event.data.object as Stripe.Checkout.Session;
 
+    if (!session?.metadata?.userId && !session?.metadata?.plan) {
+      return new NextResponse("No user id and plan", { status: 200 });
+    }
+
     if (event.type === "checkout.session.completed") {
       const subscription = await stripe.subscriptions.retrieve(
         session.subscription as string,
       );
-      if (!session?.metadata?.userId && !session?.metadata?.plan) {
-        return new NextResponse("No user id and plan", { status: 400 });
-      }
 
       // check if the user had a subscription before
       const dbSubscription = await db.subscription.findUnique({
@@ -40,31 +42,19 @@ export async function POST(req: Request) {
       });
 
       if (dbSubscription) {
-        const currentSubscription = await stripe.subscriptions.list({
-          customer: dbSubscription.stripeCustomerId!,
-          status: "active",
-          limit: 1,
+        await db.subscription.update({
+          where: {
+            userId: session?.metadata.userId,
+          },
+          data: {
+            stripeCustomerId: subscription.customer as string,
+            stripeSubscriptionId: subscription.id as string,
+            stripePriceId: subscription.items.data[0].price.id as string,
+            stripeCurrentPeriodEnd: new Date(
+              subscription.current_period_end * 1000,
+            ),
+          },
         });
-
-        if (currentSubscription) {
-          await stripe.subscriptions.cancel(currentSubscription?.data[0].id, {
-            cancellation_details: { comment: "User changed plan" },
-          });
-
-          await db.subscription.update({
-            where: {
-              userId: session?.metadata.userId,
-            },
-            data: {
-              stripeCustomerId: subscription.customer as string,
-              stripeSubscriptionId: subscription.id as string,
-              stripePriceId: subscription.items.data[0].price.id as string,
-              stripeCurrentPeriodEnd: new Date(
-                subscription.current_period_end * 1000,
-              ),
-            },
-          });
-        }
       } else {
         await db.subscription.create({
           data: {
@@ -121,11 +111,26 @@ export async function POST(req: Request) {
       const subscription = await stripe.subscriptions.retrieve(
         session.subscription as string,
       );
-      const userSub = await db.subscription.update({
+
+      const newPlan = session?.metadata.plan;
+      const plan = PLANS.find(
+        (p) => p.slug.toLowerCase() === newPlan?.toLowerCase(),
+      );
+
+      const userSub = await db.subscription.upsert({
         where: {
           stripeSubscriptionId: subscription.id as string,
         },
-        data: {
+        update: {
+          stripePriceId: subscription.items.data[0].price.id as string,
+          stripeCurrentPeriodEnd: new Date(
+            subscription.current_period_end * 1000,
+          ),
+        },
+        create: {
+          userId: session?.metadata?.userId!,
+          stripeCustomerId: subscription.customer as string,
+          stripeSubscriptionId: subscription.id as string,
           stripePriceId: subscription.items.data[0].price.id as string,
           stripeCurrentPeriodEnd: new Date(
             subscription.current_period_end * 1000,
@@ -143,16 +148,19 @@ export async function POST(req: Request) {
         },
       });
 
-      await db.userPurchase.create({
-        data: {
-          userId: userSub.userId,
-          amount: subscription.items.data[0].price.unit_amount as number,
-          success: true,
-        },
-      });
+      if (plan) {
+        await db.userPurchase.create({
+          data: {
+            userId: userSub.userId,
+            amount: plan.price.amount,
+            success: true,
+          },
+        });
+      }
     }
     return new NextResponse(null, { status: 200 });
   } catch (e) {
+    console.error("webhook error", e);
     return new NextResponse("Internal server error", { status: 500 });
   }
 }
