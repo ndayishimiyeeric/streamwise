@@ -97,13 +97,26 @@ export async function POST(req: Request) {
           },
         });
 
-        await db.userPurchase.create({
-          data: {
+        // if there is a purchase, in current month then don't create a new purchase
+        const purchase = await db.userPurchase.findFirst({
+          where: {
             userId: session?.metadata.userId,
+            createdAt: {
+              gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
+            },
             amount: plan.price.amount,
-            success: true,
           },
         });
+
+        if (!purchase) {
+          await db.userPurchase.create({
+            data: {
+              userId: session?.metadata.userId,
+              amount: plan.price.amount,
+              success: true,
+            },
+          });
+        }
       }
     }
 
@@ -156,6 +169,7 @@ export async function POST(req: Request) {
             createdAt: {
               gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
             },
+            amount: plan.price.amount,
           },
         });
 

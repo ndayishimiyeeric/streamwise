@@ -4,6 +4,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { CalendarIcon } from "lucide-react";
 import format from "date-fns/format";
 import { Separator } from "@/components/ui/separator";
+import { date } from "zod";
 
 type Props = {
   purchase: {
@@ -24,9 +25,10 @@ function PurchaseCard({ purchase }: Props) {
         }),
       )}
     >
-      <div className="flex items-center">
-        <CalendarIcon className="mr-2 h-4 w-4" />
-        <span className="text-xs">{format(purchase.date, "MMM yyyy")}</span>
+      <div className="flex items-center space-x-2">
+        <CalendarIcon className="h-4 w-4" />
+        <span className="text-xs">{format(purchase.date, "MMM dd yy")}</span>
+        <span className="text-xs">{format(purchase.date, "HH:mm")}</span>
       </div>
       <Separator orientation="vertical" className="h-2 w-2 rounded-full" />
       <span>€{purchase.amount}</span>
