@@ -96,6 +96,14 @@ export async function POST(req: Request) {
             maxPagesPdf: plan.pagePerPdf,
           },
         });
+
+        await db.userPurchase.create({
+          data: {
+            userId: session?.metadata.userId,
+            amount: plan.price.amount,
+            success: true,
+          },
+        });
       }
     }
 
@@ -141,13 +149,25 @@ export async function POST(req: Request) {
       });
 
       if (plan) {
-        await db.userPurchase.create({
-          data: {
+        // if there is a purchase, in current month then don't create a new purchase
+        const purchase = await db.userPurchase.findFirst({
+          where: {
             userId: userSub.userId,
-            amount: plan.price.amount,
-            success: true,
+            createdAt: {
+              gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
+            },
           },
         });
+
+        if (!purchase) {
+          await db.userPurchase.create({
+            data: {
+              userId: userSub.userId,
+              amount: plan.price.amount,
+              success: true,
+            },
+          });
+        }
       }
     }
     return new NextResponse(null, { status: 200 });
