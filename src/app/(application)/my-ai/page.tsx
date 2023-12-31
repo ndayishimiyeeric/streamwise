@@ -1,10 +1,11 @@
 import React from "react";
+import { redirect } from "next/navigation";
 import { auth } from "@clerk/nextjs";
 
-import { db } from "@/lib/db";
 import { getSubscription } from "@/lib/actions";
-import MyAiForm from "@/app/dashboard/my-ai/_components/my-ai-form";
-import { redirect } from "next/navigation";
+import { db } from "@/lib/db";
+
+import MyAiForm from "./_components/my-ai-form";
 
 async function Page() {
   const { userId } = auth();

@@ -1,10 +1,10 @@
 import React from "react";
+import format from "date-fns/format";
+import { CalendarIcon } from "lucide-react";
+
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
-import { CalendarIcon } from "lucide-react";
-import format from "date-fns/format";
 import { Separator } from "@/components/ui/separator";
-import { date } from "zod";
 
 type Props = {
   purchase: {
@@ -20,9 +20,8 @@ function PurchaseCard({ purchase }: Props) {
       className={cn(
         buttonVariants({
           variant: "outline",
-          className:
-            "justify-start text-left font-normal pointer-events-none w-full gap-2",
-        }),
+          className: "pointer-events-none w-full justify-start gap-2 text-left font-normal",
+        })
       )}
     >
       <div className="flex items-center space-x-2">
@@ -33,9 +32,7 @@ function PurchaseCard({ purchase }: Props) {
       <Separator orientation="vertical" className="h-2 w-2 rounded-full" />
       <span>€{purchase.amount}</span>
       <Separator orientation="vertical" className="h-2 w-2 rounded-full" />
-      <span className="text-emerald-600 text-xs lowercase">
-        {purchase.status}
-      </span>
+      <span className="text-xs lowercase text-emerald-600">{purchase.status}</span>
     </div>
   );
 }

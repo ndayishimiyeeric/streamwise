@@ -1,18 +1,18 @@
-import { createUploadthing, type FileRouter } from "uploadthing/next";
 import { auth, currentUser } from "@clerk/nextjs";
+import { TRPCError } from "@trpc/server";
 import { PDFLoader } from "langchain/document_loaders/fs/pdf";
-import { QdrantVectorStore } from "langchain/vectorstores/qdrant";
 import { OpenAIEmbeddings } from "langchain/embeddings/openai";
+import { QdrantVectorStore } from "langchain/vectorstores/qdrant";
+import { createUploadthing, type FileRouter } from "uploadthing/next";
 
-import { db } from "@/lib/db";
-import { qdrantClient } from "@/lib/qdrant";
 import {
   checkPdfUploadUsage,
   getFileChunks,
   getOrCreateCollectionIfNotExists,
 } from "@/lib/actions";
 import { getUserMaxFileLimit } from "@/lib/actions/user-usage-actions";
-import { TRPCError } from "@trpc/server";
+import { db } from "@/lib/db";
+import { qdrantClient } from "@/lib/qdrant";
 
 const f = createUploadthing();
 
@@ -84,9 +84,7 @@ export const ourFileRouter = {
       });
 
       try {
-        const response = await fetch(
-          `https://uploadthing-prod.s3.us-west-2.amazonaws.com/${file.key}`,
-        );
+        const response = await fetch(file.url);
         const blob = await response.blob();
         const loader = new PDFLoader(blob);
 
@@ -130,7 +128,7 @@ export const ourFileRouter = {
             client: qdrantClient,
             url: process.env.QDRANT_HOST!,
             collectionName: createdFile.id,
-          },
+          }
         );
 
         await db.file.update({
@@ -143,7 +141,7 @@ export const ourFileRouter = {
           },
         });
       } catch (e) {
-        console.log(e);
+        console.log("error", e);
         await db.file.update({
           where: {
             id: createdFile.id,

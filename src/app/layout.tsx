@@ -1,17 +1,19 @@
 import type { Metadata } from "next";
-import { Poppins } from "next/font/google";
+import { Be_Vietnam_Pro } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
 
 import { cn } from "@/lib/utils";
-import Navbar from "@/components/navbar";
 import Providers from "@/components/providers";
 
-import "../styles/globals.css";
+import "@/styles/globals.css";
 import "react-loading-skeleton/dist/skeleton.css";
 import "simplebar-react/dist/simplebar.min.css";
+
+import ModalProvider from "@/components/modal-provider";
+import { ThemeProvider } from "@/components/theme-provider";
 import ToastProvider from "@/components/toast-provider";
 
-const poppins = Poppins({
+const poppins = Be_Vietnam_Pro({
   subsets: ["latin"],
   display: "swap",
   weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
@@ -19,26 +21,27 @@ const poppins = Poppins({
 
 export const metadata: Metadata = {
   title: "Streamwise",
-  description:
-    "Streamwise is a platform for stream pdf docs with the help of AI.",
+  description: "Streamwise is a platform for stream pdf docs with the help of AI.",
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <ClerkProvider>
-      <html lang="en" className="light">
+      <html lang="en" suppressHydrationWarning>
         <Providers>
-          <body
-            className={cn("min-h-screen antialiased grainy", poppins.className)}
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+            storageKey="streamwise-theme-site"
           >
-            <Navbar />
-            <ToastProvider />
-            {children}
-          </body>
+            <body className={cn("min-h-screen bg-background antialiased", poppins.className)}>
+              <ModalProvider />
+              <ToastProvider />
+              {children}
+            </body>
+          </ThemeProvider>
         </Providers>
       </html>
     </ClerkProvider>

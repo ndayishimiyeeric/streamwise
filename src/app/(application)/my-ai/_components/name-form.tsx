@@ -1,11 +1,16 @@
 "use client";
 
 import React from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { AiData } from "@prisma/client";
 import { Loader2 } from "lucide-react";
+import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 
+import { getSubscription } from "@/lib/actions";
+import { MyAiBioType, MyAiDataSchema } from "@/lib/validators/my-ai";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -14,19 +19,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormMessage,
-} from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useForm } from "react-hook-form";
-import { MyAiBioType, MyAiDataSchema } from "@/lib/validators/my-ai";
-import { getSubscription } from "@/lib/actions";
-import { AiData } from "@prisma/client";
-import { Button } from "@/components/ui/button";
 import { trpc } from "@/app/_trpc/client";
 
 type Props = {
@@ -72,12 +66,10 @@ function NameForm({ aiData, subscriptionPlan }: Props) {
             .then((r) => r);
         })}
       >
-        <Card className="rounded-2xl bg-white">
+        <Card className="rounded-2xl">
           <CardHeader>
             <CardTitle>{aiData.name}&apos;s Name</CardTitle>
-            <CardDescription>
-              Customize the name of your AI assistant.
-            </CardDescription>
+            <CardDescription>Customize the name of your AI assistant.</CardDescription>
           </CardHeader>
           <CardContent>
             <FormField
@@ -90,7 +82,7 @@ function NameForm({ aiData, subscriptionPlan }: Props) {
                       {...field}
                     />
                   </FormControl>
-                  <FormMessage className="text-red-700 text-xs" />
+                  <FormMessage className="text-xs text-red-700" />
                 </FormItem>
               )}
               name="name"
@@ -99,7 +91,7 @@ function NameForm({ aiData, subscriptionPlan }: Props) {
           </CardContent>
           <CardFooter className="flex justify-end">
             <Button disabled={isLoading} type="submit">
-              {isLoading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+              {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Save
             </Button>
           </CardFooter>

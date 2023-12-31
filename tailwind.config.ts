@@ -1,23 +1,24 @@
-import type { Config } from "tailwindcss";
-const { withUt } = require("uploadthing/tw");
+import { withUt } from "uploadthing/tw";
 
-const config: Config = withUt({
+/** @type {import('tailwindcss').Config} */
+module.exports = withUt({
   darkMode: ["class"],
   content: [
-    "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
-    "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
-    "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./pages/**/*.{ts,tsx}",
+    "./components/**/*.{ts,tsx}",
+    "./app/**/*.{ts,tsx}",
+    "./src/**/*.{ts,tsx}",
+    "./content/**/*.{md,mdx}",
   ],
   theme: {
+    container: {
+      center: true,
+      padding: "2rem",
+      screens: {
+        "2xl": "1400px",
+      },
+    },
     extend: {
-      backgroundImage: {
-        "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
-        "gradient-conic":
-          "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
-      },
-      maxWidth: {
-        "8xl": "1408px",
-      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -31,6 +32,10 @@ const config: Config = withUt({
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
           foreground: "hsl(var(--secondary-foreground))",
+        },
+        destructive: {
+          DEFAULT: "hsl(var(--destructive))",
+          foreground: "hsl(var(--destructive-foreground))",
         },
         muted: {
           DEFAULT: "hsl(var(--muted))",
@@ -69,14 +74,6 @@ const config: Config = withUt({
         "accordion-up": "accordion-up 0.2s ease-out",
       },
     },
-    container: {
-      center: true,
-      padding: "2rem",
-      screens: {
-        "2xl": "1440px",
-      },
-    },
   },
   plugins: [require("tailwindcss-animate"), require("@tailwindcss/typography")],
 });
-export default config;

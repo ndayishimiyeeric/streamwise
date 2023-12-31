@@ -26,6 +26,12 @@ model User {
   subscription Subscription?
   AiData       AiData?
   purchases    UserPurchase[]
+
+  // new features
+  aiModels     AIModel[]
+  chats        Chat[]
+  chatMessages ChatMessage[]
+  aiModelSubs  AIModelSub[]
 }
 
 model UserLimit {
@@ -125,4 +131,94 @@ model AiData {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+// New Features for AI Model User Creation
+
+model ModelFile {
+  id    String @id @default(uuid())
+  name  String
+  pages Int    @default(0)
+  url   String @db.Text
+  key   String
+
+  aiModelId String
+  AIModel   AIModel @relation(fields: [aiModelId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([aiModelId])
+}
+
+model Chat {
+  id        String @id @default(uuid())
+  userId    String
+  aiModelId String
+  text      String @db.Text
+
+  User    User    @relation(fields: [userId], references: [id])
+  AIModel AIModel @relation(fields: [aiModelId], references: [id])
+
+  messages ChatMessage[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([aiModelId])
+}
+
+model ChatMessage {
+  id     String  @id @default(uuid())
+  chatId String
+  userId String
+  text   String  @db.Text
+  isUser Boolean @default(false)
+
+  Chat Chat @relation(fields: [chatId], references: [id])
+  User User @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([chatId])
+  @@index([userId])
+}
+
+model AIModelSub {
+  id        String @id @default(uuid())
+  aiModelId String
+  userId    String
+
+  aiModel AIModel @relation(fields: [aiModelId], references: [id])
+  user    User    @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([aiModelId, userId])
+  @@index([aiModelId])
+  @@index([userId])
+}
+
+model AIModel {
+  id     String @id @default(uuid())
+  name   String @default("My Model")
+  bio    String @db.Text
+  imgUrl String @db.Text
+
+  isPublic Boolean @default(false)
+
+  files ModelFile[]
+  chats Chat[]
+  subs  AIModelSub[]
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
 }

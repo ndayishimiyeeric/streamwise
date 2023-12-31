@@ -2,7 +2,7 @@ import { CharacterTextSplitter } from "langchain/text_splitter";
 
 export const getFileChunks = async (
   document: Record<string, any>[],
-  len: number,
+  len: number
 ): Promise<string[]> => {
   const text_splitter = new CharacterTextSplitter({
     separator: "\n",
@@ -19,5 +19,6 @@ export const getFileChunks = async (
     chunks.push(...chunk);
     i++;
   }
+  console.log("chunks", chunks);
   return chunks;
 };

@@ -3,7 +3,7 @@ import { User } from ".prisma/client";
 import MaxWidthWrapper from "@/components/max-width-wrapper";
 import Link from "next/link";
 import { auth, currentUser } from "@clerk/nextjs";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, BarChartBig, Compass, Layout } from "lucide-react";
 import { SignInButton, SignUpButton } from "@clerk/nextjs";
 
 import { cn } from "@/lib/utils";
@@ -29,9 +29,9 @@ async function Navbar() {
   }
 
   return (
-    <nav className="sticky h-14 inset-x-0 top-0 z-30 w-full border-b border-gray-200 bg-white/75 backdrop-blur-lg transition-all">
+    <nav className="border-b flex items-center bg-background shadow-sm p-4 transition-all">
       <MaxWidthWrapper>
-        <div className="flex h-14 items-center justify-between border-b border-zinc-200">
+        <div className="flex items-center justify-between">
           <Link href="/" className="flex z-40 font-semibold">
             <span>Streamwise.</span>
           </Link>
@@ -44,23 +44,35 @@ async function Navbar() {
                   buttonVariants({
                     variant: "ghost",
                     size: "sm",
-                    className: "hidden sm:flex",
+                    className: "hidden sm:inline-flex",
                   }),
                 )}
               >
-                Usage
+                <BarChartBig className="w-4 h-4 mr-1"/>Usage
               </Link>
               <Link
                 className={cn(
                   buttonVariants({
                     variant: "ghost",
                     size: "sm",
-                    className: "hidden sm:flex",
+                    className: "hidden sm:inline-flex",
                   }),
                 )}
                 href="/dashboard"
               >
-                Dashboard
+                <Layout className="w-4 h-4 mr-1"/>Dashboard
+              </Link>
+              <Link
+                className={cn(
+                  buttonVariants({
+                    variant: "ghost",
+                    size: "sm",
+                    className: "hidden sm:inline-flex",
+                  }),
+                )}
+                href="/dashboard"
+              >
+                <Compass className="w-4 h-4 mr-1"/>Explore
               </Link>
               <UserAccountNav
                 imageUrl={dbUser?.imgUrl}

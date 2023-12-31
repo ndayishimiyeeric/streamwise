@@ -1,12 +1,13 @@
 import React from "react";
 import Link from "next/link";
-import { format } from "date-fns";
+import { useRouter } from "next/navigation";
 import { File, Message } from "@prisma/client";
+import { format } from "date-fns";
+import { FileIcon, Loader2, MessageSquare, Plus, Trash } from "lucide-react";
 import toast from "react-hot-toast";
 
-import { trpc } from "@/app/_trpc/client";
-import { Loader2, MessageSquare, Plus, Trash } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { trpc } from "@/app/_trpc/client";
 
 type FileWithMessages = File & {
   messages: Message[];
@@ -17,6 +18,7 @@ interface Props {
 }
 
 function DashboardFileCard({ file, messages }: Props) {
+  const router = useRouter();
   const utils = trpc.useContext();
   const { mutate: deleteFile, isLoading } = trpc.deleteFile.useMutation({
     onSuccess: () => {
@@ -26,28 +28,27 @@ function DashboardFileCard({ file, messages }: Props) {
 
   const handleDelete = async (): Promise<void> => {
     deleteFile({ id: file.id });
-    return await new Promise((resolve) => setTimeout(resolve, 2000));
+    await new Promise((resolve) => setTimeout(resolve, 4000));
+    return router.refresh();
   };
 
   return (
     <li
       key={file.id}
-      className="col-span-1 divide-y divide-gray-200 rounded-lg bg-white shadow transition hover:shadow-lg"
+      className="col-span-1 divide-y rounded-lg border bg-background shadow transition hover:shadow-lg"
     >
       <Link href={`/dashboard/${file.id}`} className="flex flex-col gap-2">
-        <div className="pt-6 px-6 flex w-full items-center justify-between space-x-6">
-          <div className="h-10 w-10 flex-shrink-0 rounded-full bg-gradient-to-r from-cyan-500 to-blue-500" />
+        <div className="flex w-full items-center justify-between space-x-1 px-6 pt-6">
+          <FileIcon className="h-6 w-6" />
           <div className="flex-1 truncate">
-            <div className="flex items-center space-x-3">
-              <h3 className="truncate text-lg font-medium text-zinc-900">
-                {file.name}
-              </h3>
+            <div className="flex items-center">
+              <h3 className="truncate text-lg font-medium">{file.name}</h3>
             </div>
           </div>
         </div>
       </Link>
 
-      <div className="px-6 mt-4 grid grid-cols-3 place-items-center py-2 gap-6 text-xs text-zinc-500">
+      <div className="mt-4 grid grid-cols-3 place-items-center gap-6 px-6 py-2 text-xs">
         <div className="flex items-center gap-2">
           <Plus className="h-4 w-4" />
           {format(new Date(file.createdAt), "MMM yyyy")}
@@ -73,11 +74,7 @@ function DashboardFileCard({ file, messages }: Props) {
           className="w-full"
           disabled={isLoading}
         >
-          {isLoading ? (
-            <Loader2 className="w-4 h-4 animate-spin" />
-          ) : (
-            <Trash className="w-4 h-4" />
-          )}
+          {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash className="h-4 w-4" />}
         </Button>
       </div>
     </li>

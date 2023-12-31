@@ -1,14 +1,15 @@
 import React, { forwardRef } from "react";
-import ReactMarkdown from "react-markdown";
-import { format } from "date-fns";
+import Link from "next/link";
 import { AiData } from "@prisma/client";
+import { format } from "date-fns";
 
-import { cn } from "@/lib/utils";
 import { ExtendedMessage } from "@/types/message";
 import { getSubscription } from "@/lib/actions";
+import { cn } from "@/lib/utils";
 import BotAvatar from "@/components/ui/bot-avatar";
-import Link from "next/link";
 import UserAvatar from "@/components/ui/user-avatar";
+
+import MarkdownComponent from "../markdown-component";
 
 type Props = {
   userName: string;
@@ -20,24 +21,9 @@ type Props = {
 };
 
 const Message = forwardRef<HTMLDivElement, Props>(
-  (
-    {
-      imageUrl,
-      userName,
-      message,
-      isNextMessageSamePerson,
-      aiData,
-      subscriptionPlan,
-    },
-    ref,
-  ) => {
+  ({ imageUrl, userName, message, isNextMessageSamePerson, aiData, subscriptionPlan }, ref) => {
     return (
-      <div
-        className={cn("flex items-start px-8 py-4", {
-          "bg-[#fff]": message.isUserMessage,
-        })}
-        ref={ref}
-      >
+      <div className={cn("flex items-start px-8 py-4")} ref={ref}>
         <div>
           {message.isUserMessage ? (
             <UserAvatar
@@ -53,49 +39,31 @@ const Message = forwardRef<HTMLDivElement, Props>(
             />
           )}
         </div>
-        <div
-          className={cn(
-            "flex flex-col space-y-2 text-base w-full mx-2 items-start",
-          )}
-        >
-          <div className={cn("px-4 rounded-lg inline-block")}>
+        <div className={cn("mx-2 flex w-full flex-col items-start space-y-2 text-base")}>
+          <div className={cn("inline-block rounded-lg px-4")}>
             {!message.isUserMessage && (
-              <Link
-                href="/dashboard/my-ai"
-                className="text-sm font-semibold text-primary"
-              >
+              <Link href="/my-ai" className="text-sm font-semibold text-primary">
                 {aiData.name}
               </Link>
             )}
             {message.isUserMessage && (
-              <p className="text-sm font-semibold text-indigo-400">Me</p>
+              <p className="text-sm font-semibold text-primary">{userName}</p>
             )}
             {typeof message.text === "string" ? (
-              <ReactMarkdown
-                className={cn("prose mt-2", {
-                  // "text-zinc-50": message.isUserMessage,
-                })}
-              >
-                {message.text}
-              </ReactMarkdown>
+              <MarkdownComponent code={message.text} />
             ) : (
               message.text
             )}
           </div>
           {message.id !== "loading" && (
-            <div
-              className={cn("text-xs select-none w-full text-right", {
-                "text-zinc-500": !message.isUserMessage,
-                "text-zinc-400": message.isUserMessage,
-              })}
-            >
+            <div className={cn("w-full select-none text-right text-xs")}>
               {format(new Date(message.createdAt), "HH:mm")}
             </div>
           )}
         </div>
       </div>
     );
-  },
+  }
 );
 
 Message.displayName = "Message";
