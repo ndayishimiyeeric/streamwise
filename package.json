@@ -31,7 +31,7 @@
     "@trpc/react-query": "^10.38.5",
     "@trpc/server": "^10.38.5",
     "@uploadthing/react": "^5.6.2",
-    "ai": "^2.2.15",
+    "ai": "^2.2.30",
     "axios": "^1.5.1",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
@@ -69,6 +69,7 @@
     "eslint": "^8",
     "eslint-config-next": "^14.0.0",
     "postcss": "^8",
+    "prettier": "^3.1.1",
     "prisma": "^5.3.1",
     "tailwindcss": "^3",
     "typescript": "^5"
