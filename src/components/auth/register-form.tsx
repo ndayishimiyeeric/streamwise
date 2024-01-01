@@ -40,7 +40,7 @@ export const RegisterForm = () => {
     setsuccess(undefined);
 
     startTransition(() => {
-      axios.post("/api/auth/login", inputs).then(({ data }) => {
+      axios.post("/api/auth/register", inputs).then(({ data }) => {
         setError(data.error);
         setsuccess(data.success);
       });

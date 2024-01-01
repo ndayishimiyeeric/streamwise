@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getUserByEmail } from "@/data/user";
 import { RegisterSchema } from "@/schemas";
+import bcrypt from "bcrypt";
+
+import { db } from "@/lib/db";
 
 export async function POST(req: NextRequest) {
   try {
@@ -10,7 +14,26 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Invalid credentials" });
     }
 
-    return NextResponse.json({ success: "Email Sent" });
+    const { email, password, name } = validFields.data;
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const existingUser = await getUserByEmail(email);
+
+    if (existingUser) {
+      return NextResponse.json({ error: "User already exists" });
+    }
+
+    await db.user.create({
+      data: {
+        name,
+        email,
+        password: hashedPassword,
+      },
+    });
+
+    // TODO: Send Verification Email
+
+    return NextResponse.json({ success: "User created" });
   } catch (error) {
     return new NextResponse("Internal Server error", { status: 500 });
   }
