@@ -1,30 +1,20 @@
 import React from "react";
-import { auth } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
+import { auth } from "@/auth";
 
 import { db } from "@/lib/db";
 import Dashboard from "@/components/dashboard";
 
 async function DashboardPage() {
-  const { userId } = auth();
+  const session = await auth();
 
-  if (!userId) {
-    redirect("/auth-callback?origin=dashboard");
-  }
-
-  const dbUser = await db.user.findUnique({
-    where: {
-      id: userId,
-    },
-  });
-
-  if (!dbUser) {
-    redirect("/auth-callback?origin=dashboard");
+  if (!session?.user) {
+    redirect("/auth/login");
   }
 
   const userLimit = await db.userLimit.findFirst({
     where: {
-      userId: dbUser.id,
+      userId: session.user.id,
     },
   });
   return <Dashboard uploadLimit={userLimit?.pdfUploadLimit} />;
