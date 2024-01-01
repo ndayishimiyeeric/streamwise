@@ -59,9 +59,9 @@ async function Page({ params }: Props) {
     <div className="flex h-[85vh] w-full flex-col justify-between">
       <div className="flex w-full grow px-2">
         <div className="relative flex-1">
-          {/* <div className="fixed top-20 z-50 bg-background ">
+          <div className="fixed top-20 z-50 bg-background ">
             <PdfRenderer url={file.url} />
-          </div> */}
+          </div>
 
           <ChatWrapper
             userName={dbUser.email}

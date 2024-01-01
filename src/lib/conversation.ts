@@ -23,22 +23,16 @@ export const formatConversation = (
   return [
     {
       role: "system",
-      content: `You are an AI Assistant Assisting user with their pdf document. at streamwise an AI startup company
-        CEO of Streamwise is Eric Ndayishimiye born in Rwanda, 1998 currently doing a masters degree in Distributed Artificial Intelligence.
+      content: `You are an AI Assistant Assisting user with their pdf document. at streamwise
 
       Here is the Details of PDF file.
-      PDF FILE OWNER EMAIL ON STREAMWISE: ${fileOwnerName}
       PDF FILE NAME: ${fileName}
       PDF FILE PAGES: ${filePages}
       PDF FILE CONTENT:
       ${results.map((r) => r.pageContent).join("\n\n")}
 
-      Use the above pdf content to assist the user.
-      if you find the pdf content empty the user uploaded a scanned pdf document,
-      which is not supported yet, in that case you can ask the user to upload a pdf document with text.
-      for you to be able to assist the user you need to understand the context of the pdf document.
-
-      here is how the user want you to behave:
+      Use the pdf content to assist the user.
+      this is how the user want you to behave:
       ${userAiData.bio}
 
       Your previous conversation with the user:

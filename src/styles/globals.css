@@ -2,12 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
-
 html {
   scroll-behavior: smooth;
 }
 
-
+html,
+body,
+:root {
+  height: 100%;
+}
 
 @layer base {
   :root {
@@ -56,16 +59,13 @@ html {
   }
 }
 
-
-
-
 @layer base {
   * {
     @apply border-border;
   }
   body {
     @apply bg-background text-foreground;
-    font-family: 'Be Vietnam Pro', sans-serif;
+    font-family: "Be Vietnam Pro", sans-serif;
   }
 }
 
@@ -93,11 +93,11 @@ html {
 }
 
 .gradient-gold {
-  background:linear-gradient(315deg, #BF953F, #FCF6BA, #AA771C);
+  background: linear-gradient(315deg, #bf953f, #fcf6ba, #aa771c);
 }
 
 .gradient-silver {
-  background-image: linear-gradient(315deg, #B2B1B9, #FFFFFF, #B2B1B9);
+  background-image: linear-gradient(315deg, #b2b1b9, #ffffff, #b2b1b9);
 }
 
 @import "~@uploadthing/react/styles.css";
