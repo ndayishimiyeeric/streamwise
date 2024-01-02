@@ -59,6 +59,7 @@
     "react-markdown": "^9.0.1",
     "react-pdf": "^7.5.0",
     "react-resize-detector": "^9.1.0",
+    "react-spinners": "^0.13.8",
     "react-textarea-autosize": "^8.5.3",
     "recharts": "^2.9.0",
     "rehype-stringify": "^10.0.0",
