@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { login } from "@/actions/login";
 import { LoginSchema } from "@/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
-import axios from "axios";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
@@ -22,6 +23,14 @@ import { FormError } from "@/components/form-error";
 import { FormSuccess } from "@/components/form-success";
 
 export const LoginForm = () => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const urlError =
+    searchParams.get("error") === "OAuthAccountNotLinked"
+      ? "Email already in use with different provider"
+      : undefined;
+
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | undefined>("");
   const [success, setsuccess] = useState<string | undefined>("");
@@ -34,14 +43,24 @@ export const LoginForm = () => {
     },
   });
 
+  useEffect(() => {
+    if (!error) {
+      const timer = setTimeout(() => {
+        router.refresh();
+      }, 2000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [error, router]);
+
   const handleSubmit = async (inputs: z.infer<typeof LoginSchema>) => {
     setError(undefined);
     setsuccess(undefined);
 
     startTransition(() => {
-      axios.post("/api/auth/login", inputs).then(({ data }) => {
-        setError(data.error);
-        setsuccess(data.success);
+      login(inputs).then((data) => {
+        setError(data?.error);
+        // setsuccess(data.success);
       });
     });
   };
@@ -83,7 +102,7 @@ export const LoginForm = () => {
               )}
             />
           </div>
-          <FormError message={error} />
+          <FormError message={error || urlError} />
           <FormSuccess message={success} />
           <Button className="w-full" type="submit" disabled={isPending}>
             Login

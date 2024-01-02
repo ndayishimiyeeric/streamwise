@@ -23,18 +23,39 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "User already exists" });
     }
 
-    await db.user.create({
-      data: {
-        name,
-        email,
-        password: hashedPassword,
-      },
+    await db.$transaction(async (tx) => {
+      const user = await tx.user.create({
+        data: {
+          email,
+          password: hashedPassword,
+          name,
+        },
+      });
+
+      await tx.aiData.create({
+        data: {
+          userId: user.id,
+        },
+      });
+
+      await tx.userLimit.create({
+        data: {
+          userId: user.id,
+        },
+      });
+
+      await tx.userUsage.create({
+        data: {
+          userId: user.id,
+        },
+      });
     });
 
     // TODO: Send Verification Email
 
     return NextResponse.json({ success: "User created" });
   } catch (error) {
+    console.error(error);
     return new NextResponse("Internal Server error", { status: 500 });
   }
 }

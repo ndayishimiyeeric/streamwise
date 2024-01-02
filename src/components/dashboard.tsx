@@ -1,6 +1,7 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Ghost } from "lucide-react";
 import Skeleton from "react-loading-skeleton";
 
@@ -12,6 +13,12 @@ interface Props {
   uploadLimit?: number;
 }
 function Dashboard({ uploadLimit }: Props) {
+  const router = useRouter();
+
+  useEffect(() => {
+    router.refresh();
+  }, [router]);
+
   const { data: userFiles, isLoading } = trpc.getUserFiles.useQuery();
   return (
     <main className="mx-auto max-w-7xl p-10">

@@ -2,13 +2,12 @@
 
 import React from "react";
 import { useRouter } from "next/navigation";
+import { getPurchases, getSubscription, GraphData } from "@/data/user";
 import { UserLimit, UserUsage } from "@prisma/client";
 import { MessagesSquare, UploadCloud } from "lucide-react";
 import { PiBookOpenBold } from "react-icons/pi";
 import { TbPlant2 } from "react-icons/tb";
 
-import { getSubscription } from "@/lib/actions";
-import { getPurchases, GraphData } from "@/lib/actions/user-usage-actions";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";

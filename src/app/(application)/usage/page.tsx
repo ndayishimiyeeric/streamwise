@@ -1,33 +1,33 @@
 import React from "react";
-import { auth } from "@clerk/nextjs";
+import { redirect } from "next/navigation";
+import { auth } from "@/auth";
+import { getGraphData, getPurchases, getSubscription } from "@/data/user";
+
+import { db } from "@/lib/db";
 
 import ClientPage from "./_components/clientPage";
-import { getPurchases, getSubscription } from "@/lib/actions";
-import { db } from "@/lib/db";
-import { redirect } from "next/navigation";
-import { getGraphData } from "@/lib/actions";
 
 async function UsagePage() {
-  const { userId } = auth();
+  const session = await auth();
 
-  if (!userId) {
-    return redirect("/dashboard");
+  if (!session?.user) {
+    return redirect("/auth/login");
   }
-  const subscription = await getSubscription();
-  const purchases = await getPurchases();
+  const subscription = await getSubscription(session.user.id);
+  const purchases = await getPurchases(session.user.id);
   const userLimit = await db.userLimit.findFirst({
     where: {
-      userId,
+      userId: session.user.id,
     },
   });
 
   const usageUsage = await db.userUsage.findFirst({
     where: {
-      userId,
+      userId: session.user.id,
     },
   });
 
-  const graphData = await getGraphData(userId);
+  const graphData = await getGraphData(session.user.id);
 
   return (
     <ClientPage

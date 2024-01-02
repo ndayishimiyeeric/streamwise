@@ -31,6 +31,11 @@ model Account {
   @@unique([provider, providerAccountId])
 }
 
+enum UserRole {
+  USER
+  ADMIN
+}
+
 model User {
   id            String    @id @default(cuid())
   name          String?
@@ -38,6 +43,7 @@ model User {
   emailVerified DateTime?
   image         String?
   password      String?
+  role          UserRole  @default(USER)
   accounts      Account[]
 
   files    File[]
@@ -118,7 +124,7 @@ model File {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  User      User     @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
 
   @@unique([userId, key, name])
   @@index([userId])
@@ -132,7 +138,7 @@ model Message {
   fileId String?
   File   File?   @relation(fields: [fileId], references: [id])
   userId String?
-  User   User?   @relation(fields: [userId], references: [id])
+  user   User?   @relation(fields: [userId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -148,7 +154,7 @@ model AiData {
   imgUrl String? @default("https://utfs.io/f/747c02c6-5938-42d0-9b75-408d6897d5ad-aefp5.png") @db.Text
 
   userId String @unique
-  User   User   @relation(fields: [userId], references: [id])
+  user   User   @relation(fields: [userId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -164,7 +170,7 @@ model ModelFile {
   key   String
 
   aiModelId String
-  AIModel   AIModel @relation(fields: [aiModelId], references: [id])
+  aiModel   AIModel @relation(fields: [aiModelId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
