@@ -1,7 +1,7 @@
 import React from "react";
-import { UserButton } from "@clerk/nextjs";
 
 import AppLogo from "@/components/app-logo";
+import { UserButton } from "@/components/auth/user-button";
 
 import MobileSidebar from "./app-mobile-sidebar";
 
@@ -14,7 +14,7 @@ const AppNavbar = () => {
       </div>
 
       <div className="ml-auto flex gap-x-2">
-        <UserButton afterSignOutUrl="/" />
+        <UserButton />
       </div>
     </div>
   );

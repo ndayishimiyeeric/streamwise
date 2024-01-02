@@ -1,83 +1,74 @@
 import React from "react";
-import { auth } from "@clerk/nextjs";
 import Link from "next/link";
+import { auth } from "@/auth";
 import { ArrowRight, Check, HelpCircle, Minus } from "lucide-react";
 
-import MaxWidthWrapper from "@/components/max-width-wrapper";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { PLANS, pricingItems } from "@/config/plans/plan";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import MaxWidthWrapper from "@/components/max-width-wrapper";
 import UpgradeButton from "@/components/upgrade-button";
 
-function Page() {
-  const { userId } = auth();
+async function Page() {
+  const session = await auth();
 
   return (
     <>
-      <MaxWidthWrapper className="mb-8 mt-24 text-center max-w-5xl lg:max-w-7xl">
-        <div className="mx-auto sm:max-w-lg mb-10">
-          <h1 className="font-bold text-6xl sm:text-7xl">Pricing</h1>
+      <MaxWidthWrapper className="mb-8 mt-24 max-w-5xl text-center lg:max-w-7xl">
+        <div className="mx-auto mb-10 sm:max-w-lg">
+          <h1 className="text-6xl font-bold sm:text-7xl">Pricing</h1>
           <p className="mt-5 text-gray-600 sm:text-lg">
-            We&apos;ve got you covered. Choose the plan that&apos;s right for
-            you. whether you&apos;re just trying out streamwise or you need
-            more.
+            We&apos;ve got you covered. Choose the plan that&apos;s right for you. whether
+            you&apos;re just trying out streamwise or you need more.
           </p>
         </div>
 
-        <div className="pt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+        <div className="grid grid-cols-1 gap-10 pt-12 md:grid-cols-2 lg:grid-cols-3">
           <TooltipProvider>
             {pricingItems.map((plan, index) => {
               const price =
-                PLANS.find(
-                  (p) => p.slug.toLowerCase() === plan.plan.toLowerCase(),
-                )?.price.amount ?? 0;
+                PLANS.find((p) => p.slug.toLowerCase() === plan.plan.toLowerCase())?.price.amount ??
+                0;
               return (
                 <div
                   key={index}
                   className={cn("relative rounded-2xl bg-white shadow-lg", {
-                    "border-2 border-[#BF953F] shadow-[#BF953F]":
-                      plan.plan === "Gold",
-                    "border-2 border-[#B2B1B9] shadow-[#B2B1B9]":
-                      plan.plan === "Silver",
+                    "border-2 border-[#BF953F] shadow-[#BF953F]": plan.plan === "Gold",
+                    "border-2 border-[#B2B1B9] shadow-[#B2B1B9]": plan.plan === "Silver",
                     "border border-gray-200": plan.plan === "Free",
                   })}
                 >
                   {plan.plan === "Gold" ? (
-                    <div className="absolute -top-5 left-0 right-0 mx-auto w-32 rounded-full px-3 py-2 text-sm font-bold text-black gradient-gold">
+                    <div className="gradient-gold absolute -top-5 left-0 right-0 mx-auto w-32 rounded-full px-3 py-2 text-sm font-bold text-black">
                       Upgrade
                     </div>
                   ) : (
                     plan.plan === "Silver" && (
-                      <div className="absolute -top-5 left-0 right-0 mx-auto w-32 rounded-full px-3 py-2 text-sm font-bold text-black gradient-silver">
+                      <div className="gradient-silver absolute -top-5 left-0 right-0 mx-auto w-32 rounded-full px-3 py-2 text-sm font-bold text-black">
                         Upgrade
                       </div>
                     )
                   )}
 
                   <div className="p-5">
-                    <h3 className="my-3 text-center font-display text-3xl font-bold">
+                    <h3 className="font-display my-3 text-center text-3xl font-bold">
                       {plan.plan}
                     </h3>
                     <p className="text-gray-500">{plan.tagline}</p>
-                    <p className="my-5 font-display text-5xl font-semibold">
+                    <p className="font-display my-5 text-5xl font-semibold">
                       €{price}
                       <span className="text-xl font-normal"> / mo</span>
                     </p>
                   </div>
 
-                  <div className="flex items-center justify-center border-b border-t border-gray-200 bg-gray-50 h-20">
+                  <div className="flex h-20 items-center justify-center border-b border-t border-gray-200 bg-gray-50">
                     <div className="flex items-center space-x-1">
                       <p>{plan.quota.toLocaleString()} PDFs/mo included</p>
 
                       <Tooltip delayDuration={300}>
-                        <TooltipTrigger className="cursor-default ml-1.5">
-                          <HelpCircle className="w-4 h-4 text-gray-500" />
+                        <TooltipTrigger className="ml-1.5 cursor-default">
+                          <HelpCircle className="h-4 w-4 text-gray-500" />
                         </TooltipTrigger>
                         <TooltipContent className="w-80 p-2">
                           PDFs you can upload per month.
@@ -87,47 +78,40 @@ function Page() {
                   </div>
 
                   <ul className="my-10 space-y-5 px-8">
-                    {plan.features.map(
-                      ({ text, negative, footnote }, index) => (
-                        <li key={index} className="flex space-x-5">
-                          <div className="flex-shrink-0">
-                            {negative ? (
-                              <Minus className="w-4 h-4 text-red-300" />
-                            ) : (
-                              <Check
-                                className={cn("w-4 h-4", {
-                                  "text-[#BF953F]": plan.plan === "Gold",
-                                  "text-blue-500": plan.plan === "Silver",
-                                  "text-[#B2B1B9]": plan.plan === "Free",
-                                })}
-                              />
-                            )}
+                    {plan.features.map(({ text, negative, footnote }, index) => (
+                      <li key={index} className="flex space-x-5">
+                        <div className="flex-shrink-0">
+                          {negative ? (
+                            <Minus className="h-4 w-4 text-red-300" />
+                          ) : (
+                            <Check
+                              className={cn("h-4 w-4", {
+                                "text-[#BF953F]": plan.plan === "Gold",
+                                "text-blue-500": plan.plan === "Silver",
+                                "text-[#B2B1B9]": plan.plan === "Free",
+                              })}
+                            />
+                          )}
+                        </div>
+                        {footnote ? (
+                          <div className="flex items-center space-x-1">
+                            <p
+                              className={cn("text-left text-base text-gray-400 md:text-sm", {
+                                "text-gray-600": negative,
+                              })}
+                            >
+                              {text}
+                            </p>
+                            <Tooltip delayDuration={300}>
+                              <TooltipTrigger className="ml-1.5 cursor-default">
+                                <HelpCircle className="h-4 w-4 text-gray-500" />
+                              </TooltipTrigger>
+                              <TooltipContent className="w-80 p-2">{footnote}</TooltipContent>
+                            </Tooltip>
                           </div>
-                          {footnote ? (
-                            <div className="flex items-center space-x-1">
-                              <p
-                                className={cn(
-                                  "text-base text-left md:text-sm text-gray-400",
-                                  {
-                                    "text-gray-600": negative,
-                                  },
-                                )}
-                              >
-                                {text}
-                              </p>
-                              <Tooltip delayDuration={300}>
-                                <TooltipTrigger className="cursor-default ml-1.5">
-                                  <HelpCircle className="w-4 h-4 text-gray-500" />
-                                </TooltipTrigger>
-                                <TooltipContent className="w-80 p-2">
-                                  {footnote}
-                                </TooltipContent>
-                              </Tooltip>
-                            </div>
-                          ) : null}
-                        </li>
-                      ),
-                    )}
+                        ) : null}
+                      </li>
+                    ))}
                   </ul>
 
                   <div className=" border-t border-gray-200" />
@@ -139,22 +123,17 @@ function Page() {
                           className: "w-full",
                           variant: "secondary",
                         })}
-                        href={userId ? "/dashboard" : "/sign-in"}
+                        href={session?.user.id ? "/dashboard" : "/sign-in"}
                       >
-                        {userId ? "Dashboard" : "Get started"}
-                        <ArrowRight className="h-5 w-5 ml-1.5" />
+                        {session?.user.id ? "Dashboard" : "Get started"}
+                        <ArrowRight className="ml-1.5 h-5 w-5" />
                       </Link>
-                    ) : userId ? (
-                      <UpgradeButton
-                        plan={plan.plan === "Gold" ? "Gold" : "Silver"}
-                      />
+                    ) : session?.user.id ? (
+                      <UpgradeButton plan={plan.plan === "Gold" ? "Gold" : "Silver"} />
                     ) : (
-                      <Link
-                        className={buttonVariants({ className: "w-full" })}
-                        href="/sign-in"
-                      >
+                      <Link className={buttonVariants({ className: "w-full" })} href="/sign-in">
                         Get started
-                        <ArrowRight className="h-5 w-5 ml-1.5" />
+                        <ArrowRight className="ml-1.5 h-5 w-5" />
                       </Link>
                     )}
                   </div>

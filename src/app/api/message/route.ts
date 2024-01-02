@@ -1,25 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@clerk/nextjs";
-import { SendMessageSchema } from "@/lib/validators/message";
-import { db } from "@/lib/db";
-import { OpenAIEmbeddings } from "langchain/embeddings/openai";
-import { openai } from "@/lib/openai";
-import { formatConversation } from "@/lib/conversation";
+import { auth } from "@/auth";
+import { checkPromptUsage, getSubscription, increasePromptUsage } from "@/data/user";
 import { OpenAIStream, StreamingTextResponse } from "ai";
+import { OpenAIEmbeddings } from "langchain/embeddings/openai";
 import { QdrantVectorStore } from "langchain/vectorstores/qdrant";
+
+import { formatConversation } from "@/lib/conversation";
+import { db } from "@/lib/db";
+import { openai } from "@/lib/openai";
 import { qdrantClient } from "@/lib/qdrant";
-import {
-  checkPromptUsage,
-  getSubscription,
-  increasePromptUsage,
-} from "@/lib/actions";
+import { SendMessageSchema } from "@/lib/validators/message";
 
 export async function POST(req: NextRequest) {
   try {
     const payload = await req.json();
-    const { userId } = auth();
+    const session = await auth();
 
-    if (!userId) {
+    if (!session?.user.id) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
@@ -28,10 +25,10 @@ export async function POST(req: NextRequest) {
     const file = await db.file.findUnique({
       where: {
         id: fileId,
-        userId,
+        userId: session.user.id,
       },
       include: {
-        User: true,
+        user: true,
       },
     });
 
@@ -39,15 +36,14 @@ export async function POST(req: NextRequest) {
       return new NextResponse("Not found", { status: 404 });
     }
 
-    const isAllowed = await checkPromptUsage(userId);
-    const subscription = await getSubscription();
+    const isAllowed = await checkPromptUsage(session.user.id);
+    const subscription = await getSubscription(session.user.id);
     const isGold = subscription?.slug?.toLowerCase() === "gold";
 
     if (!isAllowed && !isGold) {
-      return new NextResponse(
-        "You have reached the limit of your prompt plan usage",
-        { status: 403 },
-      );
+      return new NextResponse("You have reached the limit of your prompt plan usage", {
+        status: 403,
+      });
     }
 
     await db.message.create({
@@ -55,7 +51,7 @@ export async function POST(req: NextRequest) {
         fileId,
         text: message,
         isUserMessage: true,
-        userId,
+        userId: session.user.id,
       },
     });
 
@@ -63,15 +59,12 @@ export async function POST(req: NextRequest) {
       openAIApiKey: process.env.OPENAI_API_KEY!,
     });
 
-    const vector_store = await QdrantVectorStore.fromExistingCollection(
-      embeddings,
-      {
-        url: process.env.QDRANT_HOST!,
-        apiKey: process.env.QDRANT_API_KEY!,
-        collectionName: fileId,
-        client: qdrantClient,
-      },
-    );
+    const vector_store = await QdrantVectorStore.fromExistingCollection(embeddings, {
+      url: process.env.QDRANT_HOST!,
+      apiKey: process.env.QDRANT_API_KEY!,
+      collectionName: fileId,
+      client: qdrantClient,
+    });
 
     const results = await vector_store.similaritySearch(message);
     const prevMessages = await db.message.findMany({
@@ -86,7 +79,7 @@ export async function POST(req: NextRequest) {
 
     const userAiData = await db.aiData.findUnique({
       where: {
-        userId,
+        userId: session.user.id,
       },
     });
 
@@ -94,13 +87,13 @@ export async function POST(req: NextRequest) {
       results,
       prevMessages,
       message,
-      file.User.email,
+      file.user.name || "",
       file.name,
       file.pages,
       {
         name: userAiData?.name,
         bio: userAiData?.bio || "",
-      },
+      }
     );
 
     const response = await openai.chat.completions.create({
@@ -110,6 +103,7 @@ export async function POST(req: NextRequest) {
       messages,
     });
 
+    // @ts-ignore
     const stream = OpenAIStream(response, {
       async onCompletion(completion) {
         await db.message.create({
@@ -117,14 +111,14 @@ export async function POST(req: NextRequest) {
             fileId,
             text: completion,
             isUserMessage: false,
-            userId,
+            userId: session.user.id,
           },
         });
       },
     });
 
     if (!isGold) {
-      await increasePromptUsage(userId);
+      await increasePromptUsage(session.user.id);
     }
 
     return new StreamingTextResponse(stream);

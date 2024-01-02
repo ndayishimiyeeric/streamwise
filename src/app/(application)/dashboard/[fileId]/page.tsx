@@ -1,6 +1,5 @@
 import React from "react";
 import { notFound, redirect } from "next/navigation";
-import { auth } from "@clerk/nextjs";
 
 import { db } from "@/lib/db";
 import ChatWrapper from "@/components/chat-wrapper";
@@ -10,7 +9,8 @@ import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
 import "@/styles/mdx.css";
 
-import { getSubscription } from "@/lib/actions";
+import { auth } from "@/auth";
+import { getSubscription } from "@/data/user";
 
 type Props = {
   params: {
@@ -20,20 +20,20 @@ type Props = {
 
 async function Page({ params }: Props) {
   const { fileId } = params;
-  const { userId } = auth();
+  const session = await auth();
 
-  if (!userId) redirect(`/auth-callback?origin=dashboard/${fileId}`);
+  if (!session?.user.id) redirect("/auth/login");
 
   const file = await db.file.findFirst({
     where: {
       id: fileId,
-      userId,
+      userId: session.user.id,
     },
   });
 
   const dbUser = await db.user.findFirst({
     where: {
-      id: userId,
+      id: session.user.id,
     },
   });
 
@@ -43,7 +43,7 @@ async function Page({ params }: Props) {
 
   const aiData = await db.aiData.findUnique({
     where: {
-      userId: userId,
+      userId: session.user.id,
     },
   });
 
@@ -51,7 +51,7 @@ async function Page({ params }: Props) {
     redirect("/auth-callback?origin=dashboard/my-ai");
   }
 
-  const subscription = await getSubscription();
+  const subscription = await getSubscription(session.user.id);
 
   if (!file) notFound();
 
@@ -64,8 +64,8 @@ async function Page({ params }: Props) {
           </div>
 
           <ChatWrapper
-            userName={dbUser.email}
-            imageUrl={dbUser.imgUrl}
+            userName={dbUser.name || ""}
+            imageUrl={dbUser.image || ""}
             fileId={fileId}
             aiData={aiData}
             subscriptionPlan={subscription}

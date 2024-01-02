@@ -1,30 +1,25 @@
-import { auth, currentUser } from "@clerk/nextjs";
+import { auth } from "@/auth";
+import { checkPdfUploadUsage, getUserMaxFileLimit } from "@/data/user";
 import { TRPCError } from "@trpc/server";
 import { PDFLoader } from "langchain/document_loaders/fs/pdf";
 import { OpenAIEmbeddings } from "langchain/embeddings/openai";
 import { QdrantVectorStore } from "langchain/vectorstores/qdrant";
 import { createUploadthing, type FileRouter } from "uploadthing/next";
 
-import {
-  checkPdfUploadUsage,
-  getFileChunks,
-  getOrCreateCollectionIfNotExists,
-} from "@/lib/actions";
-import { getUserMaxFileLimit } from "@/lib/actions/user-usage-actions";
+import { getFileChunks, getOrCreateCollectionIfNotExists } from "@/lib/actions";
 import { db } from "@/lib/db";
 import { qdrantClient } from "@/lib/qdrant";
 
 const f = createUploadthing();
 
 const handleAuth = async () => {
-  const { userId } = auth();
-  const user = await currentUser();
+  const session = await auth();
 
-  if (!userId || !user) {
+  if (!session?.user || !session.user.id) {
     throw new Error("Not authenticated");
   }
 
-  const isAllowed = await checkPdfUploadUsage(userId);
+  const isAllowed = await checkPdfUploadUsage(session.user.id);
 
   if (!isAllowed) {
     throw new TRPCError({
@@ -34,9 +29,9 @@ const handleAuth = async () => {
     });
   }
 
-  const userFileLimits = await getUserMaxFileLimit();
+  const userFileLimits = await getUserMaxFileLimit(session.user.id);
 
-  return { userId: userId, userFileLimits };
+  return { userId: session.user.id, userFileLimits };
 };
 
 export const ourFileRouter = {

@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Be_Vietnam_Pro } from "next/font/google";
-import { ClerkProvider } from "@clerk/nextjs";
 
 import { cn } from "@/lib/utils";
 import Providers from "@/components/providers";
@@ -8,6 +7,9 @@ import Providers from "@/components/providers";
 import "@/styles/globals.css";
 import "react-loading-skeleton/dist/skeleton.css";
 import "simplebar-react/dist/simplebar.min.css";
+
+import { auth } from "@/auth";
+import { SessionProvider } from "next-auth/react";
 
 import ModalProvider from "@/components/modal-provider";
 import { ThemeProvider } from "@/components/theme-provider";
@@ -24,9 +26,10 @@ export const metadata: Metadata = {
   description: "Streamwise is a platform for stream pdf docs with the help of AI.",
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const session = await auth();
   return (
-    <ClerkProvider>
+    <SessionProvider session={session}>
       <html lang="en" suppressHydrationWarning>
         <Providers>
           <ThemeProvider
@@ -44,6 +47,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </ThemeProvider>
         </Providers>
       </html>
-    </ClerkProvider>
+    </SessionProvider>
   );
 }

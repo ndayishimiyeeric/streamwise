@@ -1,14 +1,13 @@
+import { auth } from "@/auth";
 import { initTRPC, TRPCError } from "@trpc/server";
-import { auth, currentUser } from "@clerk/nextjs";
 
 const t = initTRPC.create();
 const middleware = t.middleware;
 
 const isAuthenticated = middleware(async (opts) => {
-  const { userId } = auth();
-  const user = await currentUser();
+  const session = await auth();
 
-  if (!userId || !user) {
+  if (!session?.user.id || !session?.user) {
     throw new TRPCError({
       code: "UNAUTHORIZED",
       message: "Unauthorized",
@@ -18,8 +17,8 @@ const isAuthenticated = middleware(async (opts) => {
 
   return opts.next({
     ctx: {
-      userId,
-      user,
+      userId: session.user.id,
+      user: session.user,
     },
   });
 });

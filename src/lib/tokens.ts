@@ -58,7 +58,7 @@ export const generatePasswordResetCode = async (email: string) => {
 
 export const generateTwoFactorCode = async (email: string) => {
   const code = crypto.randomInt(100_000, 1_000_000).toString();
-  const expires = new Date(new Date().getTime() + 3600 * 1000); // 1 hour TODO: for production change to 15 minutes
+  const expires = new Date(new Date().getTime() + 5 * 60 * 1000); // 5 mins
 
   const _code = await getTwoFactorCodeByEmail(email);
 

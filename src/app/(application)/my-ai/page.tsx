@@ -1,20 +1,20 @@
 import React from "react";
 import { redirect } from "next/navigation";
-import { auth } from "@clerk/nextjs";
+import { auth } from "@/auth";
+import { getSubscription } from "@/data/user";
 
-import { getSubscription } from "@/lib/actions";
 import { db } from "@/lib/db";
 
 import MyAiForm from "./_components/my-ai-form";
 
 async function Page() {
-  const { userId } = auth();
-  if (!userId) {
-    redirect("/auth-callback?origin=/dashboard/my-ai");
+  const session = await auth();
+  if (!session?.user.id) {
+    redirect("/auth/login");
   }
   const aiData = await db.aiData.findUnique({
     where: {
-      userId,
+      userId: session.user.id,
     },
   });
 
@@ -22,7 +22,7 @@ async function Page() {
     redirect("/auth-callback?origin=dashboard/my-ai");
   }
 
-  const subscriptionPlan = await getSubscription();
+  const subscriptionPlan = await getSubscription(session.user.id);
   return <MyAiForm subscriptionPlan={subscriptionPlan} aiData={aiData} />;
 }
 

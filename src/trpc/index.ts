@@ -1,10 +1,9 @@
+import { getSubscription } from "@/data/user";
 import { utapi } from "@/server/uploadthing";
-import { auth, currentUser } from "@clerk/nextjs";
 import { TRPCError } from "@trpc/server";
 
 import { PLANS } from "@/config/plans/plan";
 import { QUERY_LIMIT } from "@/config/user-usage";
-import { getSubscription } from "@/lib/actions";
 import { db } from "@/lib/db";
 import { qdrantClient } from "@/lib/qdrant";
 import stripe from "@/lib/stripe";
@@ -171,7 +170,7 @@ export const appRouter = router({
         message: "Ai data not found",
       });
 
-    const subscription = await getSubscription();
+    const subscription = await getSubscription(userId);
 
     if (subscription.isSubscribed && subscription.name === "Gold") {
       await db.aiData.update({
@@ -244,7 +243,7 @@ export const appRouter = router({
       },
     });
 
-    const subscriptionPlan = await getSubscription();
+    const subscriptionPlan = await getSubscription(userId);
 
     let isChanged = false;
 
@@ -270,7 +269,7 @@ export const appRouter = router({
       payment_method_types: ["card", "paypal"],
       mode: "subscription",
       billing_address_collection: "auto",
-      customer_email: user.emailAddresses[0].emailAddress,
+      customer_email: user.email as string,
       line_items: [
         {
           price: PLANS.find((p) => p.name.toLowerCase() === input.plan.toLowerCase())?.price
