@@ -70,6 +70,15 @@ model VerificationCode {
   @@unique([email, code])
 }
 
+model PasswordResetCode {
+  id      String   @id @default(uuid())
+  email   String
+  code    String   @unique
+  expires DateTime
+
+  @@unique([email, code])
+}
+
 model UserLimit {
   id             String   @id @default(uuid())
   userId         String   @unique

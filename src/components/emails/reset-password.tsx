@@ -1,6 +1,7 @@
 import * as React from "react";
 import {
   Body,
+  Button,
   Column,
   Container,
   Head,
@@ -13,28 +14,16 @@ import {
   Text,
 } from "@react-email/components";
 
-interface EmailVerificationEmailProps {
+interface PasswordResetEmailProps {
   username: string;
   linkUrl: string;
-  email: string;
-  verificationDate: Date;
 }
 
-export const EmailVerificationEmail = ({
-  username,
-  linkUrl,
-  email,
-  verificationDate,
-}: EmailVerificationEmailProps) => {
-  const formattedDate = new Intl.DateTimeFormat("en", {
-    dateStyle: "medium",
-    timeStyle: "medium",
-  }).format(verificationDate);
-
+export const PasswordResetEmail = ({ username, linkUrl }: PasswordResetEmailProps) => {
   return (
     <Html>
       <Head />
-      <Preview>Verify your Streamwise account.</Preview>
+      <Preview>Reset your Streamwise password</Preview>
       <Body style={main}>
         <Container style={container}>
           <Section style={logo}>
@@ -44,16 +33,20 @@ export const EmailVerificationEmail = ({
             />
           </Section>
           <Section style={content}>
-            <Text style={paragraph}>Hi {username},</Text>
-            <Text style={paragraph}>
-              Here is your account verification link for your Streamwise account {email} requested
-              on {formattedDate}. This link is only valid for 1 hour.
+            <Text style={text}>Hi {username},</Text>
+            <Text style={text}>
+              Someone recently requested a password change for your Streamwise account. If this was
+              you, you can set a new password here:
             </Text>
-            <Text style={paragraph}>
-              To verify your account, please{" "}
-              <Link href={linkUrl} style={link}>
-                click here.
-              </Link>
+            <Button style={button} href={linkUrl}>
+              Reset password
+            </Button>
+            <Text style={text}>
+              If you don&apos;t want to change your password or didn&apos;t request this, just
+              ignore and delete this message.
+            </Text>
+            <Text style={text}>
+              To keep your account secure, please don&apos;t forward this email to anyone.
             </Text>
             <Text style={paragraph}>
               Thanks,
@@ -73,7 +66,7 @@ export const EmailVerificationEmail = ({
   );
 };
 
-export default EmailVerificationEmail;
+export default PasswordResetEmail;
 
 const fontFamily = "HelveticaNeue,Helvetica,Arial,sans-serif";
 
@@ -110,6 +103,22 @@ const logo = {
   backgroundColor: "#007ee6",
 };
 
-const link = {
-  textDecoration: "underline",
+const text = {
+  fontSize: "16px",
+  fontWeight: "300",
+  color: "#404040",
+  lineHeight: "26px",
+};
+
+const button = {
+  backgroundColor: "#007ee6",
+  borderRadius: "4px",
+  color: "#fff",
+  fontFamily: "'Open Sans', 'Helvetica Neue', Arial",
+  fontSize: "15px",
+  textDecoration: "none",
+  textAlign: "center" as const,
+  display: "block",
+  width: "210px",
+  padding: "14px 7px",
 };
