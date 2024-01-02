@@ -44,7 +44,11 @@ model User {
   image         String?
   password      String?
   role          UserRole  @default(USER)
-  accounts      Account[]
+
+  isTwoFactorEnabled    Boolean                @default(false)
+  twoFactorConfirmation TwoFactorConfirmation?
+
+  accounts Account[]
 
   files    File[]
   messages Message[]
@@ -79,6 +83,23 @@ model PasswordResetCode {
   @@unique([email, code])
 }
 
+model TwoFactorCode {
+  id      String   @id @default(uuid())
+  email   String
+  code    String   @unique
+  expires DateTime
+
+  @@unique([email, code])
+}
+
+model TwoFactorConfirmation {
+  id     String @id @default(uuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId])
+}
+
 model UserLimit {
   id             String   @id @default(uuid())
   userId         String   @unique
@@ -88,7 +109,7 @@ model UserLimit {
   maxFileSize    Int      @default(4)
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
-  user           User     @relation(fields: [userId], references: [id])
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model UserUsage {
@@ -98,7 +119,7 @@ model UserUsage {
   pdfUploadUsage Int      @default(0)
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
-  user           User     @relation(fields: [userId], references: [id])
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Subscription {
@@ -108,7 +129,7 @@ model Subscription {
   stripeSubscriptionId   String?   @unique @map("stripe_subscription_id")
   stripePriceId          String?   @map("stripe_price_id")
   stripeCurrentPeriodEnd DateTime? @map("stripe_current_period_end")
-  user                   User      @relation(fields: [userId], references: [id])
+  user                   User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model UserPurchase {
@@ -117,7 +138,7 @@ model UserPurchase {
   amount    Int
   success   Boolean  @default(false)
   createdAt DateTime @default(now())
-  user      User     @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
 }
@@ -142,7 +163,7 @@ model File {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  user      User     @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, key, name])
   @@index([userId])
@@ -172,7 +193,7 @@ model AiData {
   imgUrl String? @default("https://utfs.io/f/747c02c6-5938-42d0-9b75-408d6897d5ad-aefp5.png") @db.Text
 
   userId String @unique
-  user   User   @relation(fields: [userId], references: [id])
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -188,7 +209,7 @@ model ModelFile {
   key   String
 
   aiModelId String
-  aiModel   AIModel @relation(fields: [aiModelId], references: [id])
+  aiModel   AIModel @relation(fields: [aiModelId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -202,8 +223,8 @@ model Chat {
   aiModelId String
   text      String @db.Text
 
-  User    User    @relation(fields: [userId], references: [id])
-  AIModel AIModel @relation(fields: [aiModelId], references: [id])
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  aiModel AIModel @relation(fields: [aiModelId], references: [id], onDelete: Cascade)
 
   messages ChatMessage[]
 
@@ -221,8 +242,8 @@ model ChatMessage {
   text   String  @db.Text
   isUser Boolean @default(false)
 
-  Chat Chat @relation(fields: [chatId], references: [id])
-  User User @relation(fields: [userId], references: [id])
+  Chat Chat @relation(fields: [chatId], references: [id], onDelete: Cascade)
+  User User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -236,8 +257,8 @@ model AIModelSub {
   aiModelId String
   userId    String
 
-  aiModel AIModel @relation(fields: [aiModelId], references: [id])
-  user    User    @relation(fields: [userId], references: [id])
+  aiModel AIModel @relation(fields: [aiModelId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -260,7 +281,7 @@ model AIModel {
   subs  AIModelSub[]
 
   userId String
-  user   User   @relation(fields: [userId], references: [id])
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

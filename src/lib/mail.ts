@@ -1,6 +1,7 @@
 import { Resend } from "resend";
 
 import PasswordResetEmail from "@/components/emails/reset-password";
+import TwoFactorCodeEmail from "@/components/emails/two-factor";
 import { EmailVerificationEmail } from "@/components/emails/verification-email";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
@@ -31,6 +32,17 @@ export const sendPasswordResetEmail = async (email: string, code: string, name: 
     react: PasswordResetEmail({
       username: name,
       linkUrl: confirmLink,
+    }),
+  });
+};
+
+export const sendTwoFactorCodeEmail = async (email: string, code: string) => {
+  await resend.emails.send({
+    from: "onboarding@resend.dev",
+    to: email,
+    subject: "Streamwise 2FA Code",
+    react: TwoFactorCodeEmail({
+      validationCode: code,
     }),
   });
 };

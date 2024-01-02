@@ -7,6 +7,8 @@ import NextAuth from "next-auth";
 
 import { db } from "@/lib/db";
 
+import { getTwoFactorConfirmationByUserId } from "./data/two-factor-confirmation";
+
 export const {
   handlers: { GET, POST },
   auth,
@@ -20,6 +22,18 @@ export const {
 
       const existingUser = await getUserById(user.id);
       if (!existingUser || !existingUser.emailVerified) return false;
+
+      if (existingUser.isTwoFactorEnabled) {
+        const twoFactorComfirm = await getTwoFactorConfirmationByUserId(existingUser.id);
+
+        if (!twoFactorComfirm) return false;
+
+        await db.twoFactorConfirmation.delete({
+          where: {
+            id: twoFactorComfirm.id,
+          },
+        });
+      }
 
       return true;
     },
