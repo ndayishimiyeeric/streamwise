@@ -7,11 +7,14 @@ import { LoginSchema } from "@/schemas";
 import { AuthError } from "next-auth";
 import * as z from "zod";
 
+import { sendVerificationEmail } from "@/lib/mail";
+import { generateVerificationCode } from "@/lib/tokens";
+
 export const login = async (values: z.infer<typeof LoginSchema>) => {
   const validatedFields = LoginSchema.safeParse(values);
 
   if (!validatedFields.success) {
-    return { error: "Invalid fields!" };
+    return { error: "Invalid credentials" };
   }
 
   const { email, password } = validatedFields.data;
@@ -19,7 +22,14 @@ export const login = async (values: z.infer<typeof LoginSchema>) => {
   const existingUser = await getUserByEmail(email);
 
   if (!existingUser || !existingUser.email || !existingUser.password) {
-    return { error: "Email does not exist!" };
+    return { error: "Invalid credentials" };
+  }
+
+  if (!existingUser.emailVerified) {
+    const verificationCode = await generateVerificationCode(email);
+    await sendVerificationEmail(verificationCode.email, verificationCode.code, existingUser.name!);
+
+    return { success: "Confirmation email sent!" };
   }
 
   try {

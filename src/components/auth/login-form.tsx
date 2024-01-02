@@ -60,7 +60,7 @@ export const LoginForm = () => {
     startTransition(() => {
       login(inputs).then((data) => {
         setError(data?.error);
-        // setsuccess(data.success);
+        setsuccess(data?.success);
       });
     });
   };

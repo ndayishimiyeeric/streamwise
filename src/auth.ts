@@ -15,12 +15,13 @@ export const {
 } = NextAuth({
   adapter: PrismaAdapter(db),
   callbacks: {
-    // async signIn({ user }) {
-    //   const existingUser = await getUserById(user.id);
+    async signIn({ user }) {
+      const existingUser = await getUserById(user.id);
 
-    //   if (!existingUser || !existingUser.emailVerified) return false;
-    //   return true;
-    // },
+      if (!existingUser || !existingUser.emailVerified) return false;
+      return true;
+    },
+
     async jwt({ token }) {
       if (!token.sub) return token;
       const user = await getUserById(token.sub);
@@ -29,6 +30,7 @@ export const {
       token.role = user.role;
       return token;
     },
+
     async session({ token, session }) {
       if (token.sub && session.user) {
         session.user.id = token.sub;

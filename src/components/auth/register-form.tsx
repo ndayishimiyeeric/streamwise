@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { register } from "@/actions/register";
 import { RegisterSchema } from "@/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
-import axios from "axios";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
@@ -40,7 +40,7 @@ export const RegisterForm = () => {
     setsuccess(undefined);
 
     startTransition(() => {
-      axios.post("/api/auth/register", inputs).then(({ data }) => {
+      register(inputs).then((data) => {
         setError(data.error);
         setsuccess(data.success);
       });
