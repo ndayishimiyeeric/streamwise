@@ -1,12 +1,13 @@
 import { connect } from "http2";
 import authConfig from "@/auth.config";
-import { getUserById } from "@/data/user";
+import { getUserById, getUserSettingsById } from "@/data/user";
 import { PrismaAdapter } from "@auth/prisma-adapter";
-import { UserRole } from "@prisma/client";
+import { UserLanguage, UserRole, UserSettings } from "@prisma/client";
 import NextAuth from "next-auth";
 
 import { db } from "@/lib/db";
 
+import { getAccountByUserId } from "./data/account";
 import { getTwoFactorConfirmationByUserId } from "./data/two-factor-confirmation";
 
 export const {
@@ -43,7 +44,23 @@ export const {
       const user = await getUserById(token.sub);
 
       if (!user) return token;
+      const userSettings = await getUserSettingsById(user.id);
+      const userAccount = await getAccountByUserId(user.id);
+
+      token.name = user.name;
+      token.email = user.email;
       token.role = user.role;
+      token.image = user.image;
+      token.bio = user.bio;
+      token.username = user.username;
+      token.isTwoFactorEnabled = user.isTwoFactorEnabled;
+      token.isPrivate = user.isPrivate;
+      token.isOAuth = !!userAccount;
+      token.imagekey = user.imagekey;
+      token.settings = userSettings;
+      token.updateEmail = user.updateEmail;
+      token.updateUsername = user.updateUsername;
+      token.language = user.language;
       return token;
     },
 
@@ -52,8 +69,51 @@ export const {
         session.user.id = token.sub;
       }
 
+      if (session.user) {
+        session.user.name = token.name;
+        session.user.email = token.email;
+        session.user.isOAuth = token.isOAuth as boolean;
+        session.user.language = token.language as UserLanguage;
+      }
+
       if (token.role && session.user) {
-        session.user.role = token.sub as UserRole;
+        session.user.role = token.role as UserRole;
+      }
+
+      if (token.image && session.user) {
+        session.user.image = token.image as string;
+      }
+
+      if (token.bio && session.user) {
+        session.user.bio = token.bio as string;
+      }
+
+      if (token.username && session.user) {
+        session.user.username = token.username as string;
+      }
+
+      if (token.imagekey && session.user) {
+        session.user.imagekey = token.imagekey as string;
+      }
+
+      if (token.isTwoFactorEnabled && session.user) {
+        session.user.isTwoFactorEnabled = token.isTwoFactorEnabled as boolean;
+      }
+
+      if (token.isPrivate && session.user) {
+        session.user.isPrivate = token.isTwoFactorEnabled as boolean;
+      }
+
+      if (token.settings && session.user) {
+        session.user.settings = token.settings as UserSettings;
+      }
+
+      if (token.updateUsername && session.user) {
+        session.user.updateUsername = token.updateUsername as Date;
+      }
+
+      if (token.updateUsername && session.user) {
+        session.user.updateEmail = token.updateEmail as Date;
       }
 
       return session;
@@ -84,6 +144,16 @@ export const {
           });
 
           await tx.userUsage.upsert({
+            where: {
+              userId: user.id,
+            },
+            update: {},
+            create: {
+              userId: user.id,
+            },
+          });
+
+          await tx.userSettings.upsert({
             where: {
               userId: user.id,
             },

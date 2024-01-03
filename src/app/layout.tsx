@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
+import { extractRouterConfig } from "uploadthing/server";
 
 import Providers from "@/components/providers";
 
@@ -11,6 +13,7 @@ import { SessionProvider } from "next-auth/react";
 
 import { LayoutProvider } from "@/components/layout-provider";
 import { ThemeProvider } from "@/components/theme-provider";
+import { ourFileRouter } from "@/app/api/uploadthing/core";
 
 export const metadata: Metadata = {
   title: "Streamwise",
@@ -30,6 +33,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             disableTransitionOnChange
             storageKey="streamwise-theme-site"
           >
+            <NextSSRPlugin routerConfig={extractRouterConfig(ourFileRouter)} />
             <LayoutProvider>{children}</LayoutProvider>
           </ThemeProvider>
         </Providers>

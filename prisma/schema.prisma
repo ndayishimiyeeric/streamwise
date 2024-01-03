@@ -36,19 +36,39 @@ enum UserRole {
   ADMIN
 }
 
+enum UserLanguage {
+  ENGLISH
+  FRENCH
+  GERMAN
+  SPANISH
+  PORTUGUESE
+  RUSSIAN
+  JAPANESE
+  KOREAN
+  CHINESE
+}
+
 model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String?   @unique
-  emailVerified DateTime?
-  image         String?   @default("https://utfs.io/f/31d8c1f1-082e-4b5c-88e7-9f4de946ad13-5e5vpb.jpg")
-  password      String?
-  role          UserRole  @default(USER)
+  id             String        @id @default(cuid())
+  name           String?
+  email          String?       @unique
+  emailVerified  DateTime?
+  updateEmail    DateTime?
+  image          String?       @db.Text
+  imagekey       String?       @db.Text
+  password       String?
+  role           UserRole      @default(USER)
+  username       String?       @unique
+  updateUsername DateTime?
+  bio            String?       @db.Text
+  language       UserLanguage? @default(ENGLISH)
 
   isTwoFactorEnabled    Boolean                @default(false)
+  isPrivate             Boolean                @default(false)
   twoFactorConfirmation TwoFactorConfirmation?
 
   accounts Account[]
+  settings UserSettings?
 
   files    File[]
   messages Message[]
@@ -63,6 +83,28 @@ model User {
   chats        Chat[]
   chatMessages ChatMessage[]
   aiModelSubs  AIModelSub[]
+}
+
+enum UserTheme {
+  LIGHT
+  DARK
+}
+
+enum UserFont {
+  BE_VIETNAM
+  INTER
+  POPPINS
+  MONTSERRAT
+  UBUNTU
+  ROBOTO
+}
+
+model UserSettings {
+  id     String    @id @default(uuid())
+  theme  UserTheme @default(LIGHT)
+  font   UserFont  @default(BE_VIETNAM)
+  userId String    @unique
+  user   User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model VerificationCode {
