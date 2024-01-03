@@ -18,11 +18,14 @@ export const newVerification = async (code: string) => {
 
   if (!user) return { error: "Invalid email address" };
 
+  const willUpdateEmail = new Date(new Date().getTime() + 30 * 24 * 3600 * 1000); // 30 days
+
   await db.user.update({
     where: { id: user.id },
     data: {
       emailVerified: new Date(),
       email: _code.email,
+      updateEmail: willUpdateEmail,
     },
   });
 

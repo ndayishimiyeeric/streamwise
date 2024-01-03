@@ -38,7 +38,13 @@ export const AppearanceSchema = z.object({
 export const AccountSchema = z
   .object({
     name: z.optional(z.string()),
-    username: z.optional(z.string()),
+    username: z.optional(
+      z.string().regex(/^[a-zA-Z0-9_]{3,16}$/, {
+        message:
+          "Username must be 3-16 characters long and can only contain letters, numbers, and underscores",
+      })
+    ),
+    updateUsername: z.optional(z.date()),
     bio: z.optional(z.string()),
     language: z.optional(
       z.enum([
@@ -54,6 +60,8 @@ export const AccountSchema = z
       ])
     ),
     email: z.optional(z.string().email({ message: "Please enter a valid email address" })),
+    image: z.optional(z.string().url()),
+    imagekey: z.optional(z.string()),
     isTwoFactorEnabled: z.optional(z.boolean()),
     isPrivate: z.optional(z.boolean()),
     password: z.optional(z.string()),

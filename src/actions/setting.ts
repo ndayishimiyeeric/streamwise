@@ -2,6 +2,7 @@
 
 import { getUserByEmail, getUserById } from "@/data/user";
 import { AccountSchema } from "@/schemas";
+import { utapi } from "@/server/uploadthing";
 import bcryptjs from "bcryptjs";
 import * as z from "zod";
 
@@ -50,6 +51,37 @@ export const updateSettings = async (input: z.infer<typeof AccountSchema>) => {
 
     input.password = hashedPassword;
     input.new_password = undefined;
+  }
+
+  input.updateUsername = undefined;
+  if (input.username && input.username !== session_user.username) {
+    const user_exists = await db.user.findFirst({
+      where: { username: input.username },
+    });
+
+    if (user_exists && user_exists.id !== session_user.id) {
+      return { error: "Username is taken" };
+    }
+
+    const regex = /^[a-zA-Z0-9_]{3,16}$/;
+    const isMatch = regex.test(input.username);
+    if (!isMatch) {
+      return { error: "Username is invalid" };
+    }
+
+    const willUpdateUsername = new Date(new Date().getTime() + 30 * 24 * 3600 * 1000); // 30 days
+
+    input.username = input.username.toLowerCase();
+    input.updateUsername = willUpdateUsername;
+  }
+
+  if (
+    input.image &&
+    input.imagekey &&
+    session_user.imagekey &&
+    input.imagekey !== session_user.imagekey
+  ) {
+    await utapi.deleteFiles(session_user.imagekey);
   }
 
   await db.user.update({

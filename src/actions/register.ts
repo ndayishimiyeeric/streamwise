@@ -25,12 +25,38 @@ export const register = async (values: z.infer<typeof RegisterSchema>) => {
     return { error: "Invalid credentials!" };
   }
 
-  await db.user.create({
-    data: {
-      name,
-      email,
-      password: hashedPassword,
-    },
+  await db.$transaction(async (tx) => {
+    const user = await tx.user.create({
+      data: {
+        email,
+        password: hashedPassword,
+        name,
+      },
+    });
+
+    await tx.aiData.create({
+      data: {
+        userId: user.id,
+      },
+    });
+
+    await tx.userLimit.create({
+      data: {
+        userId: user.id,
+      },
+    });
+
+    await tx.userUsage.create({
+      data: {
+        userId: user.id,
+      },
+    });
+
+    await tx.userSettings.create({
+      data: {
+        userId: user.id,
+      },
+    });
   });
 
   const verificationToken = await generateVerificationCode(email);
