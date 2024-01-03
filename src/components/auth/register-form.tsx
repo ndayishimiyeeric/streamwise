@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { register } from "@/actions/register";
+import { register } from "@/actions/auth/register";
 import { RegisterSchema } from "@/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";

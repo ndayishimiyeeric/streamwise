@@ -2,7 +2,7 @@
 
 import { useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { updateSettings } from "@/actions/setting";
+import { updateSettings } from "@/actions/auth/settings";
 import { AccountSchema } from "@/schemas";
 import { Info } from "lucide-react";
 import { useSession } from "next-auth/react";

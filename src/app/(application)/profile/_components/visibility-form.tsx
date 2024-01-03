@@ -1,8 +1,7 @@
 "use client";
 
 import { useTransition } from "react";
-import Link from "next/link";
-import { updateSettings } from "@/actions/setting";
+import { updateSettings } from "@/actions/auth/settings";
 import { AccountSchema } from "@/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";

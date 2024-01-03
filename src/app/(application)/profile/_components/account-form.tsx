@@ -1,7 +1,7 @@
 "use client";
 
 import { useTransition } from "react";
-import { updateSettings } from "@/actions/setting";
+import { updateSettings } from "@/actions/auth/settings";
 import { AccountSchema } from "@/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { UserLanguage } from "@prisma/client";
