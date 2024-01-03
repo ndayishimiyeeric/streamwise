@@ -93,6 +93,8 @@ export function AccountForm() {
           });
         });
     });
+    form.setValue("password", undefined);
+    form.setValue("new_password", undefined);
   }
 
   return (
@@ -198,7 +200,7 @@ export function AccountForm() {
                     <FormLabel className="text-base">Two-factor authentication</FormLabel>
                     <FormDescription>
                       Enable Two-factor authentication add an extra layer of security on your
-                      account.
+                      account {user?.email}.
                     </FormDescription>
                   </div>
                   <FormControl>
@@ -267,7 +269,7 @@ export function AccountForm() {
                 </PopoverContent>
               </Popover>
               <FormDescription>
-                This is the language that will be used in the dashboard.
+                This is the language that will be used on the platform.
               </FormDescription>
               <FormMessage />
             </FormItem>
