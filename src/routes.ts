@@ -4,7 +4,7 @@
  * @type {string[]}
  */
 
-export const publicRoutes = ["/", "/auth/new-verification"];
+export const publicRoutes = ["/", "/auth/new-verification, /api/webhook, /api/trpc/, /api/trpc/:path*"];
 
 /**
  * Routes that are used for authentication
@@ -18,6 +18,7 @@ export const authRoutes = [
   "/auth/error",
   "/auth/reset",
   "/auth/new-password",
+  "/api/webhook"
 ];
 
 /**
@@ -27,26 +28,5 @@ export const authRoutes = [
  */
 
 export const authApiPrefix = "/api/auth";
-
-/**
- * prefix for trpc ai routes
- * routes that start with this prefix are use for trpc purposes
- * @type {string}
- */
-
-export const trpcApiPrefix = "/api/trpc";
-
-/**
- * prefix for webhooks routes
- * routes that start with this prefix are use for webhooks purposes
- * @type {string}
- */
-
-export const webhooksApiPrefix = "/api/webhook";
-
-/**
- * the default redirect url after login
- * @type {string}
- */
 
 export const DEFAULT_LOGIN_REDIRECT = "/dashboard";

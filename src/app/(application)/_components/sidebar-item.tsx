@@ -27,12 +27,12 @@ const SidebarItem: React.FC<SidebarItemProps> = ({ icon: Icon, label, path }) =>
         buttonVariants({
           variant: isActive ? "default" : "ghost",
           size: "default",
-          className: "w-full items-center justify-start",
+          className: "w-full items-center justify-start transition-all duration-150 ease-in-out",
         })
       )}
     >
-      <Icon className="mr-4 h-4 w-4" />
-      <span className="truncate sm:block">{label}</span>
+      <Icon className="mr-4 h-5 w-5" />
+      <span className="truncate text-base transition-all sm:block">{label}</span>
     </Link>
   );
 };

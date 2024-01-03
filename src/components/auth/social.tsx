@@ -1,5 +1,6 @@
 "use client";
 
+import { useSearchParams } from "next/navigation";
 import { DEFAULT_LOGIN_REDIRECT } from "@/routes";
 import { signIn } from "next-auth/react";
 import { FaDiscord } from "react-icons/fa";
@@ -8,8 +9,11 @@ import { FcGoogle } from "react-icons/fc";
 import { Button } from "@/components/ui/button";
 
 export const Social = () => {
+  const searchParams = useSearchParams();
+  const callBackUrl = searchParams.get("callBackUrl");
+
   const onClick = (provider: "google" | "discord") => {
-    signIn(provider, { callbackUrl: DEFAULT_LOGIN_REDIRECT });
+    signIn(provider, { callbackUrl: callBackUrl || DEFAULT_LOGIN_REDIRECT });
   };
 
   return (

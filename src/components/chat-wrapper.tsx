@@ -2,10 +2,10 @@
 
 import React from "react";
 import Link from "next/link";
+import { getSubscription } from "@/data/user";
 import { AiData } from "@prisma/client";
 import { ChevronLeft, Loader2, XCircle } from "lucide-react";
 
-import { getSubscription } from "@/lib/actions";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
 import ChatInput from "@/components/chat/chat-input";

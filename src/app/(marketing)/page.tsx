@@ -1,34 +1,33 @@
-import MaxWidthWrapper from "@/components/max-width-wrapper";
+import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+
 import { cn } from "@/lib/utils";
-import { buttonVariants } from "@/components/ui/button";
-import Image from "next/image";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { LoginButton } from "@/components/auth/login-button";
+import MaxWidthWrapper from "@/components/max-width-wrapper";
 
 export default function Home() {
   return (
     <>
-      <MaxWidthWrapper className="mb-12 mt-28 sm:mt-40 flex flex-col items-center justify-center text-center">
-        <div className="mx-auto mb-4 flex max-w-fit items-center justify-center space-x-2 overflow-hidden rounded-full border border-gray-200 hover:border-gray-300 bg-white hover:bg-white/30 px-7 py-2 shadow-md backdrop-blur transition-all">
-          <p className="text-sm font-semibold text-gray-700">
-            Streamwise is public!
-          </p>
+      <LoginButton mode="modal" asChild>
+        <Button>Login</Button>
+      </LoginButton>
+      <MaxWidthWrapper className="mb-12 mt-28 flex flex-col items-center justify-center text-center sm:mt-40">
+        <div className="mx-auto mb-4 flex max-w-fit items-center justify-center space-x-2 overflow-hidden rounded-full border border-gray-200 bg-white px-7 py-2 shadow-md backdrop-blur transition-all hover:border-gray-300 hover:bg-white/30">
+          <p className="text-sm font-semibold text-gray-700">Streamwise is public!</p>
         </div>
 
         <h1 className="max-w-4xl text-5xl font-bold md:text-6xl lg:text-7xl">
-          Chat with your <span className="text-blue-600">documents</span> in
-          seconds
+          Chat with your <span className="text-blue-600">documents</span> in seconds
         </h1>
 
         <p className="mt-5 max-w-prose text-zinc-700 sm:text-lg">
-          Streamwise allows you to have conversations with any PDF document.
-          Simply upload your file and start asking questions right away.
+          Streamwise allows you to have conversations with any PDF document. Simply upload your file
+          and start asking questions right away.
         </p>
 
-        <Link
-          className={cn(buttonVariants({ size: "lg" }), "mt-5")}
-          href="/dashboard"
-        >
+        <Link className={cn(buttonVariants({ size: "lg" }), "mt-5")} href="/dashboard">
           Dashboard <ArrowRight className="ml-2 h-5 w-5" />
         </Link>
       </MaxWidthWrapper>
@@ -58,7 +57,7 @@ export default function Home() {
                     width={1907}
                     height={961}
                     quality={100}
-                    className="object-contain pointer-events-none user-select-none rounded-md bg-white p-2 sm:p-20 shadow-2xl ring-1 ring-gray-900/10"
+                    className="user-select-none pointer-events-none rounded-md bg-white object-contain p-2 shadow-2xl ring-1 ring-gray-900/10 sm:p-20"
                   />
                 </div>
               </div>
@@ -84,12 +83,12 @@ export default function Home() {
       <div className="mx-auto my-32 max-w-5xl sm:mt-56">
         <div className="mb-12 px-6 lg:px-8">
           <div className="mx-auto max-w-2xl sm:text-center">
-            <h2 className="mt-2 font-bold text-4xl text-gray-900 sm:text-5xl">
+            <h2 className="mt-2 text-4xl font-bold text-gray-900 sm:text-5xl">
               Start chatting in minutes
             </h2>
             <p className="mt-4 text-lg text-gray-600">
-              Chatting to your PDF documents has never been easier. Simply
-              streamwise your PDF and start chatting.
+              Chatting to your PDF documents has never been easier. Simply streamwise your PDF and
+              start chatting.
             </p>
           </div>
         </div>
@@ -98,15 +97,10 @@ export default function Home() {
           <li className="md:flex-1">
             <div className="flex flex-col space-y-2 border-l-4 border-zinc-300 py-2 pl-4 md:border-l-0 md:border-t-2 md:pb-0 md:pl-0 md:pt-4">
               <span className="text-sm font-medium text-blue-600">Step 1</span>
-              <span className="text-xl font-semibold">
-                Sign up for an account
-              </span>
+              <span className="text-xl font-semibold">Sign up for an account</span>
               <span className="mt-2 text-zinc-700">
                 Either starting with a free plan or choose a{" "}
-                <Link
-                  href="/pricing"
-                  className="text-blue-700 underline underline-offset-2"
-                >
+                <Link href="/pricing" className="text-blue-700 underline underline-offset-2">
                   pro plan.
                 </Link>
               </span>
@@ -116,9 +110,7 @@ export default function Home() {
           <li className="md:flex-1">
             <div className="flex flex-col space-y-2 border-l-4 border-zinc-300 py-2 pl-4 md:border-l-0 md:border-t-2 md:pb-0 md:pl-0 md:pt-4">
               <span className="text-sm font-medium text-blue-600">Step 2</span>
-              <span className="text-xl font-semibold">
-                Upload your PDF document
-              </span>
+              <span className="text-xl font-semibold">Upload your PDF document</span>
               <span className="mt-2 text-zinc-700">
                 We process your file and make it ready for you to chat with.
               </span>
@@ -145,7 +137,7 @@ export default function Home() {
                 width={1419}
                 height={732}
                 quality={100}
-                className="pointer-events-none user-select-none rounded-md bg-white p-2 sm:p-20 shadow-2xl ring-1 ring-gray-900/10"
+                className="user-select-none pointer-events-none rounded-md bg-white p-2 shadow-2xl ring-1 ring-gray-900/10 sm:p-20"
               />
             </div>
           </div>

@@ -1,24 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import {
-  Bot,
-  Cloud,
-  CreditCard,
-  Github,
-  Keyboard,
-  LifeBuoy,
-  LogOut,
-  Mail,
-  MessageSquare,
-  Plus,
-  PlusCircle,
-  Settings,
-  User,
-  UserPlus,
-  Users,
-  Wallet,
-} from "lucide-react";
+import { Bot, CreditCard, Github, LifeBuoy, LogOut, Settings, Wallet } from "lucide-react";
 import { FaUser } from "react-icons/fa";
 
 import { useCurrentUser } from "@/hooks/use-current-user";
@@ -30,12 +13,7 @@ import {
   DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuPortal,
   DropdownMenuSeparator,
-  DropdownMenuShortcut,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
@@ -56,19 +34,21 @@ export const UserButton = () => {
         </Avatar>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-64" align="end">
-        <DropdownMenuLabel className="text-base">My Account</DropdownMenuLabel>
+        <DropdownMenuLabel className="text-base">{user?.name}</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <Link href="/my-ai">
             <DropdownMenuItem>
               <Bot className="mr-2 h-6 w-5" />
-              <span className="text-base font-normal">My ai</span>
+              <span className="text-base font-normal">Custom instrutions</span>
             </DropdownMenuItem>
           </Link>
-          <DropdownMenuItem onClick={onOPen}>
-            <Settings className="mr-2 h-6 w-5" />
-            <span className="text-base font-normal">Setting</span>
-          </DropdownMenuItem>
+          <Link href="/profile">
+            <DropdownMenuItem>
+              <Settings className="mr-2 h-6 w-5" />
+              <span className="text-base font-normal">Settings & Beta</span>
+            </DropdownMenuItem>
+          </Link>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
@@ -79,7 +59,7 @@ export const UserButton = () => {
           <Link href="/upgrade">
             <DropdownMenuItem>
               <Wallet className="mr-2 h-6 w-5" />
-              <span className="text-base font-normal">Plans</span>
+              <span className="text-base font-normal">My Plan</span>
             </DropdownMenuItem>
           </Link>
         </DropdownMenuGroup>

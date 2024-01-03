@@ -35,26 +35,26 @@ function DashboardFileCard({ file, messages }: Props) {
   return (
     <li
       key={file.id}
-      className="col-span-1 divide-y rounded-lg border bg-background shadow transition hover:shadow-lg"
+      className="col-span-1 divide-y overflow-hidden rounded-lg border bg-background shadow transition hover:shadow-lg"
     >
       <Link href={`/dashboard/${file.id}`} className="flex flex-col gap-2">
         <div className="flex w-full items-center justify-between space-x-1 px-6 pt-6">
           <FileIcon className="h-6 w-6" />
           <div className="flex-1 truncate">
             <div className="flex items-center">
-              <h3 className="truncate text-lg font-medium">{file.name}</h3>
+              <h3 className="truncate text-base font-medium">{file.name}</h3>
             </div>
           </div>
         </div>
       </Link>
 
-      <div className="mt-4 grid grid-cols-3 place-items-center gap-6 px-6 py-2 text-xs">
-        <div className="flex items-center gap-2">
+      <div className="mt-4 flex place-items-center gap-6 px-6 py-2 text-xs">
+        <div className="hidden items-center gap-2 sm:flex">
           <Plus className="h-4 w-4" />
           {format(new Date(file.createdAt), "MMM yyyy")}
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-1 items-center gap-2">
           <MessageSquare className="h-4 w-4" />
           {messages.length} messages
         </div>
@@ -71,7 +71,6 @@ function DashboardFileCard({ file, messages }: Props) {
           }}
           variant="destructive"
           size="sm"
-          className="w-full"
           disabled={isLoading}
         >
           {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash className="h-4 w-4" />}

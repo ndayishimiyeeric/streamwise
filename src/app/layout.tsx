@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
 import { extractRouterConfig } from "uploadthing/server";
 
@@ -18,6 +18,13 @@ import { ourFileRouter } from "@/app/api/uploadthing/core";
 export const metadata: Metadata = {
   title: "Streamwise",
   description: "Streamwise is a platform for stream pdf docs with the help of AI.",
+};
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "white" },
+    { media: "(prefers-color-scheme: dark)", color: "black" },
+  ],
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {

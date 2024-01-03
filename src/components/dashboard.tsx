@@ -28,7 +28,7 @@ function Dashboard({ uploadLimit }: Props) {
       </div>
 
       {userFiles && userFiles.length !== 0 ? (
-        <ul className="mt-8 grid grid-cols-1 gap-6 divide-y md:grid-cols-2 lg:grid-cols-3">
+        <ul className="mt-8 grid grid-cols-1 gap-6 divide-y sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
           {userFiles
             .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
             .map((file) => {
