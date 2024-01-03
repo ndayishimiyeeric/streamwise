@@ -26,6 +26,18 @@ export const getUserById = async (id: string) => {
   }
 };
 
+export const getUserSettingsById = async (userId: string) => {
+  try {
+    const userSettings = await db.userSettings.findFirst({
+      where: { userId },
+    });
+
+    return userSettings;
+  } catch {
+    return null;
+  }
+};
+
 export const getSubscription = async (userId: string) => {
   const subscription = await db.subscription.findUnique({
     where: {
