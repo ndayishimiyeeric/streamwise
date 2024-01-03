@@ -1,6 +1,5 @@
 "use server";
 
-import { auth } from "@/auth";
 import { getUserById, getUserSettingsById } from "@/data/user";
 import { AppearanceSchema } from "@/schemas";
 import * as z from "zod";
@@ -9,9 +8,9 @@ import { currentUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 
 export const appearance = async (input: z.infer<typeof AppearanceSchema>) => {
-  const session_user = await auth();
+  const session_user = await currentUser();
   if (!session_user) return { error: "Unauthorized" };
-  const user = await getUserById(session_user.user.id);
+  const user = await getUserById(session_user.id);
   if (!user) return { error: "Unauthorized" };
   const user_settings = await getUserSettingsById(user.id);
   if (!user_settings) return { error: "Unauthorized" };

@@ -5,6 +5,7 @@ import { appearance } from "@/actions/appearance";
 import { AppearanceSchema } from "@/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { UserFont, UserTheme } from "@prisma/client";
+import { Loader2 } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -67,7 +68,11 @@ export function AppearanceForm() {
               description: (
                 <pre className="mt-2 w-[320px] rounded-md bg-primary p-4">
                   <code className="text-primary-foreground">
-                    {JSON.stringify({ success: data.success, input }, null, 2)}
+                    {JSON.stringify(
+                      { success: data.success, font: input.font, theme: input.theme },
+                      null,
+                      2
+                    )}
                   </code>
                 </pre>
               ),
@@ -198,6 +203,7 @@ export function AppearanceForm() {
         />
 
         <Button type="submit" disabled={isPending}>
+          {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           Update preferences
         </Button>
       </form>
