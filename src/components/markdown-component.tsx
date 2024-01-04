@@ -22,24 +22,27 @@ const MarkdownComponent = ({ code }: MarkdownComponentProps) => {
           </div>
         ),
         h1: ({ node, ...props }) => (
-          <h1 className={cn("mt-2 scroll-m-20 text-sm font-bold tracking-tight")} {...props} />
+          <h1 className={cn("mt-2 scroll-m-20 text-2xl font-bold tracking-tight")} {...props} />
         ),
         h2: ({ node, ...props }) => (
           <h2
             className={cn(
-              "mt-10 scroll-m-20 border-b pb-1 text-xs font-semibold tracking-tight first:mt-0"
+              "mt-10 scroll-m-20 border-b pb-1 text-xl font-semibold tracking-tight first:mt-0"
             )}
             {...props}
           />
         ),
         h3: ({ node, ...props }) => (
-          <h3 className={cn("mt-8 scroll-m-20 text-xs font-semibold tracking-tight")} {...props} />
+          <h3 className={cn("mt-8 scroll-m-20 text-lg font-semibold tracking-tight")} {...props} />
         ),
         h4: ({ node, ...props }) => (
-          <h4 className={cn("mt-8 scroll-m-20 text-xs font-semibold tracking-tight")} {...props} />
+          <h4
+            className={cn("mt-8 scroll-m-20 text-base font-semibold tracking-tight")}
+            {...props}
+          />
         ),
         h5: ({ node, ...props }) => (
-          <h5 className={cn("mt-8 scroll-m-20 text-xs font-semibold tracking-tight")} {...props} />
+          <h5 className={cn("mt-8 scroll-m-20 text-sm font-semibold tracking-tight")} {...props} />
         ),
         h6: ({ node, ...props }) => (
           <h6 className={cn("mt-8 scroll-m-20 text-xs font-semibold tracking-tight")} {...props} />

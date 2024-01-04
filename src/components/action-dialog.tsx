@@ -45,7 +45,7 @@ export const ActionDialog = ({
             <DialogTitle>{title}</DialogTitle>
             <DialogDescription>{description}</DialogDescription>
           </DialogHeader>
-          <DialogFooter className="items-center gap-x-2 sm:justify-start">
+          <DialogFooter className="flex flex-row items-center justify-start gap-x-2">
             <Button
               type="button"
               variant="default"
@@ -56,11 +56,9 @@ export const ActionDialog = ({
               {isLoading && <Loader2 className="h-4 w-4 animate-spin" />}
               Confirm
             </Button>
-            <DialogClose asChild>
-              <Button type="button" variant="outline" onClick={onClose} disabled={isLoading}>
-                Cancel
-              </Button>
-            </DialogClose>
+            <Button type="button" variant="outline" onClick={onClose} disabled={isLoading}>
+              Cancel
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

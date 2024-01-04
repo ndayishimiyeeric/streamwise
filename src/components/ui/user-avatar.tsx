@@ -1,5 +1,5 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 type Props = {
   imageUrl?: string;
@@ -10,15 +10,11 @@ type Props = {
 function UserAvatar({ imageUrl, userName, isNextMessageSamePerson }: Props) {
   return (
     <Avatar
-      className={cn("rounded-full border-2  w-8 h-8", {
+      className={cn({
         invisible: isNextMessageSamePerson,
       })}
     >
-      <AvatarImage
-        className="object-contain"
-        src={imageUrl}
-        alt="user profile image"
-      />
+      <AvatarImage src={imageUrl} alt="user profile image" />
       <AvatarFallback>{userName?.[0].toUpperCase()}</AvatarFallback>
     </Avatar>
   );

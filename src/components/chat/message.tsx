@@ -1,10 +1,10 @@
 import React, { forwardRef } from "react";
 import Link from "next/link";
+import { getSubscription } from "@/data/user";
 import { AiData } from "@prisma/client";
 import { format } from "date-fns";
 
 import { ExtendedMessage } from "@/types/message";
-import { getSubscription } from "@/lib/actions";
 import { cn } from "@/lib/utils";
 import BotAvatar from "@/components/ui/bot-avatar";
 import UserAvatar from "@/components/ui/user-avatar";
