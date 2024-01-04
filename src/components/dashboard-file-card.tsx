@@ -71,6 +71,7 @@ export const DashboardFileCard = ({
             ""
           )}" will be permenently deleted.`}
           title="Are you sure you want to delete this file?"
+          isLoading={isLoading}
         />
       )}
       <Popover>

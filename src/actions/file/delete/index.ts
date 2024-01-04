@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { deleteCollectionIfExists, getFileByIdAndUserId } from "@/data/files";
 import { utapi } from "@/server/uploadthing";
 
@@ -35,6 +36,8 @@ const handler = async (data: InputType): Promise<OutputType> => {
       userId: session_user.id,
     },
   });
+
+  revalidatePath(`/dashboard`);
 
   return {
     data: deletedFile,

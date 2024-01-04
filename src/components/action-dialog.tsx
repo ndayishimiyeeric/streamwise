@@ -1,13 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
 
 import { useActionDialog } from "@/hooks/use-action-dialog";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -40,25 +39,27 @@ export const ActionDialog = ({
   return (
     <>
       <Dialog onOpenChange={onClose} open={isOPen}>
-        <DialogContent className="border sm:max-w-md">
+        <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>{title}</DialogTitle>
             <DialogDescription>{description}</DialogDescription>
           </DialogHeader>
-          <DialogFooter className="flex flex-row items-center justify-start gap-x-2">
-            <Button
-              type="button"
-              variant="default"
-              onClick={actionHandler}
-              disabled={isLoading}
-              size="sm"
-            >
-              {isLoading && <Loader2 className="h-4 w-4 animate-spin" />}
-              Confirm
-            </Button>
-            <Button type="button" variant="outline" onClick={onClose} disabled={isLoading}>
-              Cancel
-            </Button>
+          <DialogFooter className="justify-start">
+            <div className="w-full space-x-3">
+              <Button
+                type="button"
+                variant="default"
+                onClick={actionHandler}
+                disabled={isLoading}
+                size="sm"
+              >
+                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Confirm
+              </Button>
+              <Button type="button" variant="outline" onClick={onClose} disabled={isLoading}>
+                Cancel
+              </Button>
+            </div>
           </DialogFooter>
         </DialogContent>
       </Dialog>
