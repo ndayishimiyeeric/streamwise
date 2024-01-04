@@ -1,83 +1,111 @@
+"use client";
+
 import React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { File, Message } from "@prisma/client";
 import { format } from "date-fns";
-import { FileIcon, Loader2, MessageSquare, Plus, Trash } from "lucide-react";
-import toast from "react-hot-toast";
+import { ExternalLink, FileIcon, Trash } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
-import { trpc } from "@/app/_trpc/client";
+import { cn } from "@/lib/utils";
+import { Button, buttonVariants } from "@/components/ui/button";
 
-type FileWithMessages = File & {
-  messages: Message[];
-};
+import { Hint } from "./hint";
+import { Label } from "./ui/label";
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import { Separator } from "./ui/separator";
+
 interface Props {
   file: File;
   messages: Message[];
+  side?: "left" | "right" | "top" | "bottom";
+  align?: "start" | "center" | "end";
+  sideOffset?: number;
 }
 
-function DashboardFileCard({ file, messages }: Props) {
+export const DashboardFileCard = ({
+  file,
+  messages,
+  side = "bottom",
+  align,
+  sideOffset,
+}: Props) => {
   const router = useRouter();
-  const utils = trpc.useContext();
-  const { mutate: deleteFile, isLoading } = trpc.deleteFile.useMutation({
-    onSuccess: () => {
-      utils.getUserFiles.invalidate().then((r) => r);
-    },
-  });
-
-  const handleDelete = async (): Promise<void> => {
-    deleteFile({ id: file.id });
-    await new Promise((resolve) => setTimeout(resolve, 4000));
-    return router.refresh();
-  };
-
   return (
-    <li
-      key={file.id}
-      className="col-span-1 divide-y overflow-hidden rounded-lg border bg-background shadow transition hover:shadow-lg"
-    >
-      <Link href={`/dashboard/${file.id}`} className="flex flex-col gap-2">
-        <div className="flex w-full items-center justify-between space-x-1 px-6 pt-6">
-          <FileIcon className="h-6 w-6" />
-          <div className="flex-1 truncate">
-            <div className="flex items-center">
-              <h3 className="truncate text-base font-medium">{file.name}</h3>
+    <Popover>
+      <PopoverTrigger>
+        <Button
+          variant="outline"
+          size="lg"
+          className="parent-container group h-16 w-full justify-start gap-x-2 rounded-full px-4"
+        >
+          <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-muted shadow-sm transition-all ease-in-out group-hover:bg-primary/90 group-hover:shadow-md">
+            <FileIcon className="icon h-1/2 w-1/2 text-primary/60 group-hover:text-background" />
+          </div>
+          <div className="truncate">
+            <h3 className="text-sm">{file.name.replaceAll(".pdf", "")}</h3>
+            <p className="flex justify-start text-muted-foreground">PDF</p>
+          </div>
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent sideOffset={sideOffset} side={side} align={align} className="w-80">
+        <div className="grid gap-4">
+          <div className="space-y-2">
+            <h4 className="font-medium leading-none">File details</h4>
+            <p className="text-sm text-muted-foreground">This is your file details</p>
+          </div>
+          <div className="grid gap-2">
+            <div className="grid grid-cols-3 items-center gap-4">
+              <Label>Name</Label>
+              <div className="col-span-2 truncate text-sm">{file.name.replaceAll(".pdf", "")}</div>
+            </div>
+            <div className="grid grid-cols-3 items-center gap-4">
+              <Label>Pages</Label>
+              <div className="col-span-2 truncate text-sm">{file.pages}</div>
+            </div>
+            <div className="grid grid-cols-3 items-center gap-4">
+              <Label>Messages</Label>
+              <div className="col-span-2 truncate text-sm">{messages.length}</div>
+            </div>
+            <div className="grid grid-cols-3 items-center gap-4">
+              <Label>Size</Label>
+              <div className="col-span-2 truncate text-sm">{file.size}</div>
+            </div>
+            <div className="grid grid-cols-3 items-center gap-4">
+              <Label>Format</Label>
+              <div className="col-span-2 truncate text-sm">pdf</div>
+            </div>
+            <div className="grid grid-cols-3 items-center gap-4">
+              <Label>Date</Label>
+              <time className="col-span-2 truncate text-sm">
+                {format(new Date(file.updatedAt), "MMM, dd yyyy HH:mm")}
+              </time>
             </div>
           </div>
+          <Separator />
+          <div className="space-x-3">
+            <Hint side="top" description="Open file">
+              <Link
+                href={`/dashboard/${file.id}`}
+                className={cn(
+                  buttonVariants({
+                    variant: "outline",
+                    size: "icon",
+                    className: "h-8 w-8 shadow-none",
+                  })
+                )}
+              >
+                <ExternalLink className="h-4 w-4" />
+              </Link>
+            </Hint>
+            <Hint description="Delete file" side="top">
+              <Button variant="destructive" size="icon" className="h-8 w-8 shadow-none">
+                <Trash className="h-4 w-4" />
+              </Button>
+            </Hint>
+          </div>
         </div>
-      </Link>
-
-      <div className="mt-4 flex place-items-center gap-6 px-6 py-2 text-xs">
-        <div className="hidden items-center gap-2 sm:flex">
-          <Plus className="h-4 w-4" />
-          {format(new Date(file.createdAt), "MMM yyyy")}
-        </div>
-
-        <div className="flex flex-1 items-center gap-2">
-          <MessageSquare className="h-4 w-4" />
-          {messages.length} messages
-        </div>
-
-        <Button
-          onClick={() => {
-            toast
-              .promise(handleDelete(), {
-                loading: "Deleting file...",
-                success: "File deleted",
-                error: "Error deleting file",
-              })
-              .then((r) => r);
-          }}
-          variant="destructive"
-          size="sm"
-          disabled={isLoading}
-        >
-          {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash className="h-4 w-4" />}
-        </Button>
-      </div>
-    </li>
+      </PopoverContent>
+    </Popover>
   );
-}
-
-export default DashboardFileCard;
+};

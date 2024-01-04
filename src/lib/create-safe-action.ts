@@ -5,12 +5,12 @@ export type FielErrors<T> = {
 };
 
 export type ActionState<TInput, TOuput> = {
-  fielErrors: FielErrors<TInput>;
+  fielErrors?: FielErrors<TInput>;
   error?: string | null;
   data?: TOuput;
 };
 
-export const SafeAction = <TInput, TOuput>(
+export const createSafeAction = <TInput, TOuput>(
   schema: z.Schema<TInput>,
   handler: (validData: TInput) => Promise<ActionState<TInput, TOuput>>
 ) => {

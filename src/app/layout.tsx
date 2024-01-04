@@ -35,7 +35,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <Providers>
           <ThemeProvider
             attribute="class"
-            defaultTheme={(session?.user?.settings.theme === "DARK" ? "dark" : "light") || "system"}
+            defaultTheme="system"
             enableSystem
             disableTransitionOnChange
             storageKey="streamwise-theme-site"

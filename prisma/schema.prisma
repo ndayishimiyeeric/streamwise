@@ -197,9 +197,11 @@ model File {
   userId       String
   name         String
   pages        Int              @default(0)
+  size         Int              @default(0)
   uploadStatus FileUploadStatus @default(PENDING)
   url          String           @db.Text
-  key          String
+  key          String           @db.Text
+  correctionId String           @db.Text
 
   messages Message[]
 

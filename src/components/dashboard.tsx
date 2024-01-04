@@ -1,11 +1,11 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { ElementRef, MutableRefObject, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Ghost } from "lucide-react";
 import Skeleton from "react-loading-skeleton";
 
-import DashboardFileCard from "@/components/dashboard-file-card";
+import { DashboardFileCard } from "@/components/dashboard-file-card";
 import UploadButton from "@/components/upload-button";
 import { trpc } from "@/app/_trpc/client";
 
@@ -13,12 +13,6 @@ interface Props {
   uploadLimit?: number;
 }
 function Dashboard({ uploadLimit }: Props) {
-  const router = useRouter();
-
-  useEffect(() => {
-    router.refresh();
-  }, [router]);
-
   const { data: userFiles, isLoading } = trpc.getUserFiles.useQuery();
   return (
     <main className="mx-auto max-w-7xl p-10">
@@ -28,7 +22,7 @@ function Dashboard({ uploadLimit }: Props) {
       </div>
 
       {userFiles && userFiles.length !== 0 ? (
-        <ul className="mt-8 grid grid-cols-1 gap-6 divide-y sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+        <div className="mt-8 grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
           {userFiles
             .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
             .map((file) => {
@@ -47,10 +41,11 @@ function Dashboard({ uploadLimit }: Props) {
                   file={formattedFile}
                   messages={formattedFile.messages}
                   key={file.id}
+                  side="right"
                 />
               );
             })}
-        </ul>
+        </div>
       ) : isLoading ? (
         <Skeleton height={100} className="my-2" count={3} />
       ) : (

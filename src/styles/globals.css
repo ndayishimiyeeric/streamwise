@@ -314,4 +314,30 @@ body,
   --pex: -24px;
 }
 
+.parent-container:hover .icon {
+  animation: rotate-icon-like 0.9s ease-in-out both;
+}
+
+@keyframes rotate-icon-like {
+  0% {
+    transform: rotate(0deg) translate3d(0, 0, 0);
+  }
+
+  25% {
+    transform: rotate(4deg) translate3d(0, 0, 0);
+  }
+
+  50% {
+    transform: rotate(-4deg) translate3d(0, 0, 0);
+  }
+
+  75% {
+    transform: rotate(2deg) translate3d(0, 0, 0);
+  }
+
+  100% {
+    transform: rotate(0deg) translate3d(0, 0, 0);
+  }
+}
+
 @import "~@uploadthing/react/styles.css";
