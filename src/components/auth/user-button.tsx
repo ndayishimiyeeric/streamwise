@@ -1,7 +1,22 @@
 "use client";
 
 import Link from "next/link";
-import { Bot, CreditCard, Github, LifeBuoy, LogOut, Settings, Wallet } from "lucide-react";
+import {
+  Bot,
+  CreditCard,
+  Fingerprint,
+  Github,
+  LifeBuoy,
+  LogOut,
+  Mail,
+  MessageSquare,
+  Palette,
+  PlusCircle,
+  Settings,
+  User,
+  UserPlus,
+  Wallet,
+} from "lucide-react";
 import { FaUser } from "react-icons/fa";
 
 import { useCurrentUser } from "@/hooks/use-current-user";
@@ -13,7 +28,11 @@ import {
   DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
+  DropdownMenuPortal,
   DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
@@ -43,12 +62,34 @@ export const UserButton = () => {
               <span className="text-base font-normal">Custom instrutions</span>
             </DropdownMenuItem>
           </Link>
-          <Link href="/profile">
-            <DropdownMenuItem>
-              <Settings className="mr-2 h-6 w-5" />
+          <DropdownMenuSub>
+            <DropdownMenuSubTrigger>
+              <Settings className="mr-2 h-4 w-4" />
               <span className="text-base font-normal">Settings & Beta</span>
-            </DropdownMenuItem>
-          </Link>
+            </DropdownMenuSubTrigger>
+            <DropdownMenuPortal>
+              <DropdownMenuSubContent>
+                <Link href="/profile/account">
+                  <DropdownMenuItem>
+                    <Fingerprint className="mr-2 h-4 w-4" />
+                    <span className="text-base font-normal">Account</span>
+                  </DropdownMenuItem>
+                </Link>
+                <Link href="/profile">
+                  <DropdownMenuItem>
+                    <User className="mr-2 h-4 w-4" />
+                    <span className="text-base font-normal">Profile</span>
+                  </DropdownMenuItem>
+                </Link>
+                <Link href="/profile/appearance">
+                  <DropdownMenuItem>
+                    <Palette className="mr-2 h-4 w-4" />
+                    <span className="text-base font-normal">Appearance</span>
+                  </DropdownMenuItem>
+                </Link>
+              </DropdownMenuSubContent>
+            </DropdownMenuPortal>
+          </DropdownMenuSub>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>

@@ -1,6 +1,6 @@
+import { getSubscription } from "@/data/user";
 import { AiData } from "@prisma/client";
 
-import { getSubscription } from "@/lib/actions";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
