@@ -4,6 +4,7 @@ import { OpenAIEmbeddings } from "langchain/embeddings/openai";
 import { CharacterTextSplitter } from "langchain/text_splitter";
 import { QdrantVectorStore } from "langchain/vectorstores/qdrant";
 
+import { db } from "@/lib/db";
 import { qdrantClient } from "@/lib/qdrant";
 
 export const processFile = async (url: string, size: number) => {
@@ -89,4 +90,52 @@ export const generateEmbeddings = async (
       collectionName: correctionId,
     }
   );
+};
+
+export const getFileById = async (id: string) => {
+  try {
+    const file = await db.file.findUnique({
+      where: {
+        id,
+      },
+      include: {
+        user: true,
+      },
+    });
+    return file;
+  } catch {
+    return null;
+  }
+};
+
+export const getFileByIdAndUserId = async (id: string, userId: string) => {
+  try {
+    const file = await db.file.findUnique({
+      where: {
+        id,
+        userId,
+      },
+    });
+    return file;
+  } catch {
+    return null;
+  }
+};
+
+export const getUserFilesAndMessageById = async (userId: string) => {
+  const data = await db.file.findMany({
+    where: {
+      userId,
+    },
+    include: {
+      messages: {
+        take: 1,
+      },
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+
+  return data;
 };

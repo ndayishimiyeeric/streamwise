@@ -50,6 +50,7 @@ const handler = async (data: InputType): Promise<OutputType> => {
       pages: numPages,
       url: file[0].url,
       uploadStatus: "COMPLETED",
+      size: fileSize,
     },
   });
 

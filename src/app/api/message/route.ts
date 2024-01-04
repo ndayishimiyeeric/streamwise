@@ -62,7 +62,7 @@ export async function POST(req: NextRequest) {
     const vector_store = await QdrantVectorStore.fromExistingCollection(embeddings, {
       url: process.env.QDRANT_HOST!,
       apiKey: process.env.QDRANT_API_KEY!,
-      collectionName: fileId,
+      collectionName: file.correctionId,
       client: qdrantClient,
     });
 

@@ -67,7 +67,7 @@ function FileUploader({ fileLimit = 4 }: FileUploaderProps) {
             const size = fileResponse.size;
 
             toast.promise(execute({ url, key, name, size }), {
-              loading: "Prossing file...",
+              loading: "Proccessing file...",
               success: "File processed successfully",
               error: "Error while processing file",
             });

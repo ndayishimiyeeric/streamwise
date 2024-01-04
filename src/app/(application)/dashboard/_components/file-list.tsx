@@ -1,29 +1,23 @@
-"use client";
-
-import React, { ElementRef, MutableRefObject, useEffect, useRef } from "react";
-import { useRouter } from "next/navigation";
+import { redirect } from "next/navigation";
+import { getUserFilesAndMessageById } from "@/data/files";
 import { Ghost } from "lucide-react";
-import Skeleton from "react-loading-skeleton";
 
+import { currentUser } from "@/lib/auth";
+import { Skeleton } from "@/components/ui/skeleton";
 import { DashboardFileCard } from "@/components/dashboard-file-card";
-import UploadButton from "@/components/upload-button";
-import { trpc } from "@/app/_trpc/client";
 
-interface Props {
-  uploadLimit?: number;
-}
-function Dashboard({ uploadLimit }: Props) {
-  const { data: userFiles, isLoading } = trpc.getUserFiles.useQuery();
+export const FileList = async () => {
+  const user = await currentUser();
+
+  if (!user) {
+    redirect("/auth/login");
+  }
+  const data = await getUserFilesAndMessageById(user.id);
   return (
-    <main className="mx-auto max-w-7xl p-10">
-      <div className="mt-8 flex flex-col items-start justify-between gap-4 border-b pb-5 sm:flex-row sm:items-center sm:gap-0">
-        <h1 className="text-3xl font-bold">Files</h1>
-        <UploadButton uploadLimit={uploadLimit} />
-      </div>
-
-      {userFiles && userFiles.length !== 0 ? (
+    <>
+      {data && data.length !== 0 ? (
         <div className="mt-8 grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-          {userFiles
+          {data
             .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
             .map((file) => {
               const formattedFile = {
@@ -41,13 +35,11 @@ function Dashboard({ uploadLimit }: Props) {
                   file={formattedFile}
                   messages={formattedFile.messages}
                   key={file.id}
-                  side="right"
+                  side="top"
                 />
               );
             })}
         </div>
-      ) : isLoading ? (
-        <Skeleton height={100} className="my-2" count={3} />
       ) : (
         <div className="mt-16 flex flex-col items-center gap-2">
           <Ghost className="h-8 w-8" />
@@ -55,8 +47,27 @@ function Dashboard({ uploadLimit }: Props) {
           <p>Upload your first PDF</p>
         </div>
       )}
-    </main>
+    </>
   );
-}
+};
 
-export default Dashboard;
+FileList.Skeleton = function FileListSkeleton() {
+  return (
+    <div className="mt-8 grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+      {Array.from({ length: 10 }).map((_, index) => (
+        <div
+          className="inline-flex h-16 w-[200px] items-center justify-start gap-x-2 rounded-full border px-4"
+          key={index}
+        >
+          <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-muted shadow-sm">
+            <Skeleton className="icon h-1/2 w-1/2" />
+          </div>
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-24"></Skeleton>
+            <Skeleton className="h-4 w-10" />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+};
