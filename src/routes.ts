@@ -4,7 +4,13 @@
  * @type {string[]}
  */
 
-export const publicRoutes = ["/", "/auth/new-verification, /api/webhook, /api/trpc/, /api/trpc/:path*"];
+export const publicRoutes = [
+  "/",
+  "/auth/new-verification",
+  "/api/webhooks/stripe",
+  "/api/trpc",
+  "/api/trpc/:path*",
+];
 
 /**
  * Routes that are used for authentication
@@ -18,7 +24,7 @@ export const authRoutes = [
   "/auth/error",
   "/auth/reset",
   "/auth/new-password",
-  "/api/webhook"
+  "/api/webhook",
 ];
 
 /**

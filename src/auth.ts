@@ -1,4 +1,3 @@
-import { connect } from "http2";
 import authConfig from "@/auth.config";
 import { getUserById, getUserSettingsById } from "@/data/user";
 import { PrismaAdapter } from "@auth/prisma-adapter";
@@ -8,7 +7,10 @@ import NextAuth from "next-auth";
 import { db } from "@/lib/db";
 
 import { getAccountByUserId } from "./data/account";
+import { createOrRetrieveCustomer } from "./data/stripe";
+import { getSubscription } from "./data/subscriptions";
 import { getTwoFactorConfirmationByUserId } from "./data/two-factor-confirmation";
+import { SubscriptionWithProduct } from "./types";
 
 export const {
   handlers: { GET, POST },
@@ -46,11 +48,13 @@ export const {
       if (!user) return token;
       const userSettings = await getUserSettingsById(user.id);
       const userAccount = await getAccountByUserId(user.id);
+      const subscription = await getSubscription(user.id);
 
       token.name = user.name;
       token.email = user.email;
       token.role = user.role;
       token.image = user.image;
+      token.subscription = subscription;
       token.bio = user.bio;
       token.username = user.username;
       token.isTwoFactorEnabled = user.isTwoFactorEnabled;
@@ -78,6 +82,10 @@ export const {
 
       if (token.role && session.user) {
         session.user.role = token.role as UserRole;
+      }
+
+      if (token.subscription && session.user) {
+        session.user.subscription = token.subscription as SubscriptionWithProduct;
       }
 
       if (token.image && session.user) {
@@ -171,6 +179,8 @@ export const {
         where: { id: user.id },
         data: { emailVerified: new Date() },
       });
+
+      await createOrRetrieveCustomer(user.email as string, user.id);
     },
   },
   pages: {
