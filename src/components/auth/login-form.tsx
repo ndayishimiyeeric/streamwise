@@ -23,6 +23,8 @@ import { CardWrapper } from "@/components/auth/card-wrapper";
 import { FormError } from "@/components/form-error";
 import { FormSuccess } from "@/components/form-success";
 
+import { StyledInput } from "../form/styled-input";
+
 export const LoginForm = () => {
   const searchParams = useSearchParams();
 
@@ -72,78 +74,82 @@ export const LoginForm = () => {
 
   return (
     <CardWrapper
-      headerLabel="Wellcome back"
-      backButtonLabel="Don't have an account?"
+      headerLabel="Sign in to your account"
+      backbuttonText="Don't have an account?"
+      backButtonLabel="Sign up"
       backButtonHref="/auth/register"
       showSocial
     >
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
-          <div className="space-y-4">
-            {!showTwoFactor && (
-              <>
-                <FormField
-                  name="email"
-                  control={form.control}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Email</FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          type="email"
-                          placeholder="example@mail.com"
-                          disabled={isPending}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  name="password"
-                  control={form.control}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Password</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="password"
-                          {...field}
-                          placeholder="********"
-                          disabled={isPending}
-                        />
-                      </FormControl>
-                      <Button size="sm" variant="link" className="px-0 font-normal" asChild>
-                        <Link href="/auth/reset">Forgot password?</Link>
-                      </Button>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </>
-            )}
-            {showTwoFactor && (
+        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6 py-4">
+          {!showTwoFactor && (
+            <div className="flex flex-col gap-7.5 lg:flex-row lg:justify-between lg:gap-14">
               <FormField
-                name="code"
+                name="email"
                 control={form.control}
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Code</FormLabel>
+                  <FormItem className="w-full">
                     <FormControl>
-                      <Input {...field} placeholder="123456" disabled={isPending} />
+                      <StyledInput
+                        {...field}
+                        type="email"
+                        placeholder="Email"
+                        disabled={isPending}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-            )}
+              <FormField
+                name="password"
+                control={form.control}
+                render={({ field }) => (
+                  <FormItem className="w-full">
+                    <FormControl>
+                      <StyledInput
+                        type="password"
+                        {...field}
+                        placeholder="Password"
+                        disabled={isPending}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          )}
+          {showTwoFactor && (
+            <FormField
+              name="code"
+              control={form.control}
+              render={({ field }) => (
+                <FormItem className="w-full">
+                  <FormControl>
+                    <StyledInput {...field} placeholder="Code" disabled={isPending} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          )}
+          <div>
+            <FormError message={error || urlError} />
+            <FormSuccess message={success} />
           </div>
-          <FormError message={error || urlError} />
-          <FormSuccess message={success} />
-          <Button className="w-full" type="submit" disabled={isPending}>
-            {showTwoFactor ? "Confirm" : "Login"}
-          </Button>
+
+          <div className="flex flex-wrap items-center gap-10 md:justify-between xl:gap-15">
+            <div className="flex flex-wrap gap-4 md:gap-10">
+              <Button size="sm" variant="link" className="px-0 font-normal" asChild>
+                <Link href="/auth/reset">Forgot password?</Link>
+              </Button>
+            </div>
+
+            <Button className="rounded-full py-6" size="lg" type="submit" disabled={isPending}>
+              {showTwoFactor ? "Confirm" : "Sign in"}
+            </Button>
+          </div>
         </form>
       </Form>
     </CardWrapper>

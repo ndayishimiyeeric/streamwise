@@ -9,8 +9,8 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import AppLogo from "@/components/app-logo";
 import { LoginButton } from "@/components/auth/login-button";
 import { UserButton } from "@/components/auth/user-button";
+import { styles } from "@/app/(marketing)/_components/styles";
 
-import { styles } from "../styles";
 import menuData from "./menuData";
 import { MobileNav } from "./mobile-nav";
 import { ModeToggle } from "./mode-toggle";

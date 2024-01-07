@@ -17,12 +17,24 @@ export const Social = () => {
   };
 
   return (
-    <div className="flex w-full items-center gap-x-2">
-      <Button size="lg" className="w-full" variant="outline" onClick={() => onClick("google")}>
-        <FcGoogle className="h-5 w-5" />
+    <div className="flex w-full items-center gap-x-4">
+      <Button
+        size="lg"
+        className="w-full items-center gap-x-2 rounded-full py-6"
+        variant="outline"
+        onClick={() => onClick("google")}
+      >
+        <FcGoogle className="h-5 w-5 flex-shrink-0" />
+        <p className="hidden md:block">Google</p>
       </Button>
-      <Button size="lg" className="w-full" variant="outline" onClick={() => onClick("discord")}>
-        <FaDiscord className="h-5 w-5 text-[#5865F2]" />
+      <Button
+        size="lg"
+        className="w-full items-center gap-x-2 rounded-full py-6"
+        variant="outline"
+        onClick={() => onClick("discord")}
+      >
+        <FaDiscord className="h-5 w-5 flex-shrink-0 text-[#5865F2]" />
+        <p className="hidden md:block">Discord</p>
       </Button>
     </div>
   );

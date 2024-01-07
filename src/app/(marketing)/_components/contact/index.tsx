@@ -7,6 +7,8 @@ import { Send } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { StyledInput } from "@/components/form/styled-input";
+import { StyledTextarea } from "@/components/form/styled-textarea";
 
 export const Contact = () => {
   const [isMounted, setIsMounted] = React.useState(false);
@@ -54,47 +56,29 @@ export const Contact = () => {
               whileInView="visible"
               transition={{ duration: 1, delay: 0.1 }}
               viewport={{ once: true }}
-              className="animate_top w-full rounded-lg bg-background p-7.5 shadow-solid-8  md:w-3/5 lg:w-3/4 xl:p-15"
+              className="animate_top w-full rounded-lg bg-background p-7.5 shadow-solid-4 dark:shadow-solid-8 md:w-3/5 lg:w-3/4 xl:p-15"
             >
-              <h2 className="mb-15 text-3xl font-semibold text-black dark:text-white xl:text-sectiontitle2">
+              <h2 className="mb-15 text-3xl font-semibold text-primary xl:text-sectiontitle2">
                 Send a message
               </h2>
 
               <form action="" method="POST">
                 <div className="mb-7.5 flex flex-col gap-7.5 lg:flex-row lg:justify-between lg:gap-14">
-                  <input
-                    type="text"
-                    placeholder="Full name"
-                    className="w-full border-b border-stroke bg-transparent pb-3.5 focus:border-waterloo focus:placeholder:text-black focus-visible:outline-none dark:border-strokedark dark:focus:border-manatee dark:focus:placeholder:text-white lg:w-1/2"
-                  />
-
-                  <input
-                    type="email"
-                    placeholder="Email address"
-                    className="w-full border-b border-stroke bg-transparent pb-3.5 focus:border-waterloo focus:placeholder:text-black focus-visible:outline-none dark:border-strokedark dark:focus:border-manatee dark:focus:placeholder:text-white lg:w-1/2"
-                  />
+                  <StyledInput type="text" placeholder="Full name" className="lg:w-1/2" />
+                  <StyledInput type="email" placeholder="Email address" className="lg:w-1/2" />
                 </div>
 
                 <div className="mb-12.5 flex flex-col gap-7.5 lg:flex-row lg:justify-between lg:gap-14">
-                  <input
-                    type="text"
-                    placeholder="Subject"
-                    className="w-full border-b border-stroke bg-transparent pb-3.5 focus:border-waterloo focus:placeholder:text-black focus-visible:outline-none dark:border-strokedark dark:focus:border-manatee dark:focus:placeholder:text-white lg:w-1/2"
-                  />
-
-                  <input
-                    type="text"
-                    placeholder="Phone number"
-                    className="w-full border-b border-stroke bg-transparent pb-3.5 focus:border-waterloo focus:placeholder:text-black focus-visible:outline-none dark:border-strokedark dark:focus:border-manatee dark:focus:placeholder:text-white lg:w-1/2"
-                  />
+                  <StyledInput type="text" placeholder="Subject" />
+                  <StyledInput type="tel" placeholder="Phone number" />
                 </div>
 
                 <div className="mb-11.5 flex">
-                  <textarea
-                    placeholder="Message"
+                  <StyledTextarea
                     rows={4}
-                    className="w-full resize-none border-b border-stroke bg-transparent focus:border-waterloo focus:placeholder:text-black focus-visible:outline-none dark:border-strokedark dark:focus:border-manatee dark:focus:placeholder:text-white"
-                  ></textarea>
+                    placeholder="Message"
+                    className="min-h-[23px] resize-none"
+                  />
                 </div>
 
                 <div className="flex flex-wrap gap-4 xl:justify-between ">
@@ -109,7 +93,11 @@ export const Contact = () => {
                     </label>
                   </div>
 
-                  <Button size="lg" className="rounded-full p-8">
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    className="rounded-full p-8 shadow-lg dark:shadow-btn-3"
+                  >
                     Send Message
                     <Send className="ml-2 h-4 w-4" />
                   </Button>
@@ -135,14 +123,12 @@ export const Contact = () => {
               viewport={{ once: true }}
               className="animate_top w-full md:w-2/5 md:p-7.5 lg:w-[26%] xl:pt-15"
             >
-              <h2 className="mb-12.5 text-3xl font-semibold text-black dark:text-white xl:text-sectiontitle2">
+              <h2 className="mb-12.5 text-3xl font-semibold text-primary xl:text-sectiontitle2">
                 Find us
               </h2>
 
               <div className="5 mb-7">
-                <h3 className="mb-4 text-metatitle3 font-medium text-black dark:text-white">
-                  Location
-                </h3>
+                <h3 className="mb-4 text-metatitle3 font-medium text-primary">Location</h3>
                 <p>Paris, France</p>
               </div>
             </motion.div>

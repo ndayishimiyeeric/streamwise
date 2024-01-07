@@ -21,6 +21,8 @@ import { CardWrapper } from "@/components/auth/card-wrapper";
 import { FormError } from "@/components/form-error";
 import { FormSuccess } from "@/components/form-success";
 
+import { StyledInput } from "../form/styled-input";
+
 export const RegisterForm = () => {
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | undefined>("");
@@ -50,39 +52,33 @@ export const RegisterForm = () => {
   return (
     <CardWrapper
       headerLabel="Create an account"
-      backButtonLabel="Already have an account?"
+      backbuttonText="Already have an account?"
+      backButtonLabel="Login"
       backButtonHref="/auth/login"
       showSocial
     >
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
-          <div className="space-y-4">
-            <FormField
-              name="name"
-              control={form.control}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Name</FormLabel>
-                  <FormControl>
-                    <Input {...field} placeholder="John Doe" disabled={isPending} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6 py-4">
+          <FormField
+            name="name"
+            control={form.control}
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <StyledInput {...field} placeholder="Name" disabled={isPending} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <div className="flex flex-col gap-7.5 lg:flex-row lg:justify-between lg:gap-14">
             <FormField
               name="email"
               control={form.control}
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email</FormLabel>
+                <FormItem className="w-full">
                   <FormControl>
-                    <Input
-                      {...field}
-                      placeholder="example@mail.com"
-                      disabled={isPending}
-                      type="email"
-                    />
+                    <StyledInput {...field} placeholder="Email" disabled={isPending} type="email" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -92,21 +88,29 @@ export const RegisterForm = () => {
               name="password"
               control={form.control}
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Password</FormLabel>
+                <FormItem className="w-full">
                   <FormControl>
-                    <Input type="password" {...field} placeholder="********" disabled={isPending} />
+                    <StyledInput
+                      type="password"
+                      {...field}
+                      placeholder="Password"
+                      disabled={isPending}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
           </div>
-          <FormError message={error} />
-          <FormSuccess message={success} />
-          <Button className="w-full" type="submit" disabled={isPending}>
-            Create an account
-          </Button>
+          <div>
+            <FormError message={error} />
+            <FormSuccess message={success} />
+          </div>
+          <div className="flex w-full items-center justify-start md:justify-end">
+            <Button className="rounded-full py-6" type="submit" disabled={isPending}>
+              Create an account
+            </Button>
+          </div>
         </form>
       </Form>
     </CardWrapper>

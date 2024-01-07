@@ -2,11 +2,12 @@
 
 import React, { PropsWithChildren } from "react";
 
-import { PublicNavbar } from "./_components/navbar";
+import { PublicNavbar } from "@/components/navbar/index";
 
 import "./marketing.css";
 
-import { Footer } from "./_components/footer";
+import { Footer } from "@/components/footer";
+
 import { Lines } from "./_components/lines";
 import ScrollToTop from "./_components/scrollToTop";
 
