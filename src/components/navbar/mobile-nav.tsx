@@ -12,7 +12,6 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import AppLogo from "@/components/app-logo";
 import { LoginButton } from "@/components/auth/login-button";
-import { UserButton } from "@/components/auth/user-button";
 
 import menuData from "./menuData";
 
@@ -56,7 +55,9 @@ export const MobileNav = () => {
           </div>
           <div>
             {user ? (
-              <UserButton />
+              <Button asChild className="w-full" size="lg">
+                <Link href="/dashboard">Dasboard</Link>
+              </Button>
             ) : (
               <LoginButton mode="modal" asChild>
                 <Button size="lg" className="w-full">

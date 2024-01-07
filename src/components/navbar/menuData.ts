@@ -19,7 +19,7 @@ const menuData = [
     id: 2,
     title: "Features",
     newTab: false,
-    path: "#features",
+    path: "/#features",
   },
   {
     id: 2.1,

@@ -8,7 +8,6 @@ import { useCurrentUser } from "@/hooks/use-current-user";
 import { Button, buttonVariants } from "@/components/ui/button";
 import AppLogo from "@/components/app-logo";
 import { LoginButton } from "@/components/auth/login-button";
-import { UserButton } from "@/components/auth/user-button";
 import { styles } from "@/app/(marketing)/_components/styles";
 
 import menuData from "./menuData";
@@ -57,9 +56,11 @@ export const PublicNavbar = () => {
                   {link.title}
                 </Link>
               ))}
-              <ModeToggle />
+              {!user && <ModeToggle />}
               {user ? (
-                <UserButton />
+                <Button asChild className="rounded-full" size="sm">
+                  <Link href="/dashboard">Dasboard</Link>
+                </Button>
               ) : (
                 <LoginButton mode="modal" asChild>
                   <Button size="lg" className="rounded-full">
