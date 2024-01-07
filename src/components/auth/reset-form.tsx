@@ -8,18 +8,11 @@ import { useForm } from "react-hook-form";
 import * as z from "zod";
 
 import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { CardWrapper } from "@/components/auth/card-wrapper";
 import { FormError } from "@/components/form-error";
 import { FormSuccess } from "@/components/form-success";
+import { StyledInput } from "@/components/form/styled-input";
 
 export const ResetForm = () => {
   const [isPending, startTransition] = useTransition();
@@ -53,26 +46,29 @@ export const ResetForm = () => {
     >
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
-          <div className="space-y-4">
+          <div className="flex flex-col gap-7.5 lg:flex-row lg:justify-between lg:gap-14">
             <FormField
               name="email"
               control={form.control}
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email</FormLabel>
+                <FormItem className="w-full">
                   <FormControl>
-                    <Input {...field} placeholder="example@mail.com" disabled={isPending} />
+                    <StyledInput {...field} placeholder="Email" disabled={isPending} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
+            <Button
+              className="w-auto min-w-fit rounded-full px-4 py-6"
+              type="submit"
+              disabled={isPending}
+            >
+              Send reset link
+            </Button>
           </div>
           <FormError message={error} />
           <FormSuccess message={success} />
-          <Button className="w-full" type="submit" disabled={isPending}>
-            Send reset link
-          </Button>
         </form>
       </Form>
     </CardWrapper>

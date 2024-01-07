@@ -46,7 +46,9 @@ export const CardWrapper = ({
         viewport={{ once: true }}
         className="animate_top rounded-lg bg-background px-7.5 pt-7.5 shadow-solid-4 dark:shadow-solid-8 xl:px-15 xl:pt-15"
       >
-        <h2 className={cn(styles.heading2, "mb-15 text-center text-primary")}>{headerLabel}</h2>
+        <h2 className="mb-15 text-center text-2xl font-bold text-primary md:text-4xl">
+          {headerLabel}
+        </h2>
         {showSocial && <Social />}
         {showSocial && (
           <div className="my-12 flex items-center justify-center lg:mx-auto lg:max-w-md">

@@ -22,6 +22,8 @@ import { CardWrapper } from "@/components/auth/card-wrapper";
 import { FormError } from "@/components/form-error";
 import { FormSuccess } from "@/components/form-success";
 
+import { StyledInput } from "../form/styled-input";
+
 export const NewPasswordForm = () => {
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | undefined>("");
@@ -57,26 +59,34 @@ export const NewPasswordForm = () => {
     >
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
-          <div className="space-y-4">
+          <div className="flex flex-col gap-7.5 lg:flex-row lg:justify-between lg:gap-14">
             <FormField
               name="password"
               control={form.control}
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Password</FormLabel>
+                <FormItem className="w-full">
                   <FormControl>
-                    <Input {...field} placeholder="********" disabled={isPending} type="password" />
+                    <StyledInput
+                      {...field}
+                      placeholder="New password"
+                      disabled={isPending}
+                      type="password"
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
+            <Button
+              className="w-auto min-w-fit rounded-full px-4 py-6"
+              type="submit"
+              disabled={isPending}
+            >
+              Reset password
+            </Button>
           </div>
           <FormError message={error} />
           <FormSuccess message={success} />
-          <Button className="w-full" type="submit" disabled={isPending}>
-            Reset password
-          </Button>
         </form>
       </Form>
     </CardWrapper>

@@ -3,7 +3,8 @@
 import { useCallback, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { newVerification } from "@/actions/auth/new-verification";
-import { PulseLoader } from "react-spinners";
+import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 import { CardWrapper } from "@/components/auth/card-wrapper";
 import { FormError } from "@/components/form-error";
@@ -38,6 +39,19 @@ export const NewVerificationForm = () => {
     onSubmit();
   }, [onSubmit]);
 
+  if (error || success) {
+    toast("Verification status", {
+      description: (
+        <pre className="mt-2 w-[320px] rounded-md bg-primary p-4">
+          <code className="text-primary-foreground">
+            {JSON.stringify({ error: error || undefined, success: success || undefined }, null, 2)}
+          </code>
+        </pre>
+      ),
+      duration: 10000,
+    });
+  }
+
   return (
     <CardWrapper
       headerLabel="Confirming your verification"
@@ -45,8 +59,8 @@ export const NewVerificationForm = () => {
       backButtonLabel="Back to login"
     >
       <div className="flex w-full items-center justify-center">
-        {!error && !success && <PulseLoader className="animate-pulse" />}
-        {!!success && <FormError message={error} />}
+        {!error && !success && <Loader2 className="h-5 w-6 animate-spin" />}
+        {!!success && error && <FormError message={error} />}
         <FormSuccess message={success} />
       </div>
     </CardWrapper>
