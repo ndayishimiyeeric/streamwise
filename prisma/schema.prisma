@@ -67,17 +67,18 @@ model User {
   isPrivate             Boolean                @default(false)
   twoFactorConfirmation TwoFactorConfirmation?
 
-  accounts Account[]
-  settings UserSettings?
+  accounts      Account[]
+  settings      UserSettings?
+  customer      Customer?
+  subscriptions Subscription?
 
   files    File[]
   messages Message[]
 
-  userLimit    UserLimit?
-  userUsage    UserUsage?
-  subscription Subscription?
-  aiData       AiData?
-  purchases    UserPurchase[]
+  userLimit UserLimit?
+  userUsage UserUsage?
+  aiData    AiData?
+  purchases UserPurchase[]
 
   aiModels     AIModel[]
   chats        Chat[]
@@ -162,16 +163,6 @@ model UserUsage {
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
   user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
-model Subscription {
-  id                     String    @id @default(uuid())
-  userId                 String    @unique
-  stripeCustomerId       String?   @unique @map("stripe_customer_id")
-  stripeSubscriptionId   String?   @unique @map("stripe_subscription_id")
-  stripePriceId          String?   @map("stripe_price_id")
-  stripeCurrentPeriodEnd DateTime? @map("stripe_current_period_end")
-  user                   User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model UserPurchase {
@@ -331,4 +322,88 @@ model AIModel {
   updatedAt DateTime @updatedAt
 
   @@index([userId])
+}
+
+// stripe implementation
+
+model Customer {
+  id               String @id @default(uuid())
+  userId           String @unique
+  stripeCustomerId String @unique @map("stripe_customer_id") @db.Text
+  user             User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @db.Timestamptz(3)
+
+  @@unique([stripeCustomerId, userId])
+}
+
+model Product {
+  id              String  @id @default(uuid())
+  stripeProductId String  @unique @map("stripe_product_id") @db.Text
+  active          Boolean
+  name            String
+  description     String? @db.Text
+  image           String? @db.Text
+  metadata        Json?
+  prices          Price[]
+}
+
+enum PricingType {
+  one_time
+  recurring
+}
+
+enum PricingPlanInterval {
+  day
+  week
+  month
+  year
+}
+
+model Price {
+  id              String               @id @default(uuid())
+  priceId         String               @unique @map("price_id") @db.Text
+  productId       String?              @map("product_id")
+  active          Boolean
+  description     String?              @db.Text
+  unitAmount      BigInt?              @map("unit_amount")
+  currency        String               @db.VarChar(3)
+  type            PricingType
+  interval        PricingPlanInterval?
+  intervalCount   Int?                 @map("interval_count")
+  trialPeriodDays Int?                 @map("trial_period_days")
+  metadata        Json?
+  product         Product?             @relation(fields: [productId], references: [stripeProductId])
+}
+
+enum SubscriptionStatus {
+  active
+  past_due
+  canceled
+  unpaid
+  incomplete
+  incomplete_expired
+  trialing
+  paused
+}
+
+model Subscription {
+  id                   String             @id @default(uuid())
+  stripeSubscriptionId String             @unique @map("stripe_subscription_id") @db.Text
+  userId               String             @unique
+  status               SubscriptionStatus
+  metadata             Json?
+  priceId              String             @map("price_id")
+  quantity             Int?
+  cancelAtPeriodEnd    Boolean            @map("cancel_at_period_end")
+  created              DateTime           @db.Timestamptz(3)
+  currentPeriodStart   DateTime           @map("current_period_start") @db.Timestamptz(3)
+  currentPeriodEnd     DateTime           @map("current_period_end") @db.Timestamptz(3)
+  endedAt              DateTime?          @map("ended_at") @db.Timestamptz(3)
+  cancelAt             DateTime?          @map("cancel_at") @db.Timestamptz(3)
+  canceledAt           DateTime?          @map("canceled_at") @db.Timestamptz(3)
+  trialStart           DateTime?          @map("trial_start") @db.Timestamptz(3)
+  trialEnd             DateTime?          @map("trial_end") @db.Timestamptz(3)
+  user                 User               @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
