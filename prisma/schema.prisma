@@ -67,18 +67,16 @@ model User {
   isPrivate             Boolean                @default(false)
   twoFactorConfirmation TwoFactorConfirmation?
 
-  accounts      Account[]
-  settings      UserSettings?
-  customer      Customer?
-  subscriptions Subscription?
+  accounts     Account[]
+  settings     UserSettings?
+  customer     Customer?
+  subscription Subscription?
 
   files    File[]
   messages Message[]
 
-  userLimit UserLimit?
   userUsage UserUsage?
   aiData    AiData?
-  purchases UserPurchase[]
 
   aiModels     AIModel[]
   chats        Chat[]
@@ -143,18 +141,6 @@ model TwoFactorConfirmation {
   @@unique([userId])
 }
 
-model UserLimit {
-  id             String   @id @default(uuid())
-  userId         String   @unique
-  queryLimit     Int      @default(50)
-  pdfUploadLimit Int      @default(5)
-  maxPagesPdf    Int      @default(5)
-  maxFileSize    Int      @default(4)
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
 model UserUsage {
   id             String   @id @default(uuid())
   userId         String   @unique
@@ -163,17 +149,6 @@ model UserUsage {
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
   user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
-model UserPurchase {
-  id        String   @id @default(uuid())
-  userId    String
-  amount    Int
-  success   Boolean  @default(false)
-  createdAt DateTime @default(now())
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId])
 }
 
 enum FileUploadStatus {

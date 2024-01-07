@@ -40,12 +40,6 @@ export const register = async (values: z.infer<typeof RegisterSchema>) => {
       },
     });
 
-    await tx.userLimit.create({
-      data: {
-        userId: user.id,
-      },
-    });
-
     await tx.userUsage.create({
       data: {
         userId: user.id,

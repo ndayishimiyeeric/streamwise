@@ -1,5 +1,4 @@
 import { auth } from "@/auth";
-import { checkPdfUploadUsage, getUserMaxFileLimit } from "@/data/user";
 import { TRPCError } from "@trpc/server";
 import { createUploadthing, type FileRouter } from "uploadthing/next";
 
@@ -12,7 +11,7 @@ const handleAuth = async () => {
     throw new Error("Not authenticated");
   }
 
-  const isAllowed = await checkPdfUploadUsage(session.user.id);
+  const isAllowed = true;
 
   if (!isAllowed) {
     throw new TRPCError({
@@ -22,9 +21,7 @@ const handleAuth = async () => {
     });
   }
 
-  const userFileLimits = await getUserMaxFileLimit(session.user.id);
-
-  return { userId: session.user.id, userFileLimits };
+  return { userId: session.user.id };
 };
 
 export const ourFileRouter = {

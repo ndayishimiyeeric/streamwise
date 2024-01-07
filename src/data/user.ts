@@ -1,6 +1,4 @@
-import { PLANS } from "@/config/plans/plan";
 import { db } from "@/lib/db";
-import { stripe } from "@/lib/stripe";
 
 const DAY_IN_MS = 86_400_000;
 
@@ -64,26 +62,6 @@ export const increasePromptUsage = async (userId: string) => {
   }
 };
 
-export const checkPromptUsage = async (userId: string) => {
-  const userUsageExits = await db.userUsage.findUnique({
-    where: {
-      userId,
-    },
-  });
-
-  if (!userUsageExits) return true;
-
-  const userLimit = await db.userLimit.findUnique({
-    where: {
-      userId,
-    },
-  });
-
-  if (!userLimit) return true;
-
-  return userUsageExits.queryUsage < userLimit.queryLimit;
-};
-
 export const getPromptUsage = async (userId: string) => {
   const userUsageExits = await db.userUsage.findUnique({
     where: {
@@ -124,26 +102,6 @@ export const increasePdfUploadUsage = async (userId: string) => {
   }
 };
 
-export const checkPdfUploadUsage = async (userId: string) => {
-  const userUsageExits = await db.userUsage.findUnique({
-    where: {
-      userId,
-    },
-  });
-
-  if (!userUsageExits) return true;
-
-  const userLimit = await db.userLimit.findUnique({
-    where: {
-      userId,
-    },
-  });
-
-  if (!userLimit) return true;
-
-  return userUsageExits.pdfUploadUsage < userLimit.pdfUploadLimit;
-};
-
 export const getPdfUploadUsage = async (userId: string) => {
   const userUsageExits = await db.userUsage.findUnique({
     where: {
@@ -154,41 +112,6 @@ export const getPdfUploadUsage = async (userId: string) => {
   if (!userUsageExits) return 0;
 
   return userUsageExits.pdfUploadUsage;
-};
-
-export const getUserMaxFileLimit = async (userId: string) => {
-  const userLimit = await db.userLimit.findUnique({
-    where: {
-      userId,
-    },
-    select: {
-      maxFileSize: true,
-      maxPagesPdf: true,
-    },
-  });
-
-  return {
-    maxFileSize: userLimit?.maxFileSize || 4,
-    maxPagesPdf: userLimit?.maxPagesPdf || 5,
-  };
-};
-
-export const getPurchases = async (userId: string) => {
-  const purchases = await db.userPurchase.findMany({
-    where: {
-      userId,
-    },
-  });
-
-  if (!purchases) {
-    return [];
-  }
-
-  return purchases.map((purchase) => ({
-    date: purchase.createdAt,
-    amount: purchase.amount,
-    status: purchase.success ? "Success" : "Failed",
-  }));
 };
 
 export interface GraphData {

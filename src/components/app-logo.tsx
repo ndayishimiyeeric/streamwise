@@ -1,9 +1,17 @@
 import React from "react";
 import Image from "next/image";
 
-const AppLogo = () => {
+import { cn } from "@/lib/utils";
+
+interface AppLogoProps {
+  className?: string;
+  width?: number;
+  height?: number;
+}
+
+const AppLogo = ({ className, width, height }: AppLogoProps) => {
   return (
-    <div className="relative h-10 w-48">
+    <div className={cn("relative h-10 w-48", className)}>
       <Image
         src="/logo-dark.svg"
         fill

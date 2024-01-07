@@ -141,16 +141,6 @@ export const {
             },
           });
 
-          await tx.userLimit.upsert({
-            where: {
-              userId: user.id,
-            },
-            update: {},
-            create: {
-              userId: user.id,
-            },
-          });
-
           await tx.userUsage.upsert({
             where: {
               userId: user.id,
