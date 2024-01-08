@@ -11,7 +11,6 @@ import { FaArrowRight } from "react-icons/fa";
 import { toast } from "sonner";
 
 import { PriceWithQuantity } from "@/types";
-import { getStripe } from "@/lib/stripe-client";
 import { cn } from "@/lib/utils";
 import { useAction } from "@/hooks/use-action";
 import { useCurrentUser } from "@/hooks/use-current-user";
@@ -43,7 +42,6 @@ export const Pricing = ({ products, action, className }: PricingProps) => {
 
   const { execute: createSession, isLoading: createLoading } = useAction(createStripeSession, {
     async onSuccess(data) {
-      toast.success(data.url);
       router.push(data.url);
     },
     onError(error) {
@@ -89,7 +87,7 @@ export const Pricing = ({ products, action, className }: PricingProps) => {
   };
 
   return (
-    <div className="flex flex-col items-center gap-y-4">
+    <div className="flex flex-col items-center gap-y-6">
       <div>
         <Button
           size="sm"
