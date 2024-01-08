@@ -369,7 +369,7 @@ model Price {
   productId       String?              @map("product_id")
   active          Boolean
   description     String?              @db.Text
-  unitAmount      BigInt?              @map("unit_amount")
+  unitAmount      Int?                 @map("unit_amount")
   currency        String               @db.VarChar(3)
   type            PricingType
   interval        PricingPlanInterval?
