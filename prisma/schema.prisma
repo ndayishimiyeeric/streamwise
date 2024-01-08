@@ -29,6 +29,7 @@ model Account {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
+  @@map("accounts")
 }
 
 enum UserRole {
@@ -82,6 +83,11 @@ model User {
   chats        Chat[]
   chatMessages ChatMessage[]
   aiModelSubs  AIModelSub[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
 }
 
 enum UserTheme {
@@ -104,6 +110,8 @@ model UserSettings {
   font   UserFont  @default(BE_VIETNAM)
   userId String    @unique
   user   User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_settings")
 }
 
 model VerificationCode {
@@ -113,6 +121,7 @@ model VerificationCode {
   expires DateTime
 
   @@unique([email, code])
+  @@map("verification_codes")
 }
 
 model PasswordResetCode {
@@ -122,6 +131,7 @@ model PasswordResetCode {
   expires DateTime
 
   @@unique([email, code])
+  @@map("password_reset_codes")
 }
 
 model TwoFactorCode {
@@ -131,6 +141,7 @@ model TwoFactorCode {
   expires DateTime
 
   @@unique([email, code])
+  @@map("two_factor_codes")
 }
 
 model TwoFactorConfirmation {
@@ -139,6 +150,7 @@ model TwoFactorConfirmation {
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId])
+  @@map("two_factor_confirmations")
 }
 
 model UserUsage {
@@ -149,6 +161,8 @@ model UserUsage {
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
   user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_usage")
 }
 
 enum FileUploadStatus {
@@ -177,6 +191,7 @@ model File {
 
   @@unique([userId, key, name])
   @@index([userId])
+  @@map("files")
 }
 
 model Message {
@@ -194,6 +209,7 @@ model Message {
 
   @@index([fileId])
   @@index([userId])
+  @@map("messages")
 }
 
 model AiData {
@@ -207,6 +223,8 @@ model AiData {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@map("ai_data")
 }
 
 // New Features for AI Model User Creation
@@ -225,6 +243,7 @@ model ModelFile {
   updatedAt DateTime @updatedAt
 
   @@index([aiModelId])
+  @@map("model_files")
 }
 
 model Chat {
@@ -243,6 +262,7 @@ model Chat {
 
   @@index([userId])
   @@index([aiModelId])
+  @@map("chats")
 }
 
 model ChatMessage {
@@ -260,6 +280,7 @@ model ChatMessage {
 
   @@index([chatId])
   @@index([userId])
+  @@map("chat_messages")
 }
 
 model AIModelSub {
@@ -276,6 +297,7 @@ model AIModelSub {
   @@unique([aiModelId, userId])
   @@index([aiModelId])
   @@index([userId])
+  @@map("ai_model_subscriptions")
 }
 
 model AIModel {
@@ -297,6 +319,7 @@ model AIModel {
   updatedAt DateTime @updatedAt
 
   @@index([userId])
+  @@map("ai_models")
 }
 
 // stripe implementation
@@ -311,6 +334,7 @@ model Customer {
   updatedAt DateTime @updatedAt @db.Timestamptz(3)
 
   @@unique([stripeCustomerId, userId])
+  @@map("customers")
 }
 
 model Product {
@@ -320,8 +344,11 @@ model Product {
   name            String
   description     String? @db.Text
   image           String? @db.Text
+  features        Json?
   metadata        Json?
   prices          Price[]
+
+  @@map("products")
 }
 
 enum PricingType {
@@ -350,6 +377,8 @@ model Price {
   trialPeriodDays Int?                 @map("trial_period_days")
   metadata        Json?
   product         Product?             @relation(fields: [productId], references: [stripeProductId])
+
+  @@map("prices")
 }
 
 enum SubscriptionStatus {
@@ -381,4 +410,6 @@ model Subscription {
   trialStart           DateTime?          @map("trial_start") @db.Timestamptz(3)
   trialEnd             DateTime?          @map("trial_end") @db.Timestamptz(3)
   user                 User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("subscriptions")
 }
