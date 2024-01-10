@@ -1,8 +1,13 @@
+import { unlink, writeFile } from "fs/promises";
 import { ApiError } from "@qdrant/openapi-typescript-fetch";
+import axios from "axios";
+import { Document } from "langchain/document";
 import { PDFLoader } from "langchain/document_loaders/fs/pdf";
+import { UnstructuredLoader } from "langchain/document_loaders/fs/unstructured";
 import { OpenAIEmbeddings } from "langchain/embeddings/openai";
 import { CharacterTextSplitter } from "langchain/text_splitter";
 import { QdrantVectorStore } from "langchain/vectorstores/qdrant";
+import { PDFDocument } from "pdf-lib";
 
 import { db } from "@/lib/db";
 import { qdrantClient } from "@/lib/qdrant";
@@ -138,4 +143,38 @@ export const getUserFilesAndMessageById = async (userId: string) => {
   });
 
   return data;
+};
+
+export const loadFileFromUrl = async (url: string) => {
+  const response = await axios.get(url, {
+    responseType: "arraybuffer",
+  });
+
+  return Buffer.from(response.data);
+};
+
+export const deletePages = async (pdf: Buffer, pagesToDelete: number[]): Promise<Buffer> => {
+  const pdfDoc = await PDFDocument.load(pdf);
+  let offset = 1;
+
+  for (const page of pagesToDelete) {
+    pdfDoc.removePage(page - offset);
+    offset++;
+  }
+
+  const pdfBytes = await pdfDoc.save();
+  return Buffer.from(pdfBytes);
+};
+
+export const convertPdfToDocuments = async (pdf: Buffer): Promise<Array<Document>> => {
+  const randomName = Math.random().toString(36).substring(7);
+  await writeFile(`/tmp/${randomName}.pdf`, pdf, "binary");
+  const loader = new UnstructuredLoader(`/tmp/${randomName}.pdf`, {
+    apiKey: process.env.UNSTRUCTURED_API_KEY!,
+    apiUrl: process.env.UNSTRUCTURED_API_URL!,
+    strategy: "hi_res",
+  });
+  const documents = await loader.load();
+  await unlink(`/tmp/${randomName}.pdf`);
+  return documents;
 };
