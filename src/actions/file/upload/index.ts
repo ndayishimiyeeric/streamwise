@@ -37,9 +37,9 @@ const handler = async (data: InputType): Promise<OutputType> => {
   }
 
   const { pageLevelDocs, numPages, fileSize } = await processFile(url, size);
-  const chunks = await getFileChunks(pageLevelDocs, numPages);
+  // const chunks = await getFileChunks(pageLevelDocs, numPages);
   const correctionId = uuidv4();
-  await getOrCreateCollectionIfNotExists(correctionId);
+  // await getOrCreateCollectionIfNotExists(correctionId);
 
   const dbFile = await db.file.create({
     data: {
@@ -49,12 +49,12 @@ const handler = async (data: InputType): Promise<OutputType> => {
       key,
       pages: numPages,
       url: file[0].url,
-      uploadStatus: "COMPLETED",
+      uploadStatus: "PENDING",
       size: fileSize,
     },
   });
 
-  await generateEmbeddings(chunks, correctionId);
+  // await generateEmbeddings(chunks, correctionId);
   revalidatePath(`/dashboard/${dbFile.id}`);
   revalidatePath(`/dashboard`);
   return { data: dbFile };
