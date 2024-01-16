@@ -30,21 +30,21 @@ export const viewport: Viewport = {
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
   return (
-    <SessionProvider session={session}>
-      <html lang="en" suppressHydrationWarning>
-        <Providers>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-            storageKey="streamwise-theme-site"
-          >
+    <html lang="en" suppressHydrationWarning>
+      <SessionProvider session={session}>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+          storageKey="streamwise-theme-site"
+        >
+          <Providers>
             <NextSSRPlugin routerConfig={extractRouterConfig(ourFileRouter)} />
             <LayoutProvider>{children}</LayoutProvider>
-          </ThemeProvider>
-        </Providers>
-      </html>
-    </SessionProvider>
+          </Providers>
+        </ThemeProvider>
+      </SessionProvider>
+    </html>
   );
 }

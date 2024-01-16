@@ -1,8 +1,8 @@
 import React, { createContext, useRef, useState } from "react";
-import { useMutation } from "@tanstack/react-query";
-import { trpc } from "@/app/_trpc/client";
-import { QUERY_LIMIT } from "@/config/user-usage";
 import { useRouter } from "next/navigation";
+import { useMutation } from "@tanstack/react-query";
+
+import { trpc } from "@/app/_trpc/client";
 
 type ChatContextProps = {
   addMessage: () => void;
@@ -63,37 +63,32 @@ export const ChatContextProvider = ({ fileId, children }: Props) => {
       const previousMessages = utils.getFileMessages.getInfiniteData();
 
       // optimistically update to the new value
-      utils.getFileMessages.setInfiniteData(
-        { fileId, limit: QUERY_LIMIT },
-        (old) => {
-          if (!old) return { pages: [], pageParams: [] };
+      utils.getFileMessages.setInfiniteData({ fileId, limit: 10 }, (old) => {
+        if (!old) return { pages: [], pageParams: [] };
 
-          let newPages = [...old.pages];
+        let newPages = [...old.pages];
 
-          let latestPage = newPages[0];
+        let latestPage = newPages[0];
 
-          latestPage.messages = [
-            {
-              id: crypto.randomUUID(),
-              createdAt: new Date().toISOString(),
-              text: message,
-              isUserMessage: true,
-            },
-            ...latestPage.messages,
-          ];
+        latestPage.messages = [
+          {
+            id: crypto.randomUUID(),
+            createdAt: new Date().toISOString(),
+            text: message,
+            isUserMessage: true,
+          },
+          ...latestPage.messages,
+        ];
 
-          newPages[0] = latestPage;
+        newPages[0] = latestPage;
 
-          return { ...old, pages: newPages };
-        },
-      );
+        return { ...old, pages: newPages };
+      });
 
       setIsLoading(true);
 
       return {
-        previousMessages: previousMessages?.pages.flatMap(
-          (page) => page.messages ?? [],
-        ),
+        previousMessages: previousMessages?.pages.flatMap((page) => page.messages ?? []),
       };
     },
 
@@ -122,61 +117,55 @@ export const ChatContextProvider = ({ fileId, children }: Props) => {
 
         // append to the last message
 
-        utils.getFileMessages.setInfiniteData(
-          { fileId, limit: QUERY_LIMIT },
-          (old) => {
-            if (!old) return { pages: [], pageParams: [] };
+        utils.getFileMessages.setInfiniteData({ fileId, limit: 10 }, (old) => {
+          if (!old) return { pages: [], pageParams: [] };
 
-            let isAiResponseCreated = old.pages.some((page) =>
-              page.messages.some((message) => message.id === "ai-response"),
-            );
+          let isAiResponseCreated = old.pages.some((page) =>
+            page.messages.some((message) => message.id === "ai-response")
+          );
 
-            let updatedPages = old.pages.map((page) => {
-              if (page === old.pages[0]) {
-                let latestMessages;
+          let updatedPages = old.pages.map((page) => {
+            if (page === old.pages[0]) {
+              let latestMessages;
 
-                if (!isAiResponseCreated) {
-                  latestMessages = [
-                    {
-                      id: "ai-response",
-                      createdAt: new Date().toISOString(),
+              if (!isAiResponseCreated) {
+                latestMessages = [
+                  {
+                    id: "ai-response",
+                    createdAt: new Date().toISOString(),
+                    text: response,
+                    isUserMessage: false,
+                  },
+                  ...page.messages,
+                ];
+              } else {
+                latestMessages = page.messages.map((message) => {
+                  if (message.id === "ai-response") {
+                    return {
+                      ...message,
                       text: response,
-                      isUserMessage: false,
-                    },
-                    ...page.messages,
-                  ];
-                } else {
-                  latestMessages = page.messages.map((message) => {
-                    if (message.id === "ai-response") {
-                      return {
-                        ...message,
-                        text: response,
-                      };
-                    }
-                    return message;
-                  });
-                }
-
-                return {
-                  ...page,
-                  messages: latestMessages,
-                };
+                    };
+                  }
+                  return message;
+                });
               }
 
-              return page;
-            });
-            return { ...old, pages: updatedPages };
-          },
-        );
+              return {
+                ...page,
+                messages: latestMessages,
+              };
+            }
+
+            return page;
+          });
+          return { ...old, pages: updatedPages };
+        });
       }
     },
 
     onError: async (_, __, context) => {
       setMessage(backupMessageRef.current);
-      utils.getFileMessages.setData(
-        { fileId },
-        { messages: context?.previousMessages ?? [] },
-      );
+      utils.getFileMessages.setData({ fileId }, { messages: context?.previousMessages ?? [] });
       await utils.getFileMessages.invalidate({ fileId });
     },
 
@@ -192,9 +181,7 @@ export const ChatContextProvider = ({ fileId, children }: Props) => {
   };
 
   return (
-    <ChatContext.Provider
-      value={{ addMessage, message, handleInputChange, isLoading }}
-    >
+    <ChatContext.Provider value={{ addMessage, message, handleInputChange, isLoading }}>
       {children}
     </ChatContext.Provider>
   );

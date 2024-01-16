@@ -1,18 +1,19 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogBody,
+  DialogContent,
+  DialogSurface,
+  DialogTitle,
+  DialogTrigger,
+} from "@fluentui/react-components";
 import { Loader2 } from "lucide-react";
 
 import { useActionDialog } from "@/hooks/use-action-dialog";
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 
 interface ActionDialogProps {
   actionHandler: () => void;
@@ -38,30 +39,23 @@ export const ActionDialog = ({
 
   return (
     <>
-      <Dialog onOpenChange={onClose} open={isOPen}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
+      <Dialog open={isOPen} onOpenChange={onClose}>
+        <DialogSurface>
+          <DialogBody>
             <DialogTitle>{title}</DialogTitle>
-            <DialogDescription>{description}</DialogDescription>
-          </DialogHeader>
-          <DialogFooter className="justify-start">
-            <div className="w-full space-x-3">
-              <Button
-                type="button"
-                variant="default"
-                onClick={actionHandler}
-                disabled={isLoading}
-                size="sm"
-              >
-                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Confirm
+            <DialogContent>{description}</DialogContent>
+            <DialogActions>
+              <DialogTrigger disableButtonEnhancement>
+                <Button appearance="secondary" disabled={isLoading} onClick={onClose}>
+                  Cancel
+                </Button>
+              </DialogTrigger>
+              <Button appearance="primary" onClick={actionHandler} disabled={isLoading}>
+                Delete
               </Button>
-              <Button type="button" variant="outline" onClick={onClose} disabled={isLoading}>
-                Cancel
-              </Button>
-            </div>
-          </DialogFooter>
-        </DialogContent>
+            </DialogActions>
+          </DialogBody>
+        </DialogSurface>
       </Dialog>
     </>
   );

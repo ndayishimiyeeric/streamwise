@@ -3,6 +3,7 @@
 import { useTransition } from "react";
 import { updateSettings } from "@/actions/auth/settings";
 import { AccountSchema } from "@/schemas";
+import { Button, Field, InfoLabel, Input, LabelProps, Textarea } from "@fluentui/react-components";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 import { useSession } from "next-auth/react";
@@ -11,7 +12,6 @@ import { toast } from "sonner";
 import * as z from "zod";
 
 import { useCurrentUser } from "@/hooks/use-current-user";
-import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -21,8 +21,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 
 export function ProfileForm() {
   const [isPending, startTransition] = useTransition();
@@ -91,19 +89,30 @@ export function ProfileForm() {
           name="username"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Username</FormLabel>
-              <FormControl>
+              <Field
+                // @ts-ignore
+                label={{
+                  children: (_: unknown, slotProps: LabelProps) => (
+                    <InfoLabel
+                      {...slotProps}
+                      info="This is your public display name. It can be your real name or a pseudonym. You can
+                only change this once every 30 days."
+                    >
+                      Username
+                    </InfoLabel>
+                  ),
+                }}
+                size="medium"
+                validationState={form.formState.errors.username ? "error" : "success"}
+                validationMessage={form.formState.errors.username?.message}
+              >
                 <Input
-                  placeholder="johndoe"
                   {...field}
+                  value={field.value}
+                  onChange={field.onChange}
                   disabled={!updateUsername || isPending}
-                  aria-readonly={!updateUsername || isPending}
                 />
-              </FormControl>
-              <FormDescription>
-                This is your public display name. It can be your real name or a pseudonym. You can
-                only change this once every 30 days.
-              </FormDescription>
+              </Field>
               <FormMessage />
             </FormItem>
           )}
@@ -113,25 +122,33 @@ export function ProfileForm() {
           name="bio"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Bio</FormLabel>
-              <FormControl>
+              <Field
+                // @ts-ignore
+                label={{
+                  children: (_: unknown, slotProps: LabelProps) => (
+                    <InfoLabel
+                      {...slotProps}
+                      info="More about you this can be used to improve ai suggestions for you."
+                    >
+                      Bio
+                    </InfoLabel>
+                  ),
+                }}
+                size="medium"
+                validationState={form.formState.errors.username ? "error" : "success"}
+                validationMessage={form.formState.errors.username?.message}
+              >
                 <Textarea
-                  placeholder="Tell us a little bit about yourself"
-                  className="resize-none"
-                  disabled={isPending}
-                  aria-readonly={isPending}
-                  rows={3}
                   {...field}
+                  value={field.value}
+                  onChange={field.onChange}
+                  disabled={isPending}
                 />
-              </FormControl>
-              <FormDescription>
-                More about you this can be used to improve ai suggestions for you.
-              </FormDescription>
-              <FormMessage />
+              </Field>
             </FormItem>
           )}
         />
-        <Button type="submit" disabled={isPending}>
+        <Button type="submit" disabled={isPending} appearance="primary">
           {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           Update profile
         </Button>

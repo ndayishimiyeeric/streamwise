@@ -22,9 +22,10 @@ interface PricingProps {
   products: Awaited<ReturnType<typeof getActiveProductsWithPrices>>;
   action: "session" | "portal";
   className?: string;
+  displayFree?: boolean;
 }
 
-export const Pricing = ({ products, action, className }: PricingProps) => {
+export const Pricing = ({ products, action, className, displayFree }: PricingProps) => {
   const [billingInterval, setBillingInterval] = useState<PricingPlanInterval>("month");
   const [priceIdLoading, setPriceIdLoading] = useState<string | null>(null);
 
@@ -114,26 +115,28 @@ export const Pricing = ({ products, action, className }: PricingProps) => {
           className
         )}
       >
-        <PriceItem interval={billingInterval}>
-          <button
-            aria-label="Get the Plan button"
-            className="group/btn inline-flex items-center gap-2.5 font-medium text-primary transition-all duration-300 disabled:cursor-not-allowed disabled:opacity-40 dark:text-white dark:hover:text-primary"
-            onClick={() => {
-              if (user) {
-                return router.push("/dashboard");
-              } else {
-                return router.push("/auth/login");
-              }
-            }}
-            disabled={createLoading || createLinkLoading || priceIdLoading !== null}
-          >
-            <span className="duration-300 group-hover/btn:pr-2">
-              {user ? "Dashboard" : "Sign up"}
-            </span>
-            {createLinkLoading && createLoading && <Loader2 className="h-4 w-4 animate-spin" />}
-            {!createLinkLoading && !createLoading && <FaArrowRight className="h-4 w-4" />}
-          </button>
-        </PriceItem>
+        {displayFree && (
+          <PriceItem interval={billingInterval}>
+            <button
+              aria-label="Get the Plan button"
+              className="group/btn inline-flex items-center gap-2.5 font-medium text-primary transition-all duration-300 disabled:cursor-not-allowed disabled:opacity-40 dark:text-white dark:hover:text-primary"
+              onClick={() => {
+                if (user) {
+                  return router.push("/dashboard");
+                } else {
+                  return router.push("/auth/login");
+                }
+              }}
+              disabled={createLoading || createLinkLoading || priceIdLoading !== null}
+            >
+              <span className="duration-300 group-hover/btn:pr-2">
+                {user ? "Dashboard" : "Sign up"}
+              </span>
+              {createLinkLoading && createLoading && <Loader2 className="h-4 w-4 animate-spin" />}
+              {!createLinkLoading && !createLoading && <FaArrowRight className="h-4 w-4" />}
+            </button>
+          </PriceItem>
+        )}
         {sortedProducts.map((product, idx) => {
           const prices = product.prices?.filter((price) => price.interval === billingInterval);
           return prices.map((price) => (

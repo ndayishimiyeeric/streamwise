@@ -1,11 +1,9 @@
 import React, { useContext, useEffect, useRef } from "react";
+import { getSubscription } from "@/data/subscriptions";
 import { useIntersection } from "@mantine/hooks";
 import { AiData } from "@prisma/client";
 import { Loader2, MessageSquare } from "lucide-react";
-import Skeleton from "react-loading-skeleton";
 
-import { QUERY_LIMIT } from "@/config/user-usage";
-import { getSubscription } from "@/lib/actions";
 import Message from "@/components/chat/message";
 import { ChatContext } from "@/components/hoc/chat-context";
 import { trpc } from "@/app/_trpc/client";
@@ -24,7 +22,7 @@ function Messages({ imageUrl, userName, fileId, aiData, subscriptionPlan }: Prop
   const { data, isLoading, fetchNextPage } = trpc.getFileMessages.useInfiniteQuery(
     {
       fileId,
-      limit: QUERY_LIMIT,
+      limit: 10,
     },
     {
       getNextPageParam: (lastPage) => lastPage?.nextCursor,

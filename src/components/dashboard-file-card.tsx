@@ -3,9 +3,11 @@
 import React from "react";
 import Link from "next/link";
 import { deleteFile } from "@/actions/file/delete";
+import { processFile } from "@/actions/file/process";
 import { File, Message } from "@prisma/client";
 import { format } from "date-fns";
 import { ExternalLink, FileIcon, Trash } from "lucide-react";
+import { FcProcess } from "react-icons/fc";
 import { toast } from "sonner";
 
 import { cn } from "@/lib/utils";
@@ -58,6 +60,12 @@ export const DashboardFileCard = ({
     },
     onCompleted: () => {
       onClose();
+    },
+  });
+
+  const { execute: processFileAction } = useAction(processFile, {
+    onSuccess: () => {
+      console.log("success");
     },
   });
 
@@ -153,6 +161,19 @@ export const DashboardFileCard = ({
                   onClick={() => onOPen({ id: file.id, name: file.name })}
                 >
                   <Trash className="h-4 w-4" />
+                </Button>
+              </Hint>
+              <Hint description="Continue processing" side="top">
+                <Button
+                  variant="secondary"
+                  size="icon"
+                  className="h-8 w-8 shadow-none"
+                  disabled={isLoading}
+                  onClick={() =>
+                    processFileAction({ fileId: file.id, name: file.name, url: file.url })
+                  }
+                >
+                  <FcProcess className="h-4 w-4" />
                 </Button>
               </Hint>
             </div>

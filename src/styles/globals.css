@@ -1,15 +1,11 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-html {
-  scroll-behavior: smooth;
-}
-
 html,
 body,
 :root {
   height: 100%;
+  scroll-behavior: smooth !important;
 }
 
 @layer base {
@@ -34,6 +30,8 @@ body,
     --input: 240 5.9% 90%;
     --ring: 240 5.9% 10%;
     --radius: 0.5rem;
+    --black-gradient: linear-gradient(144.39deg, #ffffff -278.56%, #6d6d6d -78.47%, #11101d 91.61%);
+    --card-shadow: 0px 20px 100px -10px rgba(66, 71, 91, 0.1);
   }
 
   .dark {
@@ -63,14 +61,89 @@ body,
   * {
     @apply border-border;
   }
-  body {
-    @apply bg-background text-foreground;
-    font-family: "Be Vietnam Pro", sans-serif;
-  }
+  /* body {
+    @apply relative z-1 bg-background text-foreground;
+  } */
 }
 
-.grainy {
-  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwBAMAAAClLOS0AAAAElBMVEUAAAD8/vz08vT09vT8+vzs7uxH16TeAAAAAXRSTlMAQObYZgAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAuFJREFUOI0Vk+3NLiEIRG1B8ClAYAsQ2AIEt4D9ePtv5Xp/mZgYJ2fOFJKEfInkVWY2aglmQFkimRTV7MblYyVqD7HXyhKsSuPX12MeDhRHLtGvRG+P+B/S0Vu4OswR9tmvwNPyhdCDbVayJGads/WiUWcjCvCnruTBNHS9gmX2VzVbk7ZvB1gb1hkWFGl+A/n+/FowcO34U/XvKqZ/fHY+6vgRfU92XrOBUbGeeDfQmjWjdrK+frc6FdGReQhfSF5JvR29O2QrfNw1huTwlgsyXLo0u+5So82sgv7tsFZR2nxB6lXiquHrfD8nfYZ9SeT0LiuvSoVrxGY16pCNRZKqvwWsn5OHypPBELzohMCaRaa0ceTHYqe7X/gfJEEtKFbJpWoNqO+aS1cuTykGPpK5Ga48m6L3NefTr013KqYBQu929iP1oQ/7UwSR+i3zqruUmT84qmhzLpxyj7pr9kg7LKvqaXxZmdpn+6o8sHqSqojy02gU3U8q9PnpidiaLks0mbMYz+q2uVXsoBQ8bfURULYxRgZVYCHMv9F4OA7qxT2NPPpvGQ/sTDH2yznKh7E2AcErfcNsaIoN1izzbJiaY63x4QjUFdBSvDCvugPpu5xDny0jzEeuUQbcP1aGT9V90uixngTRLYNEIIZ6yOF1H8tm7rj2JxiefsVy53zGVy3ag5uuPsdufYOzYxLRxngKe7nhx3VAq54pmz/DK9/Q3aDam2Yt3hNXB4HuU87jKNd/CKZn77Qdn5QkXPfqSkhk7hGOXXB+7v09KbBbqdvxGqa0AqfK/atIrL2WXdAgXAJ43Wtwe/aIoacXezeGPMlhDOHDbSfHnaXsL2QzbT82GRwZuezdwcoWzx5pnOnGMUdHuiY7lhdyWzWiHnucLZQxYStMJbtcydHaQ6vtMbe0AcDbxG+QG14AL94xry4297xpy9Cpf1OoxZ740gHDfrK+gtsy0xabwJmfgtCeii79B6aj0SJeLbd7AAAAAElFTkSuQmCC);
+.text-gradient {
+  background: radial-gradient(
+    64.18% 64.18% at 71.16% 35.69%,
+    #def9fa 0.89%,
+    #bef3f5 17.23%,
+    #9dedf0 42.04%,
+    #7de7eb 55.12%,
+    #5ce1e6 71.54%,
+    #33bbcf 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-fill-color: transparent;
+}
+
+.bg-blue-gradient {
+  background: linear-gradient(
+    157.81deg,
+    #def9fa -43.27%,
+    #bef3f5 -21.24%,
+    #9dedf0 12.19%,
+    #7de7eb 29.82%,
+    #5ce1e6 51.94%,
+    #33bbcf 90.29%
+  );
+}
+
+.bg-black-gradient {
+  background: linear-gradient(144.39deg, #ffffff -278.56%, #6d6d6d -78.47%, #11101d 91.61%);
+}
+
+.bg-black-gradient-2 {
+  background: linear-gradient(-168.39deg, #ffffff -278.56%, #6d6d6d -78.47%, #11101d 91.61%);
+}
+
+.bg-gray-gradient {
+  background: linear-gradient(153.47deg, rgba(255, 255, 255, 0) -341.94%, #14101d 95.11%);
+}
+
+.bg-discount-gradient {
+  background: linear-gradient(125.17deg, #272727 0%, #11101d 100%);
+}
+
+.box-shadow {
+  box-shadow: 0px 20px 100px -10px rgba(66, 71, 91, 0.1);
+}
+
+.feature-card:hover {
+  background: var(--black-gradient);
+  box-shadow: var(--card-shadow);
+}
+
+.feedback-container .feedback-card:last-child {
+  margin-right: 0px;
+}
+
+.feedback-card {
+  background: transparent;
+}
+
+.feedback-card:hover {
+  background: var(--black-gradient);
+}
+
+.blue__gradient {
+  background: linear-gradient(180deg, rgba(188, 165, 255, 0) 0%, #214d76 100%);
+  filter: blur(123px);
+}
+
+.pink__gradient {
+  background: linear-gradient(90deg, #f4c4f3 0%, #fc67fa 100%);
+  filter: blur(900px);
+}
+
+.white__gradient {
+  background: rgba(255, 255, 255, 0.6);
+  filter: blur(750px);
 }
 
 .scrollbar-w-2::-webkit-scrollbar {
@@ -98,220 +171,6 @@ body,
 
 .gradient-silver {
   background-image: linear-gradient(315deg, #b2b1b9, #ffffff, #b2b1b9);
-}
-
-.continue-application {
-  --color: #fff;
-  --background: #404660;
-  --background-hover: #3a4059;
-  --background-left: #2b3044;
-  --folder: #f3e9cb;
-  --folder-inner: #beb393;
-  --paper: #ffffff;
-  --paper-lines: #bbc1e1;
-  --paper-behind: #e1e6f9;
-  --pencil-cap: #fff;
-  --pencil-top: #275efe;
-  --pencil-middle: #fff;
-  --pencil-bottom: #5c86ff;
-  --shadow: rgba(13, 15, 25, 0.2);
-  border: none;
-  outline: none;
-  cursor: pointer;
-  position: relative;
-  border-radius: 5px;
-  font-size: 14px;
-  font-weight: 500;
-  line-height: 19px;
-  -webkit-appearance: none;
-  -webkit-tap-highlight-color: transparent;
-  padding: 17px 29px 17px 69px;
-  transition: background 0.3s;
-  color: var(--color);
-  background: var(--bg, var(--background));
-}
-
-.continue-application > div {
-  top: 0;
-  left: 0;
-  bottom: 0;
-  width: 53px;
-  position: absolute;
-  overflow: hidden;
-  border-radius: 5px 0 0 5px;
-  background: var(--background-left);
-}
-
-.continue-application > div .folder {
-  width: 23px;
-  height: 27px;
-  position: absolute;
-  left: 15px;
-  top: 13px;
-}
-
-.continue-application > div .folder .top {
-  left: 0;
-  top: 0;
-  z-index: 2;
-  position: absolute;
-  transform: translateX(var(--fx, 0));
-  transition: transform 0.4s ease var(--fd, 0.3s);
-}
-
-.continue-application > div .folder .top svg {
-  width: 24px;
-  height: 27px;
-  display: block;
-  fill: var(--folder);
-  transform-origin: 0 50%;
-  transition: transform 0.3s ease var(--fds, 0.45s);
-  transform: perspective(120px) rotateY(var(--fr, 0deg));
-}
-
-.continue-application > div .folder:before,
-.continue-application > div .folder:after,
-.continue-application > div .folder .paper {
-  content: "";
-  position: absolute;
-  left: var(--l, 0);
-  top: var(--t, 0);
-  width: var(--w, 100%);
-  height: var(--h, 100%);
-  border-radius: 1px;
-  background: var(--b, var(--folder-inner));
-}
-
-.continue-application > div .folder:before {
-  box-shadow:
-    0 1.5px 3px var(--shadow),
-    0 2.5px 5px var(--shadow),
-    0 3.5px 7px var(--shadow);
-  transform: translateX(var(--fx, 0));
-  transition: transform 0.4s ease var(--fd, 0.3s);
-}
-
-.continue-application > div .folder:after,
-.continue-application > div .folder .paper {
-  --l: 1px;
-  --t: 1px;
-  --w: 21px;
-  --h: 25px;
-  --b: var(--paper-behind);
-}
-
-.continue-application > div .folder:after {
-  transform: translate(var(--pbx, 0), var(--pby, 0));
-  transition: transform 0.4s ease var(--pbd, 0s);
-}
-
-.continue-application > div .folder .paper {
-  z-index: 1;
-  --b: var(--paper);
-}
-
-.continue-application > div .folder .paper:before,
-.continue-application > div .folder .paper:after {
-  content: "";
-  width: var(--wp, 14px);
-  height: 2px;
-  border-radius: 1px;
-  transform: scaleY(0.5);
-  left: 3px;
-  top: var(--tp, 3px);
-  position: absolute;
-  background: var(--paper-lines);
-  box-shadow:
-    0 12px 0 0 var(--paper-lines),
-    0 24px 0 0 var(--paper-lines);
-}
-
-.continue-application > div .folder .paper:after {
-  --tp: 6px;
-  --wp: 10px;
-}
-
-.continue-application > div .pencil {
-  height: 2px;
-  width: 3px;
-  border-radius: 1px 1px 0 0;
-  top: 8px;
-  left: 105%;
-  position: absolute;
-  z-index: 3;
-  transform-origin: 50% 19px;
-  background: var(--pencil-cap);
-  transform: translateX(var(--pex, 0)) rotate(35deg);
-  transition: transform 0.4s ease var(--pbd, 0s);
-}
-
-.continue-application > div .pencil:before,
-.continue-application > div .pencil:after {
-  content: "";
-  position: absolute;
-  display: block;
-  background: var(
-    --b,
-    linear-gradient(
-      var(--pencil-top) 55%,
-      var(--pencil-middle) 55.1%,
-      var(--pencil-middle) 60%,
-      var(--pencil-bottom) 60.1%
-    )
-  );
-  width: var(--w, 5px);
-  height: var(--h, 20px);
-  border-radius: var(--br, 2px 2px 0 0);
-  top: var(--t, 2px);
-  left: var(--l, -1px);
-}
-
-.continue-application > div .pencil:before {
-  -webkit-clip-path: polygon(0 5%, 5px 5%, 5px 17px, 50% 20px, 0 17px);
-  clip-path: polygon(0 5%, 5px 5%, 5px 17px, 50% 20px, 0 17px);
-}
-
-.continue-application > div .pencil:after {
-  --b: none;
-  --w: 3px;
-  --h: 6px;
-  --br: 0 2px 1px 0;
-  --t: 3px;
-  --l: 3px;
-  border-top: 1px solid var(--pencil-top);
-  border-right: 1px solid var(--pencil-top);
-}
-
-.continue-application:before,
-.continue-application:after {
-  content: "";
-  position: absolute;
-  width: 10px;
-  height: 2px;
-  border-radius: 1px;
-  background: var(--color);
-  transform-origin: 9px 1px;
-  transform: translateX(var(--cx, 0)) scale(0.5) rotate(var(--r, -45deg));
-  top: 26px;
-  right: 16px;
-  transition: transform 0.3s;
-}
-
-.continue-application:after {
-  --r: 45deg;
-}
-
-.continue-application:hover {
-  --cx: 2px;
-  --bg: var(--background-hover);
-  --fx: -40px;
-  --fr: -60deg;
-  --fd: 0.15s;
-  --fds: 0s;
-  --pbx: 3px;
-  --pby: -3px;
-  --pbd: 0.15s;
-  --pex: -24px;
 }
 
 .parent-container:hover .icon {

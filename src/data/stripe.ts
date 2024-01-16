@@ -5,6 +5,7 @@ import { stripe } from "@/lib/stripe";
 import { toDateTime } from "@/lib/utils";
 
 export const upsertProductRecord = async (product: Stripe.Product) => {
+  const parsedFeatures = product.features ? JSON.parse(JSON.stringify(product.features)) : null;
   const productRecord = await db.product.upsert({
     where: {
       stripeProductId: product.id,
@@ -16,6 +17,7 @@ export const upsertProductRecord = async (product: Stripe.Product) => {
       active: product.active,
       metadata: product.metadata,
       image: product.images?.[0] ?? null,
+      features: parsedFeatures,
     },
     create: {
       name: product.name,
@@ -24,6 +26,7 @@ export const upsertProductRecord = async (product: Stripe.Product) => {
       active: product.active,
       metadata: product.metadata,
       image: product.images?.[0] ?? null,
+      features: parsedFeatures,
     },
   });
 

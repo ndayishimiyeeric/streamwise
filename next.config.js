@@ -5,6 +5,9 @@ const nextConfig = {
     config.resolve.alias.encoding = false;
     return config;
   },
+  experimental: {
+    swcPlugins: [["fluentui-next-appdir-directive", { paths: ["@griffel", "@fluentui"] }]],
+  },
   images: {
     remotePatterns: [
       {

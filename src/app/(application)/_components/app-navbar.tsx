@@ -7,7 +7,7 @@ import MobileSidebar from "./app-mobile-sidebar";
 
 const AppNavbar = () => {
   return (
-    <div className="flex h-full items-center border-b bg-background p-4 shadow-sm">
+    <div className="flex h-full items-center border-b p-4 shadow-sm">
       <MobileSidebar />
       <div className="hidden lg:flex">
         <AppLogo />

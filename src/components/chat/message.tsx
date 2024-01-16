@@ -1,6 +1,6 @@
 import React, { forwardRef } from "react";
 import Link from "next/link";
-import { getSubscription } from "@/data/user";
+import { getSubscription } from "@/data/subscriptions";
 import { AiData } from "@prisma/client";
 import { format } from "date-fns";
 
