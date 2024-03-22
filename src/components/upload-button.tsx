@@ -1,8 +1,10 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import React, { ElementRef, MutableRefObject, Ref, useEffect, useState } from "react";
+
+import { useUploadButton } from "@/hooks/use-upload-button";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import FileUploader from "@/components/file-uploader";
 
 interface Props {
@@ -10,7 +12,7 @@ interface Props {
 }
 
 function UploadButton({ uploadLimit }: Props) {
-  const [isOpened, setIsOpened] = useState(false);
+  const { isOPen, onOPen, onClose } = useUploadButton();
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
@@ -22,20 +24,14 @@ function UploadButton({ uploadLimit }: Props) {
   if (!isMounted) return null;
 
   return (
-    <Dialog
-      open={isOpened}
-      onOpenChange={(prev) => {
-        if (!prev) setIsOpened(prev);
-      }}
-    >
-      <DialogTrigger onClick={() => setIsOpened(true)}>
-        <Button>Upload PDF</Button>
-      </DialogTrigger>
-
-      <DialogContent className="p-8">
-        <FileUploader fileLimit={uploadLimit} />
-      </DialogContent>
-    </Dialog>
+    <>
+      <Button onClick={onOPen}>Upload PDF</Button>
+      <Dialog open={isOPen} onOpenChange={onClose}>
+        <DialogContent className="p-8">
+          <FileUploader fileLimit={uploadLimit} />
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
 

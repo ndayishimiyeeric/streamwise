@@ -1,19 +1,15 @@
 "use client";
 
-import React, { useState } from "react";
-import { trpc } from "@/app/_trpc/client";
+import React from "react";
 import { useRouter } from "next/navigation";
+import { uploadFile } from "@/actions/file/upload";
+import { Cloud } from "lucide-react";
+import { toast } from "sonner";
+
 import { UploadDropzone } from "@/lib/uploadthing";
-import toast from "react-hot-toast";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
-import { Cloud, File, Loader2 } from "lucide-react";
+import { useAction } from "@/hooks/use-action";
+import { useUploadButton } from "@/hooks/use-upload-button";
+import { Card, CardContent } from "@/components/ui/card";
 
 interface FileUploaderProps {
   fileLimit?: number;
@@ -21,62 +17,69 @@ interface FileUploaderProps {
 
 function FileUploader({ fileLimit = 4 }: FileUploaderProps) {
   const router = useRouter();
+  const { onClose } = useUploadButton();
 
-  const { mutate: startPolling } = trpc.getFile.useMutation({
+  const { execute } = useAction(uploadFile, {
     onSuccess: (data) => {
-      router.push(`/dashboard/${data.id}`);
-    },
-    retry: true,
-    retryDelay: 500,
-  });
+      toast("File upload status", {
+        description: (
+          <pre className="mt-2 w-[320px] rounded-md bg-primary p-4">
+            <code className="text-primary-foreground">
+              {JSON.stringify(
+                { Name: data.name, Pages: data.pages, Status: data.uploadStatus },
+                null,
+                2
+              )}
+            </code>
+          </pre>
+        ),
+      });
 
-  const handlePolling = async (key: string): Promise<void> => {
-    startPolling({ key });
-    return await new Promise((resolve) => setTimeout(resolve, 3000));
-  };
+      router.refresh();
+      router.push("/dashboard");
+    },
+    onError(error) {
+      toast("Settings update status", {
+        description: (
+          <pre className="mt-2 w-[320px] rounded-md bg-primary p-4">
+            <code className="text-primary-foreground">{JSON.stringify({ error }, null, 2)}</code>
+          </pre>
+        ),
+      });
+    },
+  });
 
   return (
     <Card className="border-0 shadow-none">
       <CardContent className="p-0">
         <UploadDropzone
           endpoint="pdfUploader"
-          onUploadError={(err: Error) => {
-            toast.error(`${err.message}`);
-          }}
           onClientUploadComplete={(res) => {
             if (!res) {
-              toast.error("Max upload limit reached.");
+              onClose();
               return router.push("/dashboard/usage");
             }
-
+            onClose();
             const [fileResponse] = res;
             const key = fileResponse.key;
+            const url = fileResponse.url;
+            const name = fileResponse.name;
+            const size = fileResponse.size;
 
-            if (key) {
-              toast
-                .promise(handlePolling(key), {
-                  loading: "Processing file",
-                  success: "File processed",
-                  error: "Error processing file",
-                })
-                .then((r) => r);
-            } else {
-              return toast.error(
-                "Something went wrong. Please try again later.",
-              );
-            }
+            toast.promise(execute({ url, key, name, size }), {
+              loading: "Proccessing file...",
+              success: "File processed successfully",
+              error: "Error while processing file",
+            });
           }}
           content={{
-            uploadIcon: <Cloud className="h-6 w-6 text-zinc-500" />,
+            uploadIcon: <Cloud className="h-6 w-6 text-primary" />,
             label: (
-              <p className="text-sm text-zinc-700 mb-2 text-center">
-                <span className="font-semibold">Click to upload</span> or drag
-                and drop
+              <p className="mb-2 text-center text-sm text-primary">
+                <span className="font-semibold text-primary">Click to upload</span> or drag and drop
               </p>
             ),
-            allowedContent: (
-              <p className="text-xs text-zinc-500">PDF (up to {fileLimit}MB)</p>
-            ),
+            allowedContent: <p className="text-xs text-primary/80">PDF (up to {fileLimit}MB)</p>,
           }}
         />
       </CardContent>

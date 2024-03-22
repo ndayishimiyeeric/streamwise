@@ -1,7 +1,8 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { getSubscription } from "@/data/user";
 import { AiData } from "@prisma/client";
-import { getSubscription } from "@/lib/actions";
+
 import { cn } from "@/lib/utils";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 type Props = {
   aiData: AiData;
@@ -9,14 +10,10 @@ type Props = {
   isNextMessageSamePerson: boolean;
 };
 
-function BotAvatar({
-  aiData,
-  subscriptionPlan,
-  isNextMessageSamePerson,
-}: Props) {
+function BotAvatar({ aiData, subscriptionPlan, isNextMessageSamePerson }: Props) {
   return (
     <Avatar
-      className={cn("rounded-md w-8 h-8", {
+      className={cn({
         invisible: isNextMessageSamePerson,
       })}
     >

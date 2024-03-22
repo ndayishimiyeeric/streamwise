@@ -7,37 +7,150 @@ generator client {
 }
 
 datasource db {
-  provider     = "postgresql"
-  url          = env("DATABASE_URL")
-  relationMode = "prisma"
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+enum UserLanguage {
+  ENGLISH
+  FRENCH
+  GERMAN
+  SPANISH
+  PORTUGUESE
+  RUSSIAN
+  JAPANESE
+  KOREAN
+  CHINESE
 }
 
 model User {
-  id     String @id @unique
-  email  String @unique
-  name   String @default(cuid())
-  imgUrl String @default("https://utfs.io/f/31d8c1f1-082e-4b5c-88e7-9f4de946ad13-5e5vpb.jpg") @db.Text
+  id             String        @id @default(cuid())
+  name           String?
+  email          String?       @unique
+  emailVerified  DateTime?
+  updateEmail    DateTime?
+  image          String?       @db.Text
+  imagekey       String?       @db.Text
+  password       String?
+  role           UserRole      @default(USER)
+  username       String?       @unique
+  updateUsername DateTime?
+  bio            String?       @db.Text
+  language       UserLanguage? @default(ENGLISH)
 
-  File     File[]
+  isTwoFactorEnabled    Boolean                @default(false)
+  isPrivate             Boolean                @default(false)
+  twoFactorConfirmation TwoFactorConfirmation?
+
+  accounts     Account[]
+  settings     UserSettings?
+  customer     Customer?
+  subscription Subscription?
+
+  files    File[]
   messages Message[]
 
-  userLimit    UserLimit?
-  userUsage    UserUsage?
-  subscription Subscription?
-  AiData       AiData?
-  purchases    UserPurchase[]
+  userUsage UserUsage?
+  aiData    AiData?
+
+  aiModels     AIModel[]
+  chats        Chat[]
+  chatMessages ChatMessage[]
+  aiModelSubs  AIModelSub[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
 }
 
-model UserLimit {
-  id             String   @id @default(uuid())
-  userId         String   @unique
-  queryLimit     Int      @default(50)
-  pdfUploadLimit Int      @default(5)
-  maxPagesPdf    Int      @default(5)
-  maxFileSize    Int      @default(4)
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-  user           User     @relation(fields: [userId], references: [id])
+enum UserTheme {
+  LIGHT
+  DARK
+}
+
+enum UserFont {
+  BE_VIETNAM
+  INTER
+  POPPINS
+  MONTSERRAT
+  UBUNTU
+  ROBOTO
+}
+
+model UserSettings {
+  id     String    @id @default(uuid())
+  theme  UserTheme @default(LIGHT)
+  font   UserFont  @default(BE_VIETNAM)
+  userId String    @unique
+  user   User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_settings")
+}
+
+model VerificationCode {
+  id      String   @id @default(uuid())
+  email   String
+  code    String   @unique
+  expires DateTime
+
+  @@unique([email, code])
+  @@map("verification_codes")
+}
+
+model PasswordResetCode {
+  id      String   @id @default(uuid())
+  email   String
+  code    String   @unique
+  expires DateTime
+
+  @@unique([email, code])
+  @@map("password_reset_codes")
+}
+
+model TwoFactorCode {
+  id      String   @id @default(uuid())
+  email   String
+  code    String   @unique
+  expires DateTime
+
+  @@unique([email, code])
+  @@map("two_factor_codes")
+}
+
+model TwoFactorConfirmation {
+  id     String @id @default(uuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId])
+  @@map("two_factor_confirmations")
 }
 
 model UserUsage {
@@ -47,28 +160,9 @@ model UserUsage {
   pdfUploadUsage Int      @default(0)
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
-  user           User     @relation(fields: [userId], references: [id])
-}
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-model Subscription {
-  id                     String    @id @default(uuid())
-  userId                 String    @unique
-  stripeCustomerId       String?   @unique @map("stripe_customer_id")
-  stripeSubscriptionId   String?   @unique @map("stripe_subscription_id")
-  stripePriceId          String?   @map("stripe_price_id")
-  stripeCurrentPeriodEnd DateTime? @map("stripe_current_period_end")
-  user                   User      @relation(fields: [userId], references: [id])
-}
-
-model UserPurchase {
-  id        String   @id @default(uuid())
-  userId    String
-  amount    Int
-  success   Boolean  @default(false)
-  createdAt DateTime @default(now())
-  user      User     @relation(fields: [userId], references: [id])
-
-  @@index([userId])
+  @@map("user_usage")
 }
 
 enum FileUploadStatus {
@@ -83,18 +177,21 @@ model File {
   userId       String
   name         String
   pages        Int              @default(0)
+  size         Int              @default(0)
   uploadStatus FileUploadStatus @default(PENDING)
   url          String           @db.Text
-  key          String
+  key          String           @db.Text
+  correctionId String           @db.Text
 
   messages Message[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  User      User     @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, key, name])
   @@index([userId])
+  @@map("files")
 }
 
 model Message {
@@ -105,13 +202,14 @@ model Message {
   fileId String?
   File   File?   @relation(fields: [fileId], references: [id])
   userId String?
-  User   User?   @relation(fields: [userId], references: [id])
+  user   User?   @relation(fields: [userId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([fileId])
   @@index([userId])
+  @@map("messages")
 }
 
 model AiData {
@@ -121,8 +219,197 @@ model AiData {
   imgUrl String? @default("https://utfs.io/f/747c02c6-5938-42d0-9b75-408d6897d5ad-aefp5.png") @db.Text
 
   userId String @unique
-  User   User   @relation(fields: [userId], references: [id])
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@map("ai_data")
+}
+
+// New Features for AI Model User Creation
+
+model ModelFile {
+  id    String @id @default(uuid())
+  name  String
+  pages Int    @default(0)
+  url   String @db.Text
+  key   String
+
+  aiModelId String
+  aiModel   AIModel @relation(fields: [aiModelId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([aiModelId])
+  @@map("model_files")
+}
+
+model Chat {
+  id        String @id @default(uuid())
+  userId    String
+  aiModelId String
+  text      String @db.Text
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  aiModel AIModel @relation(fields: [aiModelId], references: [id], onDelete: Cascade)
+
+  messages ChatMessage[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([aiModelId])
+  @@map("chats")
+}
+
+model ChatMessage {
+  id     String  @id @default(uuid())
+  chatId String
+  userId String
+  text   String  @db.Text
+  isUser Boolean @default(false)
+
+  Chat Chat @relation(fields: [chatId], references: [id], onDelete: Cascade)
+  User User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([chatId])
+  @@index([userId])
+  @@map("chat_messages")
+}
+
+model AIModelSub {
+  id        String @id @default(uuid())
+  aiModelId String
+  userId    String
+
+  aiModel AIModel @relation(fields: [aiModelId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([aiModelId, userId])
+  @@index([aiModelId])
+  @@index([userId])
+  @@map("ai_model_subscriptions")
+}
+
+model AIModel {
+  id     String @id @default(uuid())
+  name   String @default("My Model")
+  bio    String @db.Text
+  imgUrl String @db.Text
+
+  isPublic Boolean @default(false)
+
+  files ModelFile[]
+  chats Chat[]
+  subs  AIModelSub[]
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@map("ai_models")
+}
+
+// stripe implementation
+
+model Customer {
+  id               String @id @default(uuid())
+  userId           String @unique
+  stripeCustomerId String @unique @map("stripe_customer_id") @db.Text
+  user             User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @db.Timestamptz(3)
+
+  @@unique([stripeCustomerId, userId])
+  @@map("customers")
+}
+
+model Product {
+  id              String  @id @default(uuid())
+  stripeProductId String  @unique @map("stripe_product_id") @db.Text
+  active          Boolean
+  name            String
+  description     String? @db.Text
+  image           String? @db.Text
+  features        Json?
+  metadata        Json?
+  prices          Price[]
+
+  @@map("products")
+}
+
+enum PricingType {
+  one_time
+  recurring
+}
+
+enum PricingPlanInterval {
+  day
+  week
+  month
+  year
+}
+
+model Price {
+  id              String               @id @default(uuid())
+  priceId         String               @unique @map("price_id") @db.Text
+  productId       String?              @map("product_id")
+  active          Boolean
+  description     String?              @db.Text
+  unitAmount      Int?                 @map("unit_amount")
+  currency        String               @db.VarChar(3)
+  type            PricingType
+  interval        PricingPlanInterval?
+  intervalCount   Int?                 @map("interval_count")
+  trialPeriodDays Int?                 @map("trial_period_days")
+  metadata        Json?
+  product         Product?             @relation(fields: [productId], references: [stripeProductId])
+
+  @@map("prices")
+}
+
+enum SubscriptionStatus {
+  active
+  past_due
+  canceled
+  unpaid
+  incomplete
+  incomplete_expired
+  trialing
+  paused
+}
+
+model Subscription {
+  id                   String             @id @default(uuid())
+  stripeSubscriptionId String             @unique @map("stripe_subscription_id") @db.Text
+  userId               String             @unique
+  status               SubscriptionStatus
+  metadata             Json?
+  priceId              String             @map("price_id")
+  quantity             Int?
+  cancelAtPeriodEnd    Boolean            @map("cancel_at_period_end")
+  created              DateTime           @db.Timestamptz(3)
+  currentPeriodStart   DateTime           @map("current_period_start") @db.Timestamptz(3)
+  currentPeriodEnd     DateTime           @map("current_period_end") @db.Timestamptz(3)
+  endedAt              DateTime?          @map("ended_at") @db.Timestamptz(3)
+  cancelAt             DateTime?          @map("cancel_at") @db.Timestamptz(3)
+  canceledAt           DateTime?          @map("canceled_at") @db.Timestamptz(3)
+  trialStart           DateTime?          @map("trial_start") @db.Timestamptz(3)
+  trialEnd             DateTime?          @map("trial_end") @db.Timestamptz(3)
+  user                 User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("subscriptions")
 }

@@ -1,46 +1,50 @@
-import type { Metadata } from "next";
-import { Poppins } from "next/font/google";
-import { ClerkProvider } from "@clerk/nextjs";
+import type { Metadata, Viewport } from "next";
+import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
+import { extractRouterConfig } from "uploadthing/server";
 
-import { cn } from "@/lib/utils";
-import Navbar from "@/components/navbar";
 import Providers from "@/components/providers";
 
-import "../styles/globals.css";
+import "@/styles/globals.css";
 import "react-loading-skeleton/dist/skeleton.css";
 import "simplebar-react/dist/simplebar.min.css";
-import ToastProvider from "@/components/toast-provider";
 
-const poppins = Poppins({
-  subsets: ["latin"],
-  display: "swap",
-  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
-});
+import { auth } from "@/auth";
+import { SessionProvider } from "next-auth/react";
+
+import { LayoutProvider } from "@/components/layout-provider";
+import { ThemeProvider } from "@/components/theme-provider";
+import { ourFileRouter } from "@/app/api/uploadthing/core";
 
 export const metadata: Metadata = {
   title: "Streamwise",
-  description:
-    "Streamwise is a platform for stream pdf docs with the help of AI.",
+  description: "Streamwise is a platform for stream pdf docs with the help of AI.",
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "white" },
+    { media: "(prefers-color-scheme: dark)", color: "black" },
+  ],
+};
+
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const session = await auth();
   return (
-    <ClerkProvider>
-      <html lang="en" className="light">
-        <Providers>
-          <body
-            className={cn("min-h-screen antialiased grainy", poppins.className)}
-          >
-            <Navbar />
-            <ToastProvider />
-            {children}
-          </body>
-        </Providers>
-      </html>
-    </ClerkProvider>
+    <html lang="en" suppressHydrationWarning>
+      <SessionProvider session={session}>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+          storageKey="streamwise-theme-site"
+        >
+          <Providers>
+            <NextSSRPlugin routerConfig={extractRouterConfig(ourFileRouter)} />
+            <LayoutProvider>{children}</LayoutProvider>
+          </Providers>
+        </ThemeProvider>
+      </SessionProvider>
+    </html>
   );
 }

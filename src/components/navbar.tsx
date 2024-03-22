@@ -1,42 +1,38 @@
 import React from "react";
-import { User } from ".prisma/client";
-import MaxWidthWrapper from "@/components/max-width-wrapper";
 import Link from "next/link";
-import { auth, currentUser } from "@clerk/nextjs";
-import { ArrowRight } from "lucide-react";
-import { SignInButton, SignUpButton } from "@clerk/nextjs";
+import { auth } from "@/auth";
+import { getSubscription } from "@/data/user";
+import { User } from "@prisma/client";
+import { ArrowRight, BarChartBig, Compass, Layout } from "lucide-react";
 
+import { db } from "@/lib/db";
 import { cn } from "@/lib/utils";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { UserAccountNav } from "@/components/user-account-nav";
-import { getSubscription } from "@/lib/actions";
-import { db } from "@/lib/db";
+import MaxWidthWrapper from "@/components/max-width-wrapper";
 import { NavbarMobileUser } from "@/components/navbar-mobile-user";
+import { UserAccountNav } from "@/components/user-account-nav";
 
 async function Navbar() {
-  const { userId } = auth();
-  const user = await currentUser();
-  const subscriptionPlan = await getSubscription();
+  const session = await auth();
+  // const subscriptionPlan = await getSubscription();
 
-  let dbUser: User | null = null;
-
-  if (userId && user) {
-    dbUser = await db.user.findUnique({
-      where: {
-        id: userId,
-      },
-    });
-  }
+  // if (!session?.user || !session.user.id) {
+  //   dbUser = await db.user.findUnique({
+  //     where: {
+  //       id: userId,
+  //     },
+  //   });
+  // }
 
   return (
-    <nav className="sticky h-14 inset-x-0 top-0 z-30 w-full border-b border-gray-200 bg-white/75 backdrop-blur-lg transition-all">
+    <nav className="flex items-center border-b bg-background p-4 shadow-sm transition-all">
       <MaxWidthWrapper>
-        <div className="flex h-14 items-center justify-between border-b border-zinc-200">
-          <Link href="/" className="flex z-40 font-semibold">
+        <div className="flex items-center justify-between">
+          <Link href="/" className="z-40 flex font-semibold">
             <span>Streamwise.</span>
           </Link>
 
-          {user && (
+          {session?.user && (
             <div className="items-center space-x-4 sm:flex">
               <Link
                 href="/dashboard/usage"
@@ -44,10 +40,11 @@ async function Navbar() {
                   buttonVariants({
                     variant: "ghost",
                     size: "sm",
-                    className: "hidden sm:flex",
-                  }),
+                    className: "hidden sm:inline-flex",
+                  })
                 )}
               >
+                <BarChartBig className="mr-1 h-4 w-4" />
                 Usage
               </Link>
               <Link
@@ -55,22 +52,36 @@ async function Navbar() {
                   buttonVariants({
                     variant: "ghost",
                     size: "sm",
-                    className: "hidden sm:flex",
-                  }),
+                    className: "hidden sm:inline-flex",
+                  })
                 )}
                 href="/dashboard"
               >
+                <Layout className="mr-1 h-4 w-4" />
                 Dashboard
               </Link>
-              <UserAccountNav
-                imageUrl={dbUser?.imgUrl}
+              <Link
+                className={cn(
+                  buttonVariants({
+                    variant: "ghost",
+                    size: "sm",
+                    className: "hidden sm:inline-flex",
+                  })
+                )}
+                href="/dashboard"
+              >
+                <Compass className="mr-1 h-4 w-4" />
+                Explore
+              </Link>
+              {/* <UserAccountNav
+                imageUrl={session.user.image}
                 userName={dbUser?.name}
                 subscriptionPlan={subscriptionPlan}
-              />
+              /> */}
             </div>
           )}
 
-          {!user && (
+          {!session?.user && (
             <>
               <div className="hidden items-center space-x-4 sm:flex">
                 <>
@@ -80,22 +91,20 @@ async function Navbar() {
                       buttonVariants({
                         variant: "ghost",
                         size: "sm",
-                      }),
+                      })
                     )}
                   >
                     Pricing
                   </Link>
-                  <SignInButton mode="modal">
-                    <Button variant="ghost" size="sm">
-                      Sign in
-                    </Button>
-                  </SignInButton>
-                  <SignUpButton mode="modal">
-                    <Button size="sm">
+                  <Button variant="ghost" size="sm" asChild>
+                    <Link href="/login">Log in</Link>
+                  </Button>
+                  <Button size="sm" asChild>
+                    <Link href="/signup">
                       Get started
-                      <ArrowRight className="h-5 w-5 ml-2" />
-                    </Button>
-                  </SignUpButton>
+                      <ArrowRight className="ml-2 h-5 w-5" />
+                    </Link>
+                  </Button>
                 </>
               </div>
               <NavbarMobileUser />

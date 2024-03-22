@@ -1,87 +1,185 @@
+"use client";
+
 import React from "react";
 import Link from "next/link";
-import { format } from "date-fns";
+import { deleteFile } from "@/actions/file/delete";
+import { processFile } from "@/actions/file/process";
 import { File, Message } from "@prisma/client";
-import toast from "react-hot-toast";
+import { format } from "date-fns";
+import { ExternalLink, FileIcon, Trash } from "lucide-react";
+import { FcProcess } from "react-icons/fc";
+import { toast } from "sonner";
 
-import { trpc } from "@/app/_trpc/client";
-import { Loader2, MessageSquare, Plus, Trash } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { useAction } from "@/hooks/use-action";
+import { useActionDialog } from "@/hooks/use-action-dialog";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Separator } from "@/components/ui/separator";
+import { ActionDialog } from "@/components/action-dialog";
+import { Hint } from "@/components/hint";
 
-type FileWithMessages = File & {
-  messages: Message[];
-};
 interface Props {
   file: File;
   messages: Message[];
+  side?: "left" | "right" | "top" | "bottom";
+  align?: "start" | "center" | "end";
+  sideOffset?: number;
 }
 
-function DashboardFileCard({ file, messages }: Props) {
-  const utils = trpc.useContext();
-  const { mutate: deleteFile, isLoading } = trpc.deleteFile.useMutation({
-    onSuccess: () => {
-      utils.getUserFiles.invalidate().then((r) => r);
+export const DashboardFileCard = ({
+  file,
+  messages,
+  side = "bottom",
+  align,
+  sideOffset,
+}: Props) => {
+  const { onOPen, onClose, file: stateFile } = useActionDialog();
+
+  const { execute, isLoading } = useAction(deleteFile, {
+    onSuccess: (data) => {
+      toast("Deleted file", {
+        description: (
+          <pre className="mt-2 w-[320px] rounded-md bg-primary p-4">
+            <code className="text-primary-foreground">
+              {JSON.stringify({ Name: data.name, Pages: data.pages, size: data.size }, null, 2)}
+            </code>
+          </pre>
+        ),
+      });
+    },
+    onError: (error) => {
+      toast("File deletion error", {
+        description: (
+          <pre className="mt-2 w-[320px] rounded-md bg-primary p-4">
+            <code className="text-primary-foreground">{JSON.stringify({ error }, null, 2)}</code>
+          </pre>
+        ),
+      });
+    },
+    onCompleted: () => {
+      onClose();
     },
   });
 
-  const handleDelete = async (): Promise<void> => {
-    deleteFile({ id: file.id });
-    return await new Promise((resolve) => setTimeout(resolve, 2000));
-  };
+  const { execute: processFileAction } = useAction(processFile, {
+    onSuccess: () => {
+      console.log("success");
+    },
+  });
 
   return (
-    <li
-      key={file.id}
-      className="col-span-1 divide-y divide-gray-200 rounded-lg bg-white shadow transition hover:shadow-lg"
-    >
-      <Link href={`/dashboard/${file.id}`} className="flex flex-col gap-2">
-        <div className="pt-6 px-6 flex w-full items-center justify-between space-x-6">
-          <div className="h-10 w-10 flex-shrink-0 rounded-full bg-gradient-to-r from-cyan-500 to-blue-500" />
-          <div className="flex-1 truncate">
-            <div className="flex items-center space-x-3">
-              <h3 className="truncate text-lg font-medium text-zinc-900">
-                {file.name}
-              </h3>
+    <>
+      {stateFile && (
+        <ActionDialog
+          actionHandler={() => execute({ id: stateFile.id })}
+          description={`This file "${stateFile.name.replaceAll(
+            ".pdf",
+            ""
+          )}" will be permenently deleted.`}
+          title="Are you sure you want to delete this file?"
+          isLoading={isLoading}
+        />
+      )}
+      <Popover>
+        <PopoverTrigger>
+          <Button
+            variant="outline"
+            size="lg"
+            className="parent-container group h-16 w-full justify-start gap-x-2 rounded-full px-4"
+          >
+            <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-muted shadow-sm transition-all ease-in-out group-hover:bg-primary/90 group-hover:shadow-md">
+              <FileIcon className="icon h-1/2 w-1/2 text-primary/60 group-hover:text-background" />
+            </div>
+            <div className="truncate">
+              <h3 className="text-sm">{file.name.replaceAll(".pdf", "")}</h3>
+              <p className="flex justify-start text-muted-foreground">PDF</p>
+            </div>
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent sideOffset={sideOffset} side={side} align={align} className="w-80">
+          <div className="grid gap-4">
+            <div className="space-y-2">
+              <h4 className="font-medium leading-none">File details</h4>
+              <p className="text-sm text-muted-foreground">This is your file details</p>
+            </div>
+            <div className="grid gap-2">
+              <div className="grid grid-cols-3 items-center gap-4">
+                <Label>Name</Label>
+                <div className="col-span-2 truncate text-sm">
+                  {file.name.replaceAll(".pdf", "")}
+                </div>
+              </div>
+              <div className="grid grid-cols-3 items-center gap-4">
+                <Label>Pages</Label>
+                <div className="col-span-2 truncate text-sm">{file.pages}</div>
+              </div>
+              <div className="grid grid-cols-3 items-center gap-4">
+                <Label>Messages</Label>
+                <div className="col-span-2 truncate text-sm">{messages.length}</div>
+              </div>
+              <div className="grid grid-cols-3 items-center gap-4">
+                <Label>Size</Label>
+                <div className="col-span-2 truncate text-sm">{file.size}</div>
+              </div>
+              <div className="grid grid-cols-3 items-center gap-4">
+                <Label>Format</Label>
+                <div className="col-span-2 truncate text-sm">pdf</div>
+              </div>
+              <div className="grid grid-cols-3 items-center gap-4">
+                <Label>Date</Label>
+                <time className="col-span-2 truncate text-sm">
+                  {format(new Date(file.updatedAt), "MMM, dd yyyy HH:mm")}
+                </time>
+              </div>
+            </div>
+            <Separator />
+            <div className="space-x-3">
+              <Hint side="top" description="Open file">
+                <Link
+                  href={`/dashboard/${file.id}`}
+                  className={cn(
+                    buttonVariants({
+                      variant: "outline",
+                      size: "icon",
+                      className: "h-8 w-8 shadow-none",
+                    })
+                  )}
+                  aria-disabled={isLoading}
+                  aria-readonly={isLoading}
+                >
+                  <ExternalLink className="h-4 w-4" />
+                </Link>
+              </Hint>
+              <Hint description="Delete file" side="top">
+                <Button
+                  variant="destructive"
+                  size="icon"
+                  className="h-8 w-8 shadow-none"
+                  disabled={isLoading}
+                  onClick={() => onOPen({ id: file.id, name: file.name })}
+                >
+                  <Trash className="h-4 w-4" />
+                </Button>
+              </Hint>
+              <Hint description="Continue processing" side="top">
+                <Button
+                  variant="secondary"
+                  size="icon"
+                  className="h-8 w-8 shadow-none"
+                  disabled={isLoading}
+                  onClick={() =>
+                    processFileAction({ fileId: file.id, name: file.name, url: file.url })
+                  }
+                >
+                  <FcProcess className="h-4 w-4" />
+                </Button>
+              </Hint>
             </div>
           </div>
-        </div>
-      </Link>
-
-      <div className="px-6 mt-4 grid grid-cols-3 place-items-center py-2 gap-6 text-xs text-zinc-500">
-        <div className="flex items-center gap-2">
-          <Plus className="h-4 w-4" />
-          {format(new Date(file.createdAt), "MMM yyyy")}
-        </div>
-
-        <div className="flex items-center gap-2">
-          <MessageSquare className="h-4 w-4" />
-          {messages.length} messages
-        </div>
-
-        <Button
-          onClick={() => {
-            toast
-              .promise(handleDelete(), {
-                loading: "Deleting file...",
-                success: "File deleted",
-                error: "Error deleting file",
-              })
-              .then((r) => r);
-          }}
-          variant="destructive"
-          size="sm"
-          className="w-full"
-          disabled={isLoading}
-        >
-          {isLoading ? (
-            <Loader2 className="w-4 h-4 animate-spin" />
-          ) : (
-            <Trash className="w-4 h-4" />
-          )}
-        </Button>
-      </div>
-    </li>
+        </PopoverContent>
+      </Popover>
+    </>
   );
-}
-
-export default DashboardFileCard;
+};
